@@ -60,7 +60,7 @@ class Login(tk.Frame):
         self.password = tk.StringVar()
 
         lblFrame = tk.LabelFrame(self,bg="#FF80ED")
-        lblFrame.place(x=490,y=160,width=340, height=450)
+        lblFrame.place(x=525,y=160,width=340, height=450)
 
         img1=Image.open("images/login.png").resize((100,100), Image.ANTIALIAS)
         self.photoimage1=ImageTk.PhotoImage(img1)
@@ -165,11 +165,11 @@ class Register(tk.Frame):
         bg1=Image.open("images/Nailwall.jpg").resize((470,610), Image.ANTIALIAS)
         self.lblbg1=ImageTk.PhotoImage(bg1)
         lblLeft=tk.Label(self, image=self.lblbg1)
-        lblLeft.place(x=50,y=50,width=470,height=610)
+        lblLeft.place(x=85,y=50,width=470,height=610)
 
         # main Frame
         frame=tk.Frame(self,bg="white")
-        frame.place(x=520,y=50,width=710,height=610)
+        frame.place(x=555,y=50,width=710,height=610)
 
         lblregist=tk.Label(frame,text="REGISTER HERE",font=("times new roman",25,"bold"),fg="darkgreen",bg="white")
         lblregist.place(x=20,y=20)
