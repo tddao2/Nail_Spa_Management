@@ -117,7 +117,9 @@ class Login(tk.Frame):
                 if EmployeeDB().fetch(userfetch) == None:
                     messagebox.showerror("Error","Invalid username or password. Please try again.")
                 else:
-                    if EmployeeDB().fetch(userfetch)[6] == 2:
+                    if EmployeeDB().fetch(userfetch)[7] == 1:
+                        messagebox.showerror("Error","Invalid username or password. Please try again.")
+                    elif EmployeeDB().fetch(userfetch)[6] == 2:
                         messagebox.showerror("Error","Your account is pending.")
                     elif EmployeeDB().fetch(userfetch)[6] == 3:
                         messagebox.showerror("Error","Your account is locked.")
