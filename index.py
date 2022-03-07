@@ -9,10 +9,10 @@ from PIL import Image, ImageTk
 import bcrypt
 
 from Backend.createtables import CreateTables
-from Backend.employee import EmployeeDB
 
-from Database.employee import EmployeeDB
-from Database.feedback import FeedbackDB
+from Backend.Database.employee import EmployeeDB
+from Backend.Database.account import AccountDB
+from Backend.Database.feedback import FeedbackDB
 
 
 class App(tk.Tk):
@@ -128,23 +128,23 @@ class Login(tk.Frame):
             elif self.password.get()=="":
                 messagebox.showwarning("Warning","Password missing!.")
             elif self.username.get() and self.password.get():
-                if EmployeeDB().fetch(userfetch) == None:
+                if AccountDB().fetch(userfetch) == None:
                     messagebox.showerror("Error","Invalid username or password. Please try again.")
                 else:
-                    if EmployeeDB().fetch(userfetch)[7] == 1:
+                    if AccountDB().fetch(userfetch)[7] == 1:
                         messagebox.showerror("Error","Invalid username or password. Please try again.")
-                    elif EmployeeDB().fetch(userfetch)[6] == 2:
+                    elif AccountDB().fetch(userfetch)[6] == 2:
                         messagebox.showerror("Error","Your account is pending.")
-                    elif EmployeeDB().fetch(userfetch)[6] == 3:
+                    elif AccountDB().fetch(userfetch)[6] == 3:
                         messagebox.showerror("Error","Your account is locked.")
-                    elif EmployeeDB().fetch(userfetch)[6] == 1 and EmployeeDB().fetch(userfetch)[5] == 1:
-                        if bcrypt.checkpw(self.password.get().encode('utf8'), EmployeeDB().fetch(userfetch)[2].encode('utf8')):
+                    elif AccountDB().fetch(userfetch)[6] == 1 and AccountDB().fetch(userfetch)[5] == 1:
+                        if bcrypt.checkpw(self.password.get().encode('utf8'), AccountDB().fetch(userfetch)[2].encode('utf8')):
                             self.controller.show_frame("AdminDashboard")
                             self.clear()
                         else:
                             messagebox.showerror("Error","Invalid username or password. Please try again.")
-                    elif EmployeeDB().fetch(userfetch)[6] == 1 and EmployeeDB().fetch(userfetch)[5] == 2:
-                        if bcrypt.checkpw(self.password.get().encode('utf8'), EmployeeDB().fetch(userfetch)[2].encode('utf8')):
+                    elif AccountDB().fetch(userfetch)[6] == 1 and AccountDB().fetch(userfetch)[5] == 2:
+                        if bcrypt.checkpw(self.password.get().encode('utf8'), AccountDB().fetch(userfetch)[2].encode('utf8')):
                             self.controller.show_frame("EmployeeDashboard")
                             self.clear()
                         else:
@@ -321,7 +321,7 @@ class Register(tk.Frame):
             elif self.password.get() != self.CFpassword.get():
                 messagebox.showerror("Error","Your password and confirmation password do not match.")
             elif self.username.get() and self.firstname.get() and self.lastname.get():
-                if EmployeeDB().fetch(userfetch)!=None:
+                if AccountDB().fetch(userfetch)!=None:
                     messagebox.showwarning("Warning","User Already Exists")
                 else:
                     password=self.password.get().encode('utf8')
@@ -329,11 +329,11 @@ class Register(tk.Frame):
                     secret_answer=self.SA.get().encode('utf8')
                     SAhased=bcrypt.hashpw(secret_answer, bcrypt.gensalt())
                     account=(self.username.get(),hashedpassword,self.SQ.get(),SAhased,role_id,account_status_id,activeAccount)
-                    EmployeeDB().insertAccount(account)
+                    AccountDB().insert(account)
 
-                    account_id=EmployeeDB().fetch(userfetch)
+                    account_id=AccountDB().fetch(userfetch)
                     employee=(self.firstname.get(),self.lastname.get(),self.txtDOB.get_date(),self.phone.get(),self.email.get(),self.txtAddress.get("1.0",END),employee_status_id,account_id[0],activeEmployee)
-                    EmployeeDB().insertEmployee(employee)
+                    EmployeeDB().insert(employee)
                     
                     op=messagebox.showinfo("Success","Register Successfully!")
                     self.clear()
