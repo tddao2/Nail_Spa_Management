@@ -11,13 +11,19 @@ import bcrypt
 from Backend.createtables import CreateTables
 from Backend.employee import EmployeeDB
 
+from Database.employee import EmployeeDB
+from Database.feedback import FeedbackDB
+
+
 class App(tk.Tk):
 
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
+        self.title("KT Nails Spa")
 
+        # Reference: https://blog.teclado.com/side-values-in-tkinters-pack-geometry-manager/
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
@@ -25,21 +31,25 @@ class App(tk.Tk):
 
         width = 1280
         height = 720
+
+        # Return screen width and height in pixels.
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
+
         x = (screen_width / 2) - (width / 2)
         y = (screen_height / 2) - (height / 2)
         self.geometry(f'{width}x{height}+{int(x)}+{int(y)}')
-        self.resizable(False,False)
+        self.resizable(False, False)
 
+        # Initializing an empty frame array.
         self.frames = {}
-        for F in (Login, Register, AdminDashboard, EmployeeDashboard):
+        for F in (Login, Register, Feedback, AdminDashboard, EmployeeDashboard):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
-
             frame.grid(row=0, column=0, sticky="nsew")
 
+        # Display the current page
         self.show_frame("Login")
 
     def show_frame(self, page_name):
@@ -106,6 +116,10 @@ class Login(tk.Frame):
         btnForgetpw=tk.Button(lblFrame,text="Forget Password",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#FF80ED", activeforeground="black",activebackground="#FF80ED")
         btnForgetpw.place(x=10,y=390,width=160)
 
+        # Feedback Button
+        btnFeedback = tk.Button(lblFrame, text="Feedback", font=("times new roman",10,"bold"), borderwidth=0, fg="black", bg="#FF80ED", activeforeground="black",activebackground="#FF80ED", command=lambda: controller.show_frame("Feedback"))
+        btnFeedback.place(x=15, y=420, width=160)
+
     def login(self):
         userfetch = (self.username.get())
         try:
@@ -143,6 +157,8 @@ class Login(tk.Frame):
     def clear(self):
         self.username.set("")
         self.password.set("")
+        
+
 class Register(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -352,6 +368,102 @@ class EmployeeDashboard(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.config(bg="yellow")
+
+# Feedback Window
+class Feedback(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+
+        # Background color
+        self.config(bg="#c86f67")
+
+        # Create widgets
+        self.create_widgets(controller)
+
+
+    def create_widgets(self, controller):
+
+        self.employeeName = tk.StringVar()
+        self.performanceScore = tk.IntVar()
+        self.description = tk.StringVar()
+
+        # Main Frame
+        frame = tk.Frame(self, bg="white")
+        frame.place(x=400, y=50, width=480, height=620)
+
+        # Header
+        header = tk.Label(frame, text="Customer Feedback", font=("Segoe UI", 25, "bold"))
+        header.place(x=20, y=20)
+
+        # Retrieve from database directly later
+        OPTIONS = [
+            "Nancy",
+            "Pham"
+        ]
+
+        # Employee Name
+        self.employeeNameLabel = tk.Label(frame, text="Employee Name:", font=("Segoe UI", 14, "bold"))
+        self.employeeNameLabel.place(x=20, y=80)
+        self.employeeNameEntry = ttk.Combobox(frame, font=("Segoe UI", 14))
+        employeeList = []
+        self.employeeNameEntry["values"] = employeeList
+        self.employeeNameEntry.place(x=150, y=80)
+
+        # Performance Score
+        self.performanceScoreLabel = tk.Label(frame, text="Performance Score:", font=("Segoe UI", 14, "bold"))
+        self.performanceScoreLabel.place(x=20, y=140)
+        self.scale = tk.Scale(frame,orient=tk.HORIZONTAL,length=300,width=20,sliderlength=10,from_=0,to=10,tickinterval=1)
+        self.scale.place(x=20, y=170)
+
+        # Description
+        self.descriptionLabel = tk.Label(frame, text="Description:", font=("Segoe UI", 14, "bold"))
+        self.descriptionLabel.place(x=20,y=250)
+        self.descriptionEntry = tk.Text(frame, font=("Segoe UI", 14, "bold"), bg="#EBECF0", borderwidth=2)
+        self.descriptionEntry.place(x=20, y=280, width=300, height=150)
+        #self.description = descriptionEntry.get("1.0",'end-1c')
+
+        print(self.description)
+
+
+        #, textvariable=self.description
+
+        #self.txtSecurityQ=ttk.Combobox(frame,font=("times new roman",15,"bold"),state="readonly",justify="center")
+        #self.txtSecurityQ["values"]=("Select","Your Birth Place","Your Girlfriend name","Your Pet Name")
+        #self.txtSecurityQ.place(x=50,y=480,width=250)
+        #self.txtSecurityQ.current(0)
+
+
+        # Back Button (To Login Page)
+        backButton = tk.Button(frame, text="Back", borderwidth=0,command=lambda: controller.show_frame("Login"))
+        backButton.place(x=40,y=500)
+
+        # Submit Button
+        submitButton = tk.Button(frame, text="Submit", borderwidth=0,command=lambda: self.retrieve_input())
+        submitButton.place(x=140,y=500)
+
+
+
+    def load_employees(self):
+
+        # Load employee naem from database.
+        print("Implementing")
+
+
+    def retrieve_input(self):
+        
+        self.performanceScore = self.scale.get()
+        self.description = self.descriptionEntry.get("1.0",'end-1c')
+
+        print(self.description)
+        print(self.performanceScore)
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     app = App()
