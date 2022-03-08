@@ -1,18 +1,18 @@
 from tkinter import *
 import tkinter as tk
-from tkinter import ttk
-from tkinter import messagebox
+from tkinter import ttk, messagebox
 from tkcalendar import DateEntry
 from tkinter import font as tkfont
 import datetime
+import time
 from PIL import Image, ImageTk
 import bcrypt
 
 from Backend.createtables import CreateTables
 from Backend.employee import EmployeeDB
 
-from Database.employee import EmployeeDB
-from Database.feedback import FeedbackDB
+from Backend.Database.employee import EmployeeDB
+from Backend.Database.feedback import FeedbackDB
 
 
 class App(tk.Tk):
@@ -361,6 +361,63 @@ class AdminDashboard(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.config(bg="#FF80ED")
+
+        AMframe=tk.Frame(self,bg="#e2479c")
+        AMframe.place(x=0,y=0,width=1350,height=720)
+
+        LeftFrame=tk.Frame(AMframe,bg="#e2479c",relief=RIDGE)
+        LeftFrame.place(x=0,y=0,width=100,height=720)
+
+        imageHome = Image.open("images/home.png").resize((100,100))
+        self.imageHome=ImageTk.PhotoImage(imageHome)
+        HomeBtn=tk.Button(LeftFrame, image=self.imageHome,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
+        HomeBtn.grid(row=0,column=1)
+
+        imageEmployee = Image.open("images/employee.png").resize((100,100))
+        self.imageEmployee=ImageTk.PhotoImage(imageEmployee)
+        EmployeeBtn=tk.Button(LeftFrame, image=self.imageEmployee,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.employee)
+        EmployeeBtn.grid(row=1,column=1)
+
+        imageCustomer = Image.open("images/client.png").resize((100,100))
+        self.imageCustomer=ImageTk.PhotoImage(imageCustomer)
+        CustomerBtn=tk.Button(LeftFrame, image=self.imageCustomer,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.client)
+        CustomerBtn.grid(row=2,column=1)
+
+        imageSale = Image.open("images/sale.png").resize((100,100))
+        self.imageSale=ImageTk.PhotoImage(imageSale)
+        SaleBtn=tk.Button(LeftFrame, image=self.imageSale,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.sale)
+        SaleBtn.grid(row=3,column=1)
+
+        imageReport = Image.open("images/Report.png").resize((100,100))
+        self.imageReport=ImageTk.PhotoImage(imageReport)
+        ReportBtn=tk.Button(LeftFrame, image=self.imageReport,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
+        ReportBtn.grid(row=4,column=1)
+
+        imageFeedback = Image.open("images/feedback.png").resize((100,100))
+        self.imageFeedback=ImageTk.PhotoImage(imageFeedback)
+        FeedbackBtn=tk.Button(LeftFrame, image=self.imageFeedback,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
+        FeedbackBtn.grid(row=5,column=1)
+
+        imagelogout = Image.open("images/logout.png").resize((100,100))
+        self.imagelogout=ImageTk.PhotoImage(imagelogout)
+        logoutBtn=tk.Button(LeftFrame, image=self.imagelogout,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
+        logoutBtn.grid(row=6,column=1)
+
+        def clock():
+            hour=time.strftime("%I")
+            minute=time.strftime("%M")
+            second=time.strftime("%S")
+            locale=time.strftime("%p")
+
+            abbDay=time.strftime("%a")
+            day=time.strftime("%d")
+            month=time.strftime("%b")
+            year=time.strftime("%Y")
+            lbl_clock.config(text="Welcome to Nail & Spa Management System\t\t Date: "+abbDay+", "+day+" "+month+" "+year+"\t\t Time: "+hour+":"+minute+":"+second+" "+locale)
+            lbl_clock.after(1000,clock)
+        lbl_clock=tk.Label(AMframe, text="",font=("times new roman",15),bg="#e2479c",fg="white")
+        lbl_clock.place(x=100,y=0,relwidth=1,height=30)
+        clock()
 
 class EmployeeDashboard(tk.Frame):
 
