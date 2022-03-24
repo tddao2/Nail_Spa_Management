@@ -1,6 +1,10 @@
 Babel==2.9.1
+bcrypt==3.2.0
+cffi==1.15.0
 mysql-connector==2.2.9
+phonenumbers==8.12.45
 Pillow==9.0.1
+pycparser==2.21
 pytz==2021.3
+six==1.16.0
 tkcalendar==1.6.1
-bcrypt
