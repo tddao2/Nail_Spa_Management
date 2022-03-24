@@ -19,17 +19,17 @@ class ServiceDB:
         return rows
 
 
-    def getServiceByName(self, service_description):
+    def getServiceByServiceDescription(self, service_description):
         self.cursor.execute("SELECT * FROM service WHERE service_description = ? AND active = 1", (username,))
         rows = self.cursor.fetchall()
         return rows
 
-    def getServiceByName(self, price):
+    def getServiceByPrice(self, price):
         self.cursor.execute("SELECT * FROM service WHERE price = ? AND active = 1", (username,))
         rows = self.cursor.fetchall()
         return rows
     
-    def getServiceByName(self, service_type_id):
+    def getServiceByServiceTypeID(self, service_type_id):
         self.cursor.execute("SELECT * FROM service WHERE service_type_id = ? AND active = 1", (username,))
         rows = self.cursor.fetchall()
         return rows
@@ -41,10 +41,10 @@ class ServiceDB:
                             (service_name, service_description, price, service_type_id))
         self.conn.commit()
 
-
-    def removeService(self, service_id):
-        self.cursor.execute("UPDATE service SET active = 0 WHERE service_id = ?", (service_id,))
-        self.conn.commit()
+    # Shouldn't the services table have an active column? When services are no longer available?
+    #def removeService(self, service_id):
+    #    self.cursor.execute("UPDATE service SET active = 0 WHERE service_id = ?", (service_id,))
+    #    self.conn.commit()
 
 
     def updateService(self, service_id, service_name, service_description, price, service_type_id):
