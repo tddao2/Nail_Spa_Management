@@ -7,15 +7,17 @@ import datetime
 import time
 from PIL import Image, ImageTk
 import bcrypt
+import phonenumbers
+import re
 
 from Backend.createtables import CreateTables
-
+from Backend.admin import AdminDB
 from Backend.Database.employee import EmployeeDB
 from Backend.Database.feedback import FeedbackDB
 
 # Database context
-employeeDB = EmployeeDB()
-feedbackDB = FeedbackDB()
+# employeeDB = EmployeeDB()
+# feedbackDB = FeedbackDB()
 
 class App(tk.Tk):
 
@@ -31,7 +33,7 @@ class App(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        width = 1280
+        width = 1350  # 1280
         height = 720
 
         # Return screen width and height in pixels.
@@ -400,10 +402,15 @@ class AdminDashboard(tk.Frame):
         FeedbackBtn=tk.Button(LeftFrame, image=self.imageFeedback,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
         FeedbackBtn.grid(row=5,column=1)
 
-        imagelogout = Image.open("images/logout.png").resize((100,100))
-        self.imagelogout=ImageTk.PhotoImage(imagelogout)
-        logoutBtn=tk.Button(LeftFrame, image=self.imagelogout,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
-        logoutBtn.grid(row=6,column=1)
+        # imagelogout = Image.open("images/logout.png").resize((100,100))
+        # self.imagelogout=ImageTk.PhotoImage(imagelogout)
+        # logoutBtn=tk.Button(LeftFrame, image=self.imagelogout,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
+        # logoutBtn.grid(row=6,column=1)
+
+        imageusers = Image.open("images/users.png").resize((100,100))
+        self.imageusers=ImageTk.PhotoImage(imageusers)
+        usersBtn=tk.Button(LeftFrame, image=self.imageusers,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.user)
+        usersBtn.grid(row=6,column=1)
 
         def clock():
             hour=time.strftime("%I")
@@ -420,6 +427,575 @@ class AdminDashboard(tk.Frame):
         lbl_clock=tk.Label(AMframe, text="",font=("times new roman",15),bg="#e2479c",fg="white")
         lbl_clock.place(x=100,y=0,relwidth=1,height=30)
         clock()
+
+        self.EmpFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
+        self.ClientFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="red")
+        self.SaleFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="yellow")
+        self.UserFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
+
+    def employee(self):
+        self.hide_all_frames()
+        self.EmpFrame.place(x=100,y=30,width=1251,height=690)
+
+        style = ttk.Style()
+        # style.theme_use('clam')
+        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.map('Treeview',background=[('selected','#e2479c')])
+
+        self.var_searchby=tk.StringVar()
+        self.var_searchtxt=tk.StringVar()
+
+        self.var_emp_id=tk.StringVar()
+        self.var_fname=tk.StringVar()
+        self.var_lname=tk.StringVar()
+        self.var_contact=tk.StringVar()
+        self.var_status=tk.StringVar()
+        self.var_email=tk.StringVar()
+
+        # =============Left Frame=============
+        LeftFrame=tk.LabelFrame(self.EmpFrame,text="Employee Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
+        LeftFrame.place(x=0,y=0,width=370,height=690)
+
+        lblEmpId=tk.Label(LeftFrame,text="Emp ID",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblEmpId.place(x=15,y=20)
+
+        txtEmpId=ttk.Entry(LeftFrame,textvariable=self.var_emp_id,font=("times new roman",18),state=DISABLED) # ,state=DISABLED
+        txtEmpId.place(x=140,y=20,width=200)
+
+        lblFname=tk.Label(LeftFrame,text="First Name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblFname.place(x=15,y=80)
+
+        txtFname=ttk.Entry(LeftFrame,textvariable=self.var_fname,font=("times new roman",18))
+        txtFname.place(x=140,y=80,width=200)
+
+        lblLname=tk.Label(LeftFrame,text="Last Name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblLname.place(x=15,y=140)
+
+        txtLname=ttk.Entry(LeftFrame,textvariable=self.var_lname,font=("times new roman",18))
+        txtLname.place(x=140,y=140,width=200)
+
+        lblDOB=tk.Label(LeftFrame,text="DOB",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblDOB.place(x=15,y=200)
+
+        self.txtDOB=DateEntry(LeftFrame,selectmode='day',font=("times new roman",18),date_pattern='mm/dd/y')
+        # self.txtDOB.pack()
+        self.txtDOB.place(x=140,y=200,width=200)
+
+        lblEmail=tk.Label(LeftFrame,text="Email",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblEmail.place(x=15,y=260)
+
+        txtEmail=ttk.Entry(LeftFrame,textvariable=self.var_email,font=("times new roman",14))
+        txtEmail.place(x=140,y=260,width=200,height=33)
+
+        lblPhone=tk.Label(LeftFrame,text="Phone",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblPhone.place(x=15,y=320)
+
+        txtPhone=ttk.Entry(LeftFrame,textvariable=self.var_contact,font=("times new roman",18))
+        txtPhone.place(x=140,y=320,width=200)
+
+        lblStatus=tk.Label(LeftFrame,text="Status",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblStatus.place(x=15,y=380)
+
+        self.txtStatus=ttk.Combobox(LeftFrame,textvariable=self.var_status,font=("times new roman",18,"bold"),state="readonly",justify="center")
+        self.txtStatus["values"]=("Select","New","Current","Pass")
+        self.txtStatus.place(x=140,y=380,width=200)
+        self.txtStatus.current(0)
+
+        lblAddress=tk.Label(LeftFrame,text="Address",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblAddress.place(x=15,y=440)
+
+        self.txtAddress=tk.Text(LeftFrame,font=("times new roman",14),bg="white")
+        self.txtAddress.place(x=140,y=440,width=200,height=100)
+
+        imgUpdate=Image.open("images/update.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageUpdate=ImageTk.PhotoImage(imgUpdate)
+        Updatebtn=tk.Button(LeftFrame, image=self.photoimageUpdate,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpUpdate)
+        Updatebtn.place(x=20,y=575,width=80)
+
+        imgDelete=Image.open("images/delete.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageDelete=ImageTk.PhotoImage(imgDelete)
+        Deletebtn=tk.Button(LeftFrame, image=self.photoimageDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpDelete)
+        Deletebtn.place(x=148,y=575,width=80)
+
+        imgRefresh=Image.open("images/refresh.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageRefresh=ImageTk.PhotoImage(imgRefresh)
+        Refreshbtn=tk.Button(LeftFrame, image=self.photoimageRefresh,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpClear)
+        Refreshbtn.place(x=275,y=575,width=80)
+
+        # ==========================================================Right Frame=============================================================
+        RightFrame=tk.LabelFrame(self.EmpFrame,relief=RIDGE,bd=1,bg="#e2479c")
+        RightFrame.place(x=370,y=12,width=880,height=678)
+
+        # =============Top Right Frame=============
+        SearchFrame=tk.LabelFrame(RightFrame,text="Search Employee",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="white")
+        SearchFrame.place(x=100,width=680,height=71) #550
+
+        self.cmb_search=ttk.Combobox(SearchFrame,textvariable=self.var_searchby,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.cmb_search["values"]=("Select","first_name","last_name","birthday","phone")
+        self.cmb_search.place(x=15,y=2,width=180)
+        self.cmb_search.current(0)
+
+        txt_search=tk.Entry(SearchFrame,textvariable=self.var_searchtxt,font=("times new roman",18),bg="white")
+        txt_search.place(x=215,y=2) #10
+
+        imgSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageSearch=ImageTk.PhotoImage(imgSearch)
+        # Searchbtn=tk.Button(LeftFrame, image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        # Searchbtn.place(x=275,y=580,width=80)
+        btn_search=tk.Button(SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpSearch)
+        btn_search.place(x=465)
+
+        btn_showHistory=tk.Button(SearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.EmpHistory)
+        btn_showHistory.place(x=510,width=150)
+
+        
+        # =============Bottom Right Frame=============
+        EmpTableFrame=tk.LabelFrame(RightFrame,relief=RIDGE,bd=1,bg="white")
+        EmpTableFrame.place(y=72,width=879,height=604) #608
+
+        scrollx=tk.Scrollbar(EmpTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(EmpTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+        
+        self.EmployeeTable=ttk.Treeview(EmpTableFrame,columns=("ID","fname","lname","dob","email","contact","address","status"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.EmployeeTable.xview)
+        scrolly.config(command=self.EmployeeTable.yview)
+
+        self.EmployeeTable.heading("ID",text="ID")
+        self.EmployeeTable.heading("fname",text="First Name")
+        self.EmployeeTable.heading("lname",text="Last Name")
+        self.EmployeeTable.heading("dob",text="D.O.B")
+        self.EmployeeTable.heading("email",text="Email")
+        self.EmployeeTable.heading("contact",text="Contact")
+        self.EmployeeTable.heading("address",text="Address")
+        self.EmployeeTable.heading("status",text="Status")
+
+        self.EmployeeTable["show"]="headings"
+
+        self.EmployeeTable.column("ID",anchor=CENTER)
+        self.EmployeeTable.column("fname",anchor=CENTER)
+        self.EmployeeTable.column("lname",anchor=CENTER)
+        self.EmployeeTable.column("dob",anchor=CENTER)
+        self.EmployeeTable.column("email",anchor=CENTER)
+        self.EmployeeTable.column("contact",anchor=CENTER)
+        self.EmployeeTable.column("address",anchor=CENTER)
+        self.EmployeeTable.column("status",anchor=CENTER)
+
+        self.EmployeeTable.pack(fill=BOTH,expand=1)
+        self.EmployeeTable.bind("<ButtonRelease-1>",self.EmpGetdata)
+
+        self.EmpShow()
+      
+    def client(self):
+        self.hide_all_frames()
+        self.ClientFrame.place(x=200,y=30,width=1250,height=690)
+
+    def sale(self):
+        self.hide_all_frames()
+        self.SaleFrame.place(x=250,y=30,width=1250,height=690)
+    
+    def user(self):
+        self.hide_all_frames()
+        self.UserFrame.place(x=100,y=30,width=1251,height=690)
+
+        style = ttk.Style()
+        # style.theme_use('clam')
+        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.map('Treeview',background=[('selected','#e2479c')])
+
+        self.var_Acctsearchby=tk.StringVar()
+        self.var_Acctsearchtxt=tk.StringVar()
+
+        self.var_acct_id=tk.StringVar()
+        self.var_username=tk.StringVar()
+        self.var_rolename=tk.StringVar()
+        self.var_Acctstatus=tk.StringVar()
+
+        # =============Left Frame=============
+        LeftFrame=tk.LabelFrame(self.UserFrame,text="Account Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
+        LeftFrame.place(x=0,y=0,width=370,height=689)
+
+        lblAcctId=tk.Label(LeftFrame,text="Account ID",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblAcctId.place(x=15,y=20)
+
+        txtAcctId=ttk.Entry(LeftFrame,textvariable=self.var_acct_id,font=("times new roman",18),state=DISABLED) # ,state=DISABLED
+        txtAcctId.place(x=140,y=20,width=200)
+
+        lblUsername=tk.Label(LeftFrame,text="User Name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblUsername.place(x=15,y=80)
+
+        txtUsername=ttk.Entry(LeftFrame,textvariable=self.var_username,font=("times new roman",18),state=DISABLED)
+        txtUsername.place(x=140,y=80,width=200)
+
+        lblRoleName=tk.Label(LeftFrame,text="Role",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblRoleName.place(x=15,y=140)
+
+        self.txtRoleName=ttk.Combobox(LeftFrame,textvariable=self.var_rolename,font=("times new roman",18,"bold"),state="readonly",justify="center")
+        self.txtRoleName["values"]=("Select","Admin","User")
+        self.txtRoleName.place(x=140,y=140,width=200)
+        self.txtRoleName.current(0)
+
+        lblAcctStatus=tk.Label(LeftFrame,text="Status",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblAcctStatus.place(x=15,y=200)
+
+        self.txtAcctStatus=ttk.Combobox(LeftFrame,textvariable=self.var_Acctstatus,font=("times new roman",18,"bold"),state="readonly",justify="center")
+        self.txtAcctStatus["values"]=("Select","active","inactive","pending")
+        self.txtAcctStatus.place(x=140,y=200,width=200)
+        self.txtAcctStatus.current(0)
+
+        imgAcctUpdate=Image.open("images/update.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageAcctUpdate=ImageTk.PhotoImage(imgAcctUpdate)
+        AcctUpdatebtn=tk.Button(LeftFrame, image=self.photoimageAcctUpdate,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctUpdate)
+        AcctUpdatebtn.place(x=20,y=575,width=80)
+
+        # imgAcctDelete=Image.open("images/delete.png").resize((80,80),Image.ANTIALIAS)
+        # self.photoimageAcctDelete=ImageTk.PhotoImage(imgAcctDelete)
+        # AcctDeletebtn=tk.Button(LeftFrame, image=self.photoimageAcctDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        # AcctDeletebtn.place(x=148,y=575,width=80)
+
+        imgAcctRefresh=Image.open("images/refresh.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageAcctRefresh=ImageTk.PhotoImage(imgAcctRefresh)
+        AcctRefreshbtn=tk.Button(LeftFrame, image=self.photoimageAcctRefresh,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctClear)
+        AcctRefreshbtn.place(x=275,y=575,width=80)
+
+        # ==========================================================Right Frame=============================================================
+        RightFrame=tk.Frame(self.UserFrame,relief=RIDGE,bd=1,bg="#e2479c")
+        RightFrame.place(x=370,y=12,width=880,height=678)
+
+        # =============Top Right Frame=============
+        SearchFrame=tk.LabelFrame(RightFrame,text="Search Account",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="white")
+        SearchFrame.place(x=100,width=680,height=71) #550
+
+        self.Acctcmb_search=ttk.Combobox(SearchFrame,textvariable=self.var_Acctsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.Acctcmb_search["values"]=("Select","first_name","last_name","username","acct_status")
+        self.Acctcmb_search.place(x=15,y=2,width=180)
+        self.Acctcmb_search.current(0)
+
+        txt_Acctsearch=tk.Entry(SearchFrame,textvariable=self.var_Acctsearchtxt,font=("times new roman",18),bg="white")
+        txt_Acctsearch.place(x=215,y=2) #10
+
+        imgSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageSearch=ImageTk.PhotoImage(imgSearch)
+        btn_search=tk.Button(SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctSearch)
+        btn_search.place(x=465)
+
+        btn_showHistory=tk.Button(SearchFrame,text="Show All",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.AcctShowAll)
+        btn_showHistory.place(x=510,width=150)
+
+        # =============Bottom Right Frame=============
+        AcctTableFrame=tk.LabelFrame(RightFrame,relief=RIDGE,bd=1,bg="white")
+        AcctTableFrame.place(y=72,width=879,height=604) #608
+
+        scrollx=tk.Scrollbar(AcctTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(AcctTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+        
+        self.AccountTable=ttk.Treeview(AcctTableFrame,columns=("ID","Full name","username","role","status"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.AccountTable.xview)
+        scrolly.config(command=self.AccountTable.yview)
+
+        self.AccountTable.heading("ID",text="ID")
+        self.AccountTable.heading("Full name",text="Full name")
+        self.AccountTable.heading("username",text="User name")
+        self.AccountTable.heading("role",text="Role")
+        self.AccountTable.heading("status",text="Status")
+        
+
+        self.AccountTable["show"]="headings"
+
+        self.AccountTable.column("ID",anchor=CENTER)
+        self.AccountTable.column("Full name",anchor=CENTER)
+        self.AccountTable.column("username",anchor=CENTER)
+        self.AccountTable.column("role",anchor=CENTER)
+        self.AccountTable.column("status",anchor=CENTER)
+        
+
+        self.AccountTable.pack(fill=BOTH,expand=1)
+        self.AccountTable.bind("<ButtonRelease-1>",self.AcctGetdata)
+
+        self.AcctShow()
+
+    def hide_all_frames(self):
+        self.EmpFrame.place_forget()
+        self.ClientFrame.place_forget()
+        self.SaleFrame.place_forget()
+        self.UserFrame.place_forget()
+
+    def EmpUpdate(self):
+        emp_status_New = 1
+        emp_status_Current = 2
+        emp_status_Pass = 3
+        try:
+            if self.var_emp_id.get()=="":
+                messagebox.showerror("Error","No employee info selected")
+            elif self.var_fname.get()=="":
+                messagebox.showerror("Error","First Name missing")
+            elif self.var_lname.get()=="":
+                messagebox.showerror("Error","Last Name missing")
+            elif self.var_lname.get()=="":
+                messagebox.showerror("Error","Last Name missing")
+            elif self.txtDOB.get_date()==datetime.datetime.now().date():
+                messagebox.showerror("Error","Invalid Date of Birth")
+            # elif self.var_email.get()=="":
+            #     messagebox.showerror("Error","Email missing")
+            elif self.var_contact.get()=="":
+                messagebox.showerror("Error","Phone missing")
+            elif self.var_status.get()=="Select":
+                messagebox.showerror("Error","Status missing")
+            elif len(self.txtAddress.get("1.0",END))==1:
+                messagebox.showerror("Error","Address missing")
+            else:
+                if self.var_status.get()=="New":
+                    FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_contact.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
+                    data=(self.var_fname.get(),self.var_lname.get(),self.txtDOB.get_date(),self.var_email.get(),FormatedPhone,self.txtAddress.get("1.0",END),emp_status_New,self.var_emp_id.get())
+                    AdminDB().EmpUpdate(data)
+                    messagebox.showinfo("Success","Update Successfully!")
+                    self.EmpClear()
+                elif self.var_status.get()=="Current":
+                    FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_contact.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
+                    data=(self.var_fname.get(),self.var_lname.get(),self.txtDOB.get_date(),self.var_email.get(),FormatedPhone,self.txtAddress.get("1.0",END),emp_status_Current,self.var_emp_id.get())
+                    AdminDB().EmpUpdate(data)
+                    messagebox.showinfo("Success","Update Successfully!")
+                    self.EmpClear()
+                elif self.var_status.get()=="Pass":
+                    FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_contact.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
+                    data=(self.var_fname.get(),self.var_lname.get(),self.txtDOB.get_date(),self.var_email.get(),FormatedPhone,self.txtAddress.get("1.0",END),emp_status_Pass,self.var_emp_id.get())
+                    AdminDB().EmpUpdate(data)
+                    messagebox.showinfo("Success","Update Successfully!")
+                    self.EmpClear()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+    
+    def EmpDelete(self):
+        try:
+            if self.var_emp_id.get()=="":
+                messagebox.showerror("Error","No employee info selected")
+            else:
+                op=messagebox.askyesno("Confirm","Do you really want to delete?")
+                if op==True:
+                    data = self.var_emp_id.get()
+                    AdminDB().EmpDelete(data)
+                    messagebox.showinfo("Success","Delete Successfully!")
+                    self.EmpClear()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+    
+    def EmpSearch(self):
+        try:
+            if self.var_searchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_searchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            elif self.var_searchby.get()=="phone" and self.var_searchtxt.get():
+                FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_searchtxt.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
+                data=(self.var_searchby.get(),FormatedPhone)
+                rows = AdminDB().EmpSearch(data)
+                if len(rows)!=0:
+                    self.EmployeeTable.delete(*self.EmployeeTable.get_children())
+                    for row in rows:
+                        self.EmployeeTable.insert("",END,values=row)
+                else:
+                    messagebox.showerror("Error","No record found.")
+            else:
+                data=(self.var_searchby.get(),self.var_searchtxt.get())
+                rows = AdminDB().EmpSearch(data)
+                if len(rows)!=0:
+                    self.EmployeeTable.delete(*self.EmployeeTable.get_children())
+                    for row in rows:
+                        self.EmployeeTable.insert("",END,values=row)
+                else:
+                    messagebox.showerror("Error","No record found.")
+        except Exception as e:
+            messagebox.showerror("Error",f"Error due to: {str(e)}")
+            print(f"Something went wrong {e}.")
+
+    def EmpHistory(self):
+        try:
+            rows = AdminDB().EmpFetchHistory()
+            if len(rows)!=0:
+                    self.EmployeeTable.delete(*self.EmployeeTable.get_children())
+                    for row in rows:
+                        self.EmployeeTable.insert("",END,values=row)
+            else:
+                messagebox.showerror("Error","No record found.")
+        except Exception as e:
+            messagebox.showerror("Error",f"Error due to: {str(e)}")
+            print(f"Something went wrong {e}.")
+
+    def EmpClear(self):
+        self.var_emp_id.set("")
+        self.var_fname.set("")
+        self.var_lname.set("")
+        self.txtDOB.set_date(datetime.datetime.now().date())
+        self.var_email.set("")
+        self.var_contact.set("")
+        self.txtAddress.delete("1.0",END)
+        self.txtStatus.current(0)
+        self.cmb_search.current(0)
+        self.var_searchtxt.set("")
+
+        self.EmpShow()
+
+    def EmpShow(self):
+        self.EmployeeTable.delete(*self.EmployeeTable.get_children())
+        try:
+            if not AdminDB().EmpFetch():
+                messagebox.showerror("Error", "No records found.")
+            else:
+                for row in AdminDB().EmpFetch():
+                    self.EmployeeTable.insert("",END,values=row)
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def EmpGetdata(self,event):
+        f=self.EmployeeTable.focus()
+        curItem=(self.EmployeeTable.item(f))
+        row=curItem['values']
+
+        try:
+            self.var_emp_id.set(row[0])
+            self.var_fname.set(row[1])
+            self.var_lname.set(row[2])
+            self.txtDOB.set_date(datetime.datetime.strptime(str(row[3]), '%Y-%m-%d').strftime('%m/%d/%Y'))
+            self.var_email.set(row[4])
+            # self.var_contact.set(row[5])
+            self.var_contact.set(re.sub('[^A-Za-z0-9]+', '', str(row[5])))
+            self.txtAddress.delete("1.0",END)
+            self.txtAddress.insert(END,row[6])
+            self.txtStatus.set(row[7])
+        except:
+            pass
+
+    def AcctUpdate(self):
+        Role_Admin = 1
+        Role_User = 2
+        Acct_Status_active = 1
+        Acct_Status_pending = 2
+        Acct_Status_inactive = 3
+        try:
+            if self.var_acct_id.get()=="":
+                messagebox.showerror("Error","No account info selected")
+            elif self.var_rolename.get()=="Select":
+                messagebox.showerror("Error","Role is missing")
+            elif self.var_Acctstatus.get()=="Select":
+                messagebox.showerror("Error","Status is missing")
+            else:
+                if self.var_rolename.get()=="User" and self.var_Acctstatus.get()=="active":
+                    data=(Role_User, Acct_Status_active, self.var_acct_id.get())
+                    AdminDB().AcctUpdate(data)
+                    messagebox.showinfo("Success","Update Successfully!")
+                    self.AcctClear()
+                elif self.var_rolename.get()=="User" and self.var_Acctstatus.get()=="pending":
+                    data=(Role_User, Acct_Status_pending, self.var_acct_id.get())
+                    AdminDB().AcctUpdate(data)
+                    messagebox.showinfo("Success","Update Successfully!")
+                    self.AcctClear()
+                elif self.var_rolename.get()=="User" and self.var_Acctstatus.get()=="inactive":
+                    data=(Role_User, Acct_Status_inactive, self.var_acct_id.get())
+                    AdminDB().AcctUpdate(data)
+                    messagebox.showinfo("Success","Update Successfully!")
+                    self.AcctClear()
+                elif self.var_rolename.get()=="Admin" and self.var_Acctstatus.get()=="active":
+                    data=(Role_Admin, Acct_Status_active, self.var_acct_id.get())
+                    AdminDB().AcctUpdate(data)
+                    messagebox.showinfo("Success","Update Successfully!")
+                    self.AcctClear()
+                elif self.var_rolename.get()=="Admin" and self.var_Acctstatus.get()=="pending":
+                    data=(Role_Admin, Acct_Status_pending, self.var_acct_id.get())
+                    AdminDB().AcctUpdate(data)
+                    messagebox.showinfo("Success","Update Successfully!")
+                    self.AcctClear()
+                elif self.var_rolename.get()=="Admin" and self.var_Acctstatus.get()=="inactive":
+                    data=(Role_Admin, Acct_Status_inactive, self.var_acct_id.get())
+                    AdminDB().AcctUpdate(data)
+                    messagebox.showinfo("Success","Update Successfully!")
+                    self.AcctClear()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def AcctSearch(self):
+        try:
+            if self.var_Acctsearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_Acctsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                data=(self.var_Acctsearchby.get(),self.var_Acctsearchtxt.get())
+                rows = AdminDB().AcctSearch(data)
+                if len(rows)!=0:
+                    self.AccountTable.delete(*self.AccountTable.get_children())
+                    for row in rows:
+                        self.AccountTable.insert("",END,values=row)
+                else:
+                    messagebox.showerror("Error","No record found.")
+        except Exception as e:
+            messagebox.showerror("Error",f"Error due to: {str(e)}")
+            print(f"Something went wrong {e}.")
+
+    def AcctClear(self):
+        self.var_acct_id.set("")
+        self.var_username.set("")
+        self.txtRoleName.current(0)
+        self.txtAcctStatus.current(0)
+
+        self.AcctShow()
+
+    def AcctShow(self):
+        self.AccountTable.delete(*self.AccountTable.get_children())
+        try:
+            if not AdminDB().AcctFetch():
+                messagebox.showerror("Error", "No records found.")
+            else:
+                for row in AdminDB().AcctFetch():
+                    self.AccountTable.insert("",END,values=row)
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def AcctShowAll(self):
+        self.AccountTable.delete(*self.AccountTable.get_children())
+        try:
+            if not AdminDB().AcctFetchAll():
+                messagebox.showerror("Error", "No records found.")
+            else:
+                for row in AdminDB().AcctFetchAll():
+                    self.AccountTable.insert("",END,values=row)
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def AcctGetdata(self,event):
+        f=self.AccountTable.focus()
+        curItem=(self.AccountTable.item(f))
+        row=curItem['values']
+
+        try:
+            self.var_acct_id.set(row[0])
+            self.var_username.set(row[2])
+            self.var_rolename.set(row[3])
+            self.var_Acctstatus.set(row[4])
+        except:
+            pass
 
 class EmployeeDashboard(tk.Frame):
 
