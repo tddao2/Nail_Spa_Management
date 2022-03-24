@@ -67,6 +67,19 @@ class CreateTables:
             ")"
         )
 
+        TABLES['feedback'] = (
+            "CREATE TABLE `feedback` ("
+            "  `feedback_id` int NOT NULL AUTO_INCREMENT,"
+            "  `employee_id` int NOT NULL,"
+            "  `performance_score` int NOT NULL,"
+            "  `description` varchar(500),"
+            "  `dateFB` datetime NOT NULL,"
+            "  PRIMARY KEY (`feedback_id`),"
+            "  CONSTRAINT `FK_feedback_employee_id` FOREIGN KEY (`employee_id`) "
+            "     REFERENCES `employee` (`employee_id`)"
+            ")"
+        )
+
         TABLES['test'] = (
             "CREATE TABLE `test` ("
             "  `test_id` int NOT NULL AUTO_INCREMENT,"

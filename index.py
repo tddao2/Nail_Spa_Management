@@ -12,8 +12,9 @@ import re
 
 from Backend.createtables import CreateTables
 from Backend.admin import AdminDB
+from Backend.feedback import FeedbackDB
 from Backend.Database.employee import EmployeeDB
-from Backend.Database.feedback import FeedbackDB
+# from Backend.Database.feedback import FeedbackDB
 
 # Database context
 # employeeDB = EmployeeDB()
@@ -65,7 +66,7 @@ class Login(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
-        self.config(bg="#FF80ED")
+        self.config(bg="#e2479c")
         self.controller = controller
 
         CreateTables()
@@ -73,25 +74,25 @@ class Login(tk.Frame):
         self.username = tk.StringVar()
         self.password = tk.StringVar()
 
-        lblFrame = tk.LabelFrame(self,bg="#FF80ED")
+        lblFrame = tk.LabelFrame(self,bg="#e2479c")
         lblFrame.place(x=525,y=160,width=340, height=450)
 
         img1=Image.open("images/login.png").resize((100,100), Image.ANTIALIAS)
         self.photoimage1=ImageTk.PhotoImage(img1)
-        lblimg1=tk.Label(lblFrame,image=self.photoimage1,bg="#FF80ED", borderwidth=0)
+        lblimg1=tk.Label(lblFrame,image=self.photoimage1,bg="#e2479c", borderwidth=0)
         lblimg1.place(x=122, y=10, width=100,height=100)
 
-        lblLogin=tk.Label(lblFrame,text="Login", font=("times new roman",20,"bold"),fg="black",bg="#FF80ED")
+        lblLogin=tk.Label(lblFrame,text="Login", font=("times new roman",20,"bold"),fg="black",bg="#e2479c")
         lblLogin.place(x=130,y=120)
 
         # label
-        lblusername=tk.Label(lblFrame,text="Username",font=("times new roman",15,"bold"),fg="black",bg="#FF80ED")
+        lblusername=tk.Label(lblFrame,text="Username",font=("times new roman",15,"bold"),fg="black",bg="#e2479c")
         lblusername.place(x=60,y=175)
 
         self.txtuser=ttk.Entry(lblFrame, textvariable=self.username,font=("times new roman",15,"bold"))
         self.txtuser.place(x=35,y=200,width=270)
 
-        lblpassword=tk.Label(lblFrame,text="Password",font=("times new roman",15,"bold"),fg="black",bg="#FF80ED")
+        lblpassword=tk.Label(lblFrame,text="Password",font=("times new roman",15,"bold"),fg="black",bg="#e2479c")
         lblpassword.place(x=60,y=245)
 
         self.txtpass=ttk.Entry(lblFrame, textvariable=self.password,font=("times new roman",15,"bold"),show="*")
@@ -100,28 +101,28 @@ class Login(tk.Frame):
         # Icon Images
         img2=Image.open("images/login.png").resize((25,25), Image.ANTIALIAS)
         self.photoimage2=ImageTk.PhotoImage(img2)
-        lblimg2=tk.Label(lblFrame,image=self.photoimage2, bg="#FF80ED", borderwidth=0)
+        lblimg2=tk.Label(lblFrame,image=self.photoimage2, bg="#e2479c", borderwidth=0)
         lblimg2.place(x=35, y=173, width=25,height=25)
 
         img3=Image.open("images/lock.png").resize((25,25), Image.ANTIALIAS)
         self.photoimage3=ImageTk.PhotoImage(img3)
-        lblimg3=tk.Label(lblFrame,image=self.photoimage3, bg="#FF80ED", borderwidth=0)
+        lblimg3=tk.Label(lblFrame,image=self.photoimage3, bg="#e2479c", borderwidth=0)
         lblimg3.place(x=35, y=242, width=25,height=25)
 
         # Login Button
-        btnLogin=tk.Button(lblFrame,text="Login",font=("times new roman",15,"bold"),bd=3,relief="ridge",fg="black",bg="#FF80ED", activeforeground="black",activebackground="#FF80ED",command=self.login)
+        btnLogin=tk.Button(lblFrame,text="Login",font=("times new roman",15,"bold"),bd=3,relief="ridge",fg="black",bg="#e2479c", activeforeground="black",activebackground="#e2479c",command=self.login)
         btnLogin.place(x=110,y=310,width=120,height=35)
 
         # Register Button
-        btnRegist=tk.Button(lblFrame,text="New User Register",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#FF80ED", activeforeground="black",activebackground="#FF80ED",command=lambda: controller.show_frame("Register"))
+        btnRegist=tk.Button(lblFrame,text="New User Register",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#e2479c", activeforeground="black",activebackground="#e2479c",command=lambda: controller.show_frame("Register"))
         btnRegist.place(x=15,y=370,width=160)
 
         # Forget password Button
-        btnForgetpw=tk.Button(lblFrame,text="Forget Password",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#FF80ED", activeforeground="black",activebackground="#FF80ED")
+        btnForgetpw=tk.Button(lblFrame,text="Forget Password",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#e2479c", activeforeground="black",activebackground="#e2479c")
         btnForgetpw.place(x=10,y=390,width=160)
 
         # Feedback Button
-        btnFeedback = tk.Button(lblFrame, text="Feedback", font=("times new roman",10,"bold"), borderwidth=0, fg="black", bg="#FF80ED", activeforeground="black",activebackground="#FF80ED", command=lambda: controller.show_frame("Feedback"))
+        btnFeedback = tk.Button(lblFrame, text="Feedback", font=("times new roman",10,"bold"), borderwidth=0, fg="black", bg="#FF80ED", activeforeground="black",activebackground="#e2479c", command=lambda: controller.show_frame("Feedback"))
         btnFeedback.place(x=15, y=420, width=160)
 
     def login(self):
@@ -168,7 +169,7 @@ class Register(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        self.config(bg="#FF80ED")
+        self.config(bg="#e2479c")
 
         # Set Variables
         self.firstname = tk.StringVar()
@@ -364,7 +365,7 @@ class AdminDashboard(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        self.config(bg="#FF80ED")
+        self.config(bg="#e2479c")
 
         AMframe=tk.Frame(self,bg="#e2479c")
         AMframe.place(x=0,y=0,width=1350,height=720)
@@ -1011,7 +1012,7 @@ class Feedback(tk.Frame):
         tk.Frame.__init__(self, parent)
 
         # Background color
-        self.config(bg="#c86f67")
+        self.config(bg="#e2479c")
 
         # Create widgets
         self.create_widgets(controller)
@@ -1019,86 +1020,80 @@ class Feedback(tk.Frame):
 
     def create_widgets(self, controller):
 
-        self.employeeName = tk.StringVar()
-        self.performanceScore = tk.IntVar()
-        self.description = tk.StringVar()
+        # self.employeeName = tk.StringVar()
+        # self.performanceScore = tk.IntVar()
+        # self.description = tk.StringVar()
 
         # Main Frame
         frame = tk.Frame(self, bg="white")
-        frame.place(x=400, y=50, width=480, height=620)
+        frame.place(x=435, y=50, width=480, height=620)  # x=400
 
         # Header
-        header = tk.Label(frame, text="Customer Feedback", font=("Segoe UI", 25, "bold"))
+        header = tk.Label(frame, text="Customer Feedback", font=("Segoe UI", 25, "bold"),bg="white")
         header.place(x=20, y=20)
 
-        # Retrieve from database directly later
-        OPTIONS = [
-            "Nancy",
-            "Pham"
-        ]
-
         # Employee Name
-        self.employeeNameLabel = tk.Label(frame, text="Employee Name:", font=("Segoe UI", 14, "bold"))
-        self.employeeNameLabel.place(x=20, y=80)
-        self.employeeNameEntry = ttk.Combobox(frame, font=("Segoe UI", 14))
-        employeeList = []
-        self.employeeNameEntry["values"] = employeeList
-        self.employeeNameEntry.place(x=150, y=80)
+        self.employeeNameLabel = tk.Label(frame, text="Employee Name:", font=("Segoe UI", 14, "bold"),bg="white")
+        self.employeeNameLabel.place(x=20, y=160)
+
+        self.employeeId = []
+        def run_sql(event):
+            index = employeeNameEntry.current()
+            row = FeedbackDB().EmpfetchAll()[index]
+            
+            self.employeeId.clear()
+            self.employeeId.append(row[0])
+            
+        employeeNameEntry = ttk.Combobox(frame,font=("Segoe UI", 14),state="readonly",justify="center")
+        employeeNameEntry["values"] = [row[1] for row in FeedbackDB().EmpfetchAll()]
+        employeeNameEntry.place(x=190, y=160)
+        employeeNameEntry.bind("<<ComboboxSelected>>", run_sql)
 
         # Performance Score
-        self.performanceScoreLabel = tk.Label(frame, text="Performance Score:", font=("Segoe UI", 14, "bold"))
-        self.performanceScoreLabel.place(x=20, y=140)
-        self.scale = tk.Scale(frame,orient=tk.HORIZONTAL,length=300,width=20,sliderlength=10,from_=0,to=10,tickinterval=1)
-        self.scale.place(x=20, y=170)
+        performanceScoreLabel = tk.Label(frame, text="Performance Score:", font=("Segoe UI", 14, "bold"),bg="white")
+        performanceScoreLabel.place(x=20, y=220)
+
+        self.scale = tk.Scale(frame,orient=tk.HORIZONTAL,length=390,width=20,sliderlength=15,from_=0,to=10,tickinterval=1)
+        self.scale.place(x=20, y=250)
 
         # Description
-        self.descriptionLabel = tk.Label(frame, text="Description:", font=("Segoe UI", 14, "bold"))
-        self.descriptionLabel.place(x=20,y=250)
+        descriptionLabel = tk.Label(frame, text="Description:", font=("Segoe UI", 14, "bold"),bg="white")
+        descriptionLabel.place(x=20,y=330)
+
         self.descriptionEntry = tk.Text(frame, font=("Segoe UI", 14, "bold"), bg="#EBECF0", borderwidth=2)
-        self.descriptionEntry.place(x=20, y=280, width=300, height=150)
-        #self.description = descriptionEntry.get("1.0",'end-1c')
-
-        print(self.description)
-
-
-        #, textvariable=self.description
-
-        #self.txtSecurityQ=ttk.Combobox(frame,font=("times new roman",15,"bold"),state="readonly",justify="center")
-        #self.txtSecurityQ["values"]=("Select","Your Birth Place","Your Girlfriend name","Your Pet Name")
-        #self.txtSecurityQ.place(x=50,y=480,width=250)
-        #self.txtSecurityQ.current(0)
-
-
+        self.descriptionEntry.place(x=20, y=360, width=400, height=150)
+       
         # Back Button (To Login Page)
-        backButton = tk.Button(frame, text="Back", borderwidth=0,command=lambda: controller.show_frame("Login"))
-        backButton.place(x=40,y=500)
+        imgBack=Image.open("images/back.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageBack=ImageTk.PhotoImage(imgBack)
+        backButton = tk.Button(frame, image=self.photoimageBack,borderwidth=0,bg="white",activebackground="white",command=lambda: controller.show_frame("Login"))
+        backButton.place(x=40,y=530)
 
         # Submit Button
-        submitButton = tk.Button(frame, text="Submit", borderwidth=0,command=lambda: self.retrieve_input())
-        submitButton.place(x=140,y=500)
-
-
-
-    def load_employees(self):
-
-        # Load employee naem from database.
-        print("Implementing")
-
+        imgSubmit=Image.open("images/save.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageSubmit=ImageTk.PhotoImage(imgSubmit)
+        submitButton = tk.Button(frame,image=self.photoimageSubmit,borderwidth=0,bg="white",activebackground="white",command=lambda: self.retrieve_input())
+        submitButton.place(x=140,y=530)
 
     def retrieve_input(self):
-        
-        self.performanceScore = self.scale.get()
-        self.description = self.descriptionEntry.get("1.0",'end-1c')
-
-        print(self.description)
-        print(self.performanceScore)
-
-
-
-
-
-
-
+        try:
+            if not self.employeeId:
+                messagebox.showerror("Error","Please select an employee")
+            elif self.scale.get()==0:
+                op=messagebox.askyesno("Confirm","Are you sure to evaluate 0?")
+                if op==True:
+                    pass
+                else:
+                    return
+            # elif len(self.descriptionEntry.get("1.0",'end-1c'))==0:
+            #     messagebox.showerror("Error","Please leave some comments")
+            else:
+                data=(self.employeeId[0],self.scale.get(),self.descriptionEntry.get("1.0",'end-1c'),datetime.datetime.now())
+                FeedbackDB().AddFB(data)
+                messagebox.showinfo("Success","Record Successfully!")
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
 
 if __name__ == "__main__":
     app = App()
