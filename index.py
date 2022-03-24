@@ -9,11 +9,13 @@ from PIL import Image, ImageTk
 import bcrypt
 
 from Backend.createtables import CreateTables
-from Backend.employee import EmployeeDB
 
 from Database.employee import EmployeeDB
 from Database.feedback import FeedbackDB
 
+# Database context
+employeeDB = EmployeeDB()
+feedbackDB = FeedbackDB()
 
 class App(tk.Tk):
 

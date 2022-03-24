@@ -12,24 +12,30 @@ class FeedbackDB:
         self.cursor = self.conn.cursor()
 
 
-    def fetch(self):
+    def getAllFeedback(self):
         self.cursor.execute("SELECT * FROM feedback WHERE active = 1")
         rows = self.cursor.fetchall()
         return rows
 
+    
+    def getFeedbackByEmployeeID(self, employee_id):
+        self.cursor.execute("SELECT * FROM feedback WHERE employee_id = ? AND active = 1", (employee_id,))
+        rows = self.cursor.fetchall()
+        return rows
 
-    def insert(self, employee_id, performance_score, description):
+
+    def addFeedback(self, employee_id, performance_score, description):
         self.cursor.execute("INSERT INTO feedback (employee_id, performance_score, description) VALUES (?, ?, ?)",
                             (employee_id, performance_score, description))
         self.conn.commit()
 
 
-    def remove(self, feedback_id):
+    def removeFeedback(self, feedback_id):
         self.cursor.execute("UPDATE feedback SET active = 0 WHERE feedback_id = ?", (feedback_id,))
         self.conn.commit()
 
 
-    def update(self, feedback_id, employee_id, performance_score, description):
+    def updateFeedback(self, feedback_id, employee_id, performance_score, description):
         self.cursor.execute("UPDATE feedback SET employee_id = ?, performance_score = ?, description = ? WHERE feedback_id = ?",
                             (employee_id, performance_score, description, feedback_id))
         self.conn.commit()
