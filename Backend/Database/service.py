@@ -37,7 +37,7 @@ class ServiceDB:
 
 
     def addAService(self, service_name, service_description, price, service_type_id):
-        self.cursor.execute("INSERT INTO account (service_name, service_description, price, service_type_id) VALUES (?, ?, ?, ?)",
+        self.cursor.execute("INSERT INTO serivce (service_name, service_description, price, service_type_id) VALUES (?, ?, ?, ?)",
                             (service_name, service_description, price, service_type_id))
         self.conn.commit()
 
