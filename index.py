@@ -591,10 +591,10 @@ class AdminDashboard(tk.Frame):
         self.EmployeeTable.column("address",anchor=CENTER)
         self.EmployeeTable.column("status",anchor=CENTER)
 
-        self.EmployeeTable.pack(fill=BOTH,expand=1)
+        self.EmployeeTable.pack(fill=BOTH, expand=1)
         self.EmployeeTable.bind("<ButtonRelease-1>",self.EmpGetdata)
-
         self.EmpShow()
+
       
     def client(self):
         self.hide_all_frames()
@@ -659,13 +659,13 @@ class AdminDashboard(tk.Frame):
         # Save Button
         imgSave = Image.open("images/icons8-save-close-40.png")
         self.photoIamgeSave = ImageTk.PhotoImage(imgSave)
-        btnSave = tk.Button(LeftFrame, image=self.photoIamgeSave, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.customerAddOrUpdate)
+        btnSave = tk.Button(LeftFrame, image=self.photoIamgeSave, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerAddOrUpdate)
         btnSave.place(x=230, y=380, width=50, height=50)
 
         # Delete Button
         imgDelete = Image.open("images/icons8-trash-can-40.png")
         self.photoIamgeDelete = ImageTk.PhotoImage(imgDelete)
-        btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.customerAddOrUpdate)
+        btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerAddOrUpdate)
         btnDelete.place(x=290, y=380, width=50, height=50)
 
         # ============= RIGHT FRAME ================
@@ -694,11 +694,39 @@ class AdminDashboard(tk.Frame):
         btnSearch.place(x=385, y=10)
 
         # ============= RIGHT LOWER FRAME =============
-        tableFrame = tk.LabelFrame(RightFrame, relief=RIDGE, bd=1, bg="white")
-        tableFrame.place(x=20, y=135, width=835, height=540)
+        TableFrame = tk.LabelFrame(RightFrame, relief=RIDGE, bd=1, bg="white")
+        TableFrame.place(x=20, y=135, width=835, height=540)
 
-        # TODO: 1. Table
-        # TODO: 2. Search View
+        scrollX = tk.Scrollbar(TableFrame, orient=HORIZONTAL)
+        scrollX.pack(side=BOTTOM, fill=X)
+
+        scrollY = tk.Scrollbar(TableFrame, orient=VERTICAL)
+        scrollY.pack(side=RIGHT, fill=Y)
+
+        self.tblCustomer = ttk.Treeview(TableFrame, columns=("customer_id", "customer_first_name", "customer_last_name", "customer_phone", "customer_email"),
+                                            xscrollcommand=scrollX.set,
+                                            yscrollcommand=scrollY.set,
+                                            show='headings')
+
+        scrollX.config(command=self.tblCustomer.xview)
+        scrollY.config(command=self.tblCustomer.yview)
+
+        self.tblCustomer.heading("customer_id", text="ID")
+        self.tblCustomer.heading("customer_first_name", text="First Name")
+        self.tblCustomer.heading("customer_last_name", text="Last Name")
+        self.tblCustomer.heading("customer_phone", text="Phone Number")
+        self.tblCustomer.heading("customer_email", text="Email")
+
+        self.tblCustomer.column("customer_id", anchor=CENTER)
+        self.tblCustomer.column("customer_first_name", anchor=CENTER)
+        self.tblCustomer.column("customer_last_name", anchor=CENTER)
+        self.tblCustomer.column("customer_phone", anchor=CENTER)
+        self.tblCustomer.column("customer_email", anchor=CENTER)
+
+        self.tblCustomer.pack(fill=BOTH, expand=1)
+        # self.tblCustomer.bind("<ButtonRelease-1>", self.EmpGetdata)
+        self.CustomerShow()
+
 
 
     def sale(self):
@@ -1105,7 +1133,7 @@ class AdminDashboard(tk.Frame):
 
 
     # Customer Helper Function
-    def customerAddOrUpdate(self):
+    def CustomerAddOrUpdate(self):
         try:
             # Check Input Field.
             if self.var_customer_firstname.get() == '' or self.var_customer_lastname.get() == '' \
@@ -1125,6 +1153,19 @@ class AdminDashboard(tk.Frame):
                 messagebox.showinfo("Success", "Customer Record is updated Successfully!")
                 self.customerClear()
 
+        except Exception as e:
+            messagebox.showerror("Error", "Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    
+    def CustomerShow(self):
+        # Clear existing records.
+        self.tblCustomer.delete(*self.tblCustomer.get_children())
+
+        try:
+            # Iterate through the data returned by the fetch method in Database Class
+            for row in CustomerDB().getAllCustomer():
+                self.tblCustomer.insert('', tk.END, values=row)
         except Exception as e:
             messagebox.showerror("Error", "Something went wrong")
             print(f"Error due to: {str(e)}.")

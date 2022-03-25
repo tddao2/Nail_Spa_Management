@@ -87,7 +87,7 @@ class CreateTables:
             "   `last_name` VARCHAR(50) NOT NULL,"
             "   `phone` VARCHAR(12) NOT NULL,"
             "   `email` VARCHAR(50) NOT NULL,"
-            "   `acive` BIT NOT NULL DEFAULT 1"
+            "   `active` BIT NOT NULL DEFAULT 1"
             ");"
         )
 
