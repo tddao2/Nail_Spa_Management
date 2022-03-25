@@ -21,3 +21,15 @@ class EmployeeDB:
         self.cursor.execute("INSERT INTO employee (first_name,last_name,birthday,phone,email,address,employee_status_id,account_id,active) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
                             (employee[0],employee[1],employee[2],employee[3],employee[4],employee[5],employee[6],employee[7],employee[8])) 
         self.cnx.commit()
+
+    def fetchSQ(self, fetchSQ):
+        self.cursor.execute("SELECT * FROM account WHERE username = %s and secret_question = %s", (fetchSQ[0],fetchSQ[1]))
+        row = self.cursor.fetchone()
+        return row
+
+    def Resetpassword(self, pwUpdate):
+        self.cursor.execute("UPDATE account \
+                            SET password = %s \
+                            WHERE username = %s",
+                            (pwUpdate[0],pwUpdate[1]))
+        self.cnx.commit()
