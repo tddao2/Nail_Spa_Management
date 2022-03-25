@@ -25,10 +25,6 @@ from Backend.Database.role import RoleDB
 from Backend.Database.service_type import ServiceTypeDB
 from Backend.Database.service import ServiceDB
 
-# Database context
-# employeeDB = EmployeeDB()
-# feedbackDB = FeedbackDB()
-
 class App(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -64,7 +60,7 @@ class App(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         # Display the current page
-        self.show_frame("Login")
+        self.show_frame("AdminDashboard")
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
@@ -1135,16 +1131,21 @@ class AdminDashboard(tk.Frame):
                 messagebox.showerror("Error", "Please input all required fields.")
                 return
             
-            # Add Mode
+            # Add Mode: Insert New Customer Info.
             if self.var_customer_id.get() == "":
                 CustomerDB().addCustomer(self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.var_customer_phone.get(), self.var_customer_email.get())
-                messagebox.showinfo("Success", "New Customer Record is Added Successfully!")
-                self.CustomerClear()
-            # Update Mode
-            else:
+                messagebox.showinfo("Success", "New Customer Record is Added Successfully!")            
+            
+            # Update Mode: Modify existing Customer Info.
+            else:              
                 CustomerDB().addCustomer(self.var_customer_id.get(), self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.var_customer_phone.get(), self.var_customer_email.get())
                 messagebox.showinfo("Success", "Customer Record is updated Successfully!")
-                self.CustomerClear()
+                
+            # Clear Input Field.
+            self.CustomerClear()
+
+            # Reload Customer Table.
+            self.CustomerShow()
 
         except Exception as e:
             messagebox.showerror("Error", "Something went wrong")
