@@ -56,7 +56,7 @@ class App(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         # Display the current page
-        self.show_frame("Login")
+        self.show_frame("AdminDashboard")
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
@@ -596,14 +596,14 @@ class AdminDashboard(tk.Frame):
       
     def client(self):
         self.hide_all_frames()
-        self.ClientFrame.place(x=100, y=30, width=1250, height=690)
+        self.ClientFrame.place(x=100, y=30, width=1251, height=690)
 
         style = ttk.Style()
-        style.configure('Treeview.Heading', font=("times new roman",15,"bold"), foreground="black")
+        style.configure('Treeview.Heading', font=("Segoe UI", 15, "bold"), foreground="black")
         style.map('Treeview', background=[('selected','#e2479c')])
 
-        self.var_searchby = tk.StringVar()
-        self.var_searchtxt = tk.StringVar()
+        self.var_customer_searchby = tk.StringVar()
+        self.var_customer_searchtxt = tk.StringVar()
 
         self.var_customer_id = tk.StringVar()
         self.var_customer_firstname = tk.StringVar()
@@ -612,7 +612,7 @@ class AdminDashboard(tk.Frame):
         self.var_customer_email = tk.StringVar()
 
         # ============= LEFT FRAME ================
-        LeftFrame = tk.LabelFrame(self.ClientFrame, relief=RIDGE, font=("Segoe UI", 15), bd=1, bg="#e2479c", fg="white")
+        LeftFrame = tk.LabelFrame(self.ClientFrame, relief=RIDGE, bd=1, bg="#e2479c")
         LeftFrame.place(x=0, y=0, width=370, height=690)
 
         # Header
@@ -655,17 +655,48 @@ class AdminDashboard(tk.Frame):
         self.txtCustomerEmail.place(x=140, y=320, width=200)
 
         # Save Button
-        imgSave = Image.open("images/save1.png")
+        imgSave = Image.open("images/icons8-save-close-40.png")
         self.photoIamgeSave = ImageTk.PhotoImage(imgSave)
         btnSave = tk.Button(LeftFrame, image=self.photoIamgeSave, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.customerAddOrUpdate)
-        btnSave.place(x=20, y=400, width=80)
+        btnSave.place(x=230, y=380, width=50, height=50)
 
         # Delete Button
-        imgDelete = Image.open("images/trash.png")
+        imgDelete = Image.open("images/icons8-trash-can-40.png")
         self.photoIamgeDelete = ImageTk.PhotoImage(imgDelete)
         btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.customerAddOrUpdate)
-        btnDelete.place(x=140, y=400, width=80)
+        btnDelete.place(x=290, y=380, width=50, height=50)
 
+        # ============= RIGHT FRAME ================
+        RightFrame = tk.LabelFrame(self.ClientFrame, relief=RIDGE, bd=1, bg="#e2479c")
+        RightFrame.place(x=370, y=0, width=880, height=690)
+
+        # Header
+        header = tk.Label(RightFrame, text="Search Customer", font=("Segoe UI", 25, "bold"), bg="#e2479c", fg="black")
+        header.place(x=20, y=20)
+
+        # ============= RIGHT UPPER FRAME =============
+        SearchFrame = tk.Frame(RightFrame, relief=RIDGE, bd=2, bg="#e2479c")
+        SearchFrame.place(x=20, y=60, width=680, height=60)
+
+        self.cmbCustomerSearch = ttk.Combobox(SearchFrame, textvariable=self.var_customer_searchby, state="readonly", justify=CENTER, font=("Segoe UI", 15))
+        self.cmbCustomerSearch["values"] = ("Select", "First Name", "Last Name", "Phone", "Email")
+        self.cmbCustomerSearch.place(x=15, y=10, width=150)
+        self.cmbCustomerSearch.current(0)
+
+        txtCustomerSearch = tk.Entry(SearchFrame, textvariable=self.var_customer_searchtxt, font=("Segoe UI",15), bg="white")
+        txtCustomerSearch.place(x=180, y=10, height=29)
+
+        imgSearch = Image.open("images/icons8-browse-folder-30.png").resize((20,20),Image.ANTIALIAS)
+        self.photoImageSearch=ImageTk.PhotoImage(imgSearch)
+        btnSearch = tk.Button(SearchFrame, image=self.photoImageSearch, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.AcctSearch)
+        btnSearch.place(x=385, y=10)
+
+        # ============= RIGHT LOWER FRAME =============
+        tableFrame = tk.LabelFrame(RightFrame, relief=RIDGE, bd=1, bg="white")
+        tableFrame.place(x=20, y=135, width=835, height=540)
+
+        # TODO: 1. Table
+        # TODO: 2. Search View
 
 
     def sale(self):
