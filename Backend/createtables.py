@@ -53,7 +53,7 @@ class CreateTables:
             "  `first_name` varchar(50) NOT NULL,"
             "  `last_name` varchar(50) NOT NULL,"
             "  `birthday` date NOT NULL,"
-            "  `phone` varchar(12) NOT NULL,"
+            "  `phone` varchar(16) NOT NULL,"
             "  `email` varchar(50),"
             "  `address` varchar(100),"
             "  `employee_status_id` int NOT NULL,"

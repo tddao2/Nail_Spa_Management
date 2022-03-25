@@ -6,6 +6,14 @@ class FeedbackDB:
         self.conn = mysql.connector.connect(**Connect)
         self.cursor = self.conn.cursor()
 
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    def AddFB(self,data):
+        self.cursor.execute("INSERT INTO feedback(employee_id,performance_score,description,dateFB) values(%s,%s,%s,%s)",
+                            (data[0],data[1],data[2],data[3]))
+        self.conn.commit()
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     def getAllFeedback(self):
         self.cursor.execute("SELECT * FROM feedback WHERE active = 1")

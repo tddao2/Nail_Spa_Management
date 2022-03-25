@@ -11,11 +11,19 @@ import phonenumbers
 import re
 
 from Backend.createtables import CreateTables
-from Backend.admin import AdminDB
-from Backend.feedback import FeedbackDB
-from Backend.employee import EmployeeDB
 
+from Backend.Database.account import AccountDB
+from Backend.Database.account_status import AccountStatusDB
+from Backend.Database.appointment import AppointmentDB
 from Backend.Database.customer import CustomerDB
+from Backend.Database.employee_status import EmployeeStatusDB
+from Backend.Database.employee import EmployeeDB
+from Backend.Database.feedback import FeedbackDB
+from Backend.Database.invoice_line_item import InvoiceLineItemDB
+from Backend.Database.invoice import InvoiceDB
+from Backend.Database.role import RoleDB
+from Backend.Database.service_type import ServiceTypeDB
+from Backend.Database.service import ServiceDB
 
 # Database context
 # employeeDB = EmployeeDB()
@@ -56,7 +64,7 @@ class App(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         # Display the current page
-        self.show_frame("AdminDashboard")
+        self.show_frame("Login")
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
@@ -116,11 +124,11 @@ class Login(tk.Frame):
 
         # Register Button
         btnRegist=tk.Button(lblFrame,text="New User Register",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#e2479c", activeforeground="black",activebackground="#e2479c",command=lambda: controller.show_frame("Register"))
-        btnRegist.place(x=15,y=360,width=160)
+        btnRegist.place(x=15,y=360,width=160) # y=370
 
         # Forget password Button
         btnForgetpw=tk.Button(lblFrame,text="Forget Password",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#e2479c", activeforeground="black",activebackground="#e2479c",command=lambda: controller.show_frame("Reset"))
-        btnForgetpw.place(x=10,y=380,width=160)
+        btnForgetpw.place(x=10,y=380,width=160) # y=390
 
         # Feedback Button
         img3FB=Image.open("images/feedback1.png").resize((160,43), Image.ANTIALIAS)
@@ -136,23 +144,23 @@ class Login(tk.Frame):
             elif self.password.get()=="":
                 messagebox.showwarning("Warning","Password missing!.")
             elif self.username.get() and self.password.get():
-                if EmployeeDB().fetch(userfetch) == None:
+                if AccountDB().fetch(userfetch) == None:
                     messagebox.showerror("Error","Invalid username or password. Please try again.")
                 else:
-                    if EmployeeDB().fetch(userfetch)[7] == 1:
+                    if AccountDB().fetch(userfetch)[7] == 1:
                         messagebox.showerror("Error","Invalid username or password. Please try again.")
-                    elif EmployeeDB().fetch(userfetch)[6] == 2:
+                    elif AccountDB().fetch(userfetch)[6] == 2:
                         messagebox.showerror("Error","Your account is pending.")
-                    elif EmployeeDB().fetch(userfetch)[6] == 3:
+                    elif AccountDB().fetch(userfetch)[6] == 3:
                         messagebox.showerror("Error","Your account is locked.")
-                    elif EmployeeDB().fetch(userfetch)[6] == 1 and EmployeeDB().fetch(userfetch)[5] == 1:
-                        if bcrypt.checkpw(self.password.get().encode('utf8'), EmployeeDB().fetch(userfetch)[2].encode('utf8')):
+                    elif AccountDB().fetch(userfetch)[6] == 1 and AccountDB().fetch(userfetch)[5] == 1:
+                        if bcrypt.checkpw(self.password.get().encode('utf8'), AccountDB().fetch(userfetch)[2].encode('utf8')):
                             self.controller.show_frame("AdminDashboard")
                             self.clear()
                         else:
                             messagebox.showerror("Error","Invalid username or password. Please try again.")
-                    elif EmployeeDB().fetch(userfetch)[6] == 1 and EmployeeDB().fetch(userfetch)[5] == 2:
-                        if bcrypt.checkpw(self.password.get().encode('utf8'), EmployeeDB().fetch(userfetch)[2].encode('utf8')):
+                    elif AccountDB().fetch(userfetch)[6] == 1 and AccountDB().fetch(userfetch)[5] == 2:
+                        if bcrypt.checkpw(self.password.get().encode('utf8'), AccountDB().fetch(userfetch)[2].encode('utf8')):
                             self.controller.show_frame("EmployeeDashboard")
                             self.clear()
                         else:
@@ -166,7 +174,6 @@ class Login(tk.Frame):
         self.username.set("")
         self.password.set("")
         
-
 class Register(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -189,11 +196,11 @@ class Register(tk.Frame):
         bg1=Image.open("images/Nailwall.jpg").resize((470,610), Image.ANTIALIAS)
         self.lblbg1=ImageTk.PhotoImage(bg1)
         lblLeft=tk.Label(self, image=self.lblbg1)
-        lblLeft.place(x=85,y=50,width=470,height=610)
+        lblLeft.place(x=85,y=50,width=470,height=610) #x=50
 
         # main Frame
         frame=tk.Frame(self,bg="white")
-        frame.place(x=555,y=50,width=710,height=610)
+        frame.place(x=555,y=50,width=710,height=610)  #x=520
 
         lblregist=tk.Label(frame,text="REGISTER HERE",font=("times new roman",25,"bold"),fg="darkgreen",bg="white")
         lblregist.place(x=20,y=20)
@@ -297,8 +304,8 @@ class Register(tk.Frame):
 
         imgLogin=Image.open("images/Loginbtn.png").resize((200,60),Image.ANTIALIAS)
         self.photoimageLogin=ImageTk.PhotoImage(imgLogin)
-        Registerbtn=tk.Button(frame, image=self.photoimageLogin,borderwidth=0,cursor="hand2",font=("times new roman",15,"bold"),fg="white",bg="white",activebackground="white",command=lambda: controller.show_frame("Login"))
-        Registerbtn.place(x=400,y=537,width=210,height=60)
+        Loginbtn=tk.Button(frame, image=self.photoimageLogin,borderwidth=0,cursor="hand2",font=("times new roman",15,"bold"),fg="white",bg="white",activebackground="white",command=lambda: controller.show_frame("Login"))
+        Loginbtn.place(x=400,y=537,width=210,height=60)
 
     def add(self):
         userfetch = (self.username.get())
@@ -308,12 +315,11 @@ class Register(tk.Frame):
 
         employee_status_id = 1
         activeEmployee = 0
- 
-        try:
+     
+        try: 
             if self.firstname.get()=="" \
                 or self.lastname.get()=="" \
                 or self.phone.get()=="" \
-                or self.email.get()=="" \
                 or self.txtDOB.get_date()=="" \
                 or len(self.txtAddress.get("1.0",END))==1 \
                 or self.username.get()=="" \
@@ -329,23 +335,24 @@ class Register(tk.Frame):
             elif self.password.get() != self.CFpassword.get():
                 messagebox.showerror("Error","Your password and confirmation password do not match.")
             elif self.username.get() and self.firstname.get() and self.lastname.get():
-                if EmployeeDB().fetch(userfetch)!=None:
-                    messagebox.showwarning("Warning","User Already Exists")
+                if AccountDB().fetch(userfetch)!=None:
+                    messagebox.showerror("Warning","User Already Exists")
                 else:
                     password=self.password.get().encode('utf8')
                     hashedpassword=bcrypt.hashpw(password, bcrypt.gensalt())
                     secret_answer=self.SA.get().encode('utf8')
                     SAhased=bcrypt.hashpw(secret_answer, bcrypt.gensalt())
                     account=(self.username.get(),hashedpassword,self.SQ.get(),SAhased,role_id,account_status_id,activeAccount)
-                    EmployeeDB().insertAccount(account)
+                    AccountDB().insertAccount(account)
 
-                    account_id=EmployeeDB().fetch(userfetch)
-                    employee=(self.firstname.get(),self.lastname.get(),self.txtDOB.get_date(),self.phone.get(),self.email.get(),self.txtAddress.get("1.0",END),employee_status_id,account_id[0],activeEmployee)
+                    account_id=AccountDB().fetch(userfetch)
+                    FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.phone.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
+                    employee=(self.firstname.get(),self.lastname.get(),self.txtDOB.get_date(),FormatedPhone,self.email.get(),self.txtAddress.get("1.0",END),employee_status_id,account_id[0],activeEmployee)
                     EmployeeDB().insertEmployee(employee)
                     
                     op=messagebox.showinfo("Success","Register Successfully!")
                     self.clear()
-                    
+    
         except Exception as e:
             messagebox.showerror("Error",f"Error due to: {str(e)}")
             print(f"Something went wrong {e}.")
@@ -362,14 +369,13 @@ class Register(tk.Frame):
         self.CFpassword.set("")
         self.txtSecurityQ.current(0)
         self.SA.set("")
-
-
+    
 class AdminDashboard(tk.Frame):
 
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        self.config(bg="#e2479c")
+        # self.config(bg="#e2479c")
 
         AMframe=tk.Frame(self,bg="#e2479c")
         AMframe.place(x=0,y=0,width=1350,height=720)
@@ -407,11 +413,6 @@ class AdminDashboard(tk.Frame):
         FeedbackBtn=tk.Button(LeftFrame, image=self.imageFeedback,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
         FeedbackBtn.grid(row=5,column=1)
 
-        # imagelogout = Image.open("images/logout.png").resize((100,100))
-        # self.imagelogout=ImageTk.PhotoImage(imagelogout)
-        # logoutBtn=tk.Button(LeftFrame, image=self.imagelogout,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
-        # logoutBtn.grid(row=6,column=1)
-
         imageusers = Image.open("images/users.png").resize((100,100))
         self.imageusers=ImageTk.PhotoImage(imageusers)
         usersBtn=tk.Button(LeftFrame, image=self.imageusers,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.user)
@@ -438,6 +439,7 @@ class AdminDashboard(tk.Frame):
         self.SaleFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="yellow")
         self.UserFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
 
+
     def employee(self):
         self.hide_all_frames()
         self.EmpFrame.place(x=100,y=30,width=1251,height=690)
@@ -456,6 +458,7 @@ class AdminDashboard(tk.Frame):
         self.var_contact=tk.StringVar()
         self.var_status=tk.StringVar()
         self.var_email=tk.StringVar()
+        
 
         # =============Left Frame=============
         LeftFrame=tk.LabelFrame(self.EmpFrame,text="Employee Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
@@ -545,8 +548,6 @@ class AdminDashboard(tk.Frame):
 
         imgSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageSearch=ImageTk.PhotoImage(imgSearch)
-        # Searchbtn=tk.Button(LeftFrame, image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
-        # Searchbtn.place(x=275,y=580,width=80)
         btn_search=tk.Button(SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpSearch)
         btn_search.place(x=465)
 
@@ -728,7 +729,6 @@ class AdminDashboard(tk.Frame):
         self.CustomerShow()
 
 
-
     def sale(self):
         self.hide_all_frames()
         self.SaleFrame.place(x=250,y=30,width=1250,height=690)
@@ -786,11 +786,6 @@ class AdminDashboard(tk.Frame):
         self.photoimageAcctUpdate=ImageTk.PhotoImage(imgAcctUpdate)
         AcctUpdatebtn=tk.Button(LeftFrame, image=self.photoimageAcctUpdate,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctUpdate)
         AcctUpdatebtn.place(x=20,y=575,width=80)
-
-        # imgAcctDelete=Image.open("images/delete.png").resize((80,80),Image.ANTIALIAS)
-        # self.photoimageAcctDelete=ImageTk.PhotoImage(imgAcctDelete)
-        # AcctDeletebtn=tk.Button(LeftFrame, image=self.photoimageAcctDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
-        # AcctDeletebtn.place(x=148,y=575,width=80)
 
         imgAcctRefresh=Image.open("images/refresh.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageAcctRefresh=ImageTk.PhotoImage(imgAcctRefresh)
@@ -892,19 +887,19 @@ class AdminDashboard(tk.Frame):
                 if self.var_status.get()=="New":
                     FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_contact.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
                     data=(self.var_fname.get(),self.var_lname.get(),self.txtDOB.get_date(),self.var_email.get(),FormatedPhone,self.txtAddress.get("1.0",END),emp_status_New,self.var_emp_id.get())
-                    AdminDB().EmpUpdate(data)
+                    EmployeeDB().EmpUpdate(data)
                     messagebox.showinfo("Success","Update Successfully!")
                     self.EmpClear()
                 elif self.var_status.get()=="Current":
                     FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_contact.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
                     data=(self.var_fname.get(),self.var_lname.get(),self.txtDOB.get_date(),self.var_email.get(),FormatedPhone,self.txtAddress.get("1.0",END),emp_status_Current,self.var_emp_id.get())
-                    AdminDB().EmpUpdate(data)
+                    EmployeeDB().EmpUpdate(data)
                     messagebox.showinfo("Success","Update Successfully!")
                     self.EmpClear()
                 elif self.var_status.get()=="Pass":
                     FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_contact.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
                     data=(self.var_fname.get(),self.var_lname.get(),self.txtDOB.get_date(),self.var_email.get(),FormatedPhone,self.txtAddress.get("1.0",END),emp_status_Pass,self.var_emp_id.get())
-                    AdminDB().EmpUpdate(data)
+                    EmployeeDB().EmpUpdate(data)
                     messagebox.showinfo("Success","Update Successfully!")
                     self.EmpClear()
                 else:
@@ -921,7 +916,7 @@ class AdminDashboard(tk.Frame):
                 op=messagebox.askyesno("Confirm","Do you really want to delete?")
                 if op==True:
                     data = self.var_emp_id.get()
-                    AdminDB().EmpDelete(data)
+                    EmployeeDB().EmpDelete(data)
                     messagebox.showinfo("Success","Delete Successfully!")
                     self.EmpClear()
                 else:
@@ -939,7 +934,7 @@ class AdminDashboard(tk.Frame):
             elif self.var_searchby.get()=="phone" and self.var_searchtxt.get():
                 FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_searchtxt.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
                 data=(self.var_searchby.get(),FormatedPhone)
-                rows = AdminDB().EmpSearch(data)
+                rows = EmployeeDB().EmpSearch(data)
                 if len(rows)!=0:
                     self.EmployeeTable.delete(*self.EmployeeTable.get_children())
                     for row in rows:
@@ -948,7 +943,7 @@ class AdminDashboard(tk.Frame):
                     messagebox.showerror("Error","No record found.")
             else:
                 data=(self.var_searchby.get(),self.var_searchtxt.get())
-                rows = AdminDB().EmpSearch(data)
+                rows = EmployeeDB().EmpSearch(data)
                 if len(rows)!=0:
                     self.EmployeeTable.delete(*self.EmployeeTable.get_children())
                     for row in rows:
@@ -961,7 +956,7 @@ class AdminDashboard(tk.Frame):
 
     def EmpHistory(self):
         try:
-            rows = AdminDB().EmpFetchHistory()
+            rows = EmployeeDB().EmpFetchHistory()
             if len(rows)!=0:
                     self.EmployeeTable.delete(*self.EmployeeTable.get_children())
                     for row in rows:
@@ -989,10 +984,10 @@ class AdminDashboard(tk.Frame):
     def EmpShow(self):
         self.EmployeeTable.delete(*self.EmployeeTable.get_children())
         try:
-            if not AdminDB().EmpFetch():
+            if not EmployeeDB().EmpFetch():
                 messagebox.showerror("Error", "No records found.")
             else:
-                for row in AdminDB().EmpFetch():
+                for row in EmployeeDB().EmpFetch():
                     self.EmployeeTable.insert("",END,values=row)
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
@@ -1009,7 +1004,6 @@ class AdminDashboard(tk.Frame):
             self.var_lname.set(row[2])
             self.txtDOB.set_date(datetime.datetime.strptime(str(row[3]), '%Y-%m-%d').strftime('%m/%d/%Y'))
             self.var_email.set(row[4])
-            # self.var_contact.set(row[5])
             self.var_contact.set(re.sub('[^A-Za-z0-9]+', '', str(row[5])))
             self.txtAddress.delete("1.0",END)
             self.txtAddress.insert(END,row[6])
@@ -1033,32 +1027,32 @@ class AdminDashboard(tk.Frame):
             else:
                 if self.var_rolename.get()=="User" and self.var_Acctstatus.get()=="active":
                     data=(Role_User, Acct_Status_active, self.var_acct_id.get())
-                    AdminDB().AcctUpdate(data)
+                    AccountDB().AcctUpdate(data)
                     messagebox.showinfo("Success","Update Successfully!")
                     self.AcctClear()
                 elif self.var_rolename.get()=="User" and self.var_Acctstatus.get()=="pending":
                     data=(Role_User, Acct_Status_pending, self.var_acct_id.get())
-                    AdminDB().AcctUpdate(data)
+                    AccountDB().AcctUpdate(data)
                     messagebox.showinfo("Success","Update Successfully!")
                     self.AcctClear()
                 elif self.var_rolename.get()=="User" and self.var_Acctstatus.get()=="inactive":
                     data=(Role_User, Acct_Status_inactive, self.var_acct_id.get())
-                    AdminDB().AcctUpdate(data)
+                    AccountDB().AcctUpdate(data)
                     messagebox.showinfo("Success","Update Successfully!")
                     self.AcctClear()
                 elif self.var_rolename.get()=="Admin" and self.var_Acctstatus.get()=="active":
                     data=(Role_Admin, Acct_Status_active, self.var_acct_id.get())
-                    AdminDB().AcctUpdate(data)
+                    AccountDB().AcctUpdate(data)
                     messagebox.showinfo("Success","Update Successfully!")
                     self.AcctClear()
                 elif self.var_rolename.get()=="Admin" and self.var_Acctstatus.get()=="pending":
                     data=(Role_Admin, Acct_Status_pending, self.var_acct_id.get())
-                    AdminDB().AcctUpdate(data)
+                    AccountDB().AcctUpdate(data)
                     messagebox.showinfo("Success","Update Successfully!")
                     self.AcctClear()
                 elif self.var_rolename.get()=="Admin" and self.var_Acctstatus.get()=="inactive":
                     data=(Role_Admin, Acct_Status_inactive, self.var_acct_id.get())
-                    AdminDB().AcctUpdate(data)
+                    AccountDB().AcctUpdate(data)
                     messagebox.showinfo("Success","Update Successfully!")
                     self.AcctClear()
                 else:
@@ -1075,7 +1069,7 @@ class AdminDashboard(tk.Frame):
                 messagebox.showerror("Error","Search input is required")
             else:
                 data=(self.var_Acctsearchby.get(),self.var_Acctsearchtxt.get())
-                rows = AdminDB().AcctSearch(data)
+                rows = AccountDB().AcctSearch(data)
                 if len(rows)!=0:
                     self.AccountTable.delete(*self.AccountTable.get_children())
                     for row in rows:
@@ -1097,10 +1091,10 @@ class AdminDashboard(tk.Frame):
     def AcctShow(self):
         self.AccountTable.delete(*self.AccountTable.get_children())
         try:
-            if not AdminDB().AcctFetch():
+            if not AccountStatusDB().AcctFetch():
                 messagebox.showerror("Error", "No records found.")
             else:
-                for row in AdminDB().AcctFetch():
+                for row in AccountStatusDB().AcctFetch():
                     self.AccountTable.insert("",END,values=row)
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
@@ -1109,10 +1103,10 @@ class AdminDashboard(tk.Frame):
     def AcctShowAll(self):
         self.AccountTable.delete(*self.AccountTable.get_children())
         try:
-            if not AdminDB().AcctFetchAll():
+            if not AccountDB().AcctFetchAll():
                 messagebox.showerror("Error", "No records found.")
             else:
-                for row in AdminDB().AcctFetchAll():
+                for row in AccountDB().AcctFetchAll():
                     self.AccountTable.insert("",END,values=row)
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
@@ -1130,8 +1124,7 @@ class AdminDashboard(tk.Frame):
             self.var_Acctstatus.set(row[4])
         except:
             pass
-
-
+    
     # Customer Helper Function
     def CustomerAddOrUpdate(self):
         try:
@@ -1146,18 +1139,17 @@ class AdminDashboard(tk.Frame):
             if self.var_customer_id.get() == "":
                 CustomerDB().addCustomer(self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.var_customer_phone.get(), self.var_customer_email.get())
                 messagebox.showinfo("Success", "New Customer Record is Added Successfully!")
-                self.customerClear()
+                self.CustomerClear()
             # Update Mode
             else:
                 CustomerDB().addCustomer(self.var_customer_id.get(), self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.var_customer_phone.get(), self.var_customer_email.get())
                 messagebox.showinfo("Success", "Customer Record is updated Successfully!")
-                self.customerClear()
+                self.CustomerClear()
 
         except Exception as e:
             messagebox.showerror("Error", "Something went wrong")
             print(f"Error due to: {str(e)}.")
 
-    
     def CustomerShow(self):
         # Clear existing records.
         self.tblCustomer.delete(*self.tblCustomer.get_children())
@@ -1170,8 +1162,7 @@ class AdminDashboard(tk.Frame):
             messagebox.showerror("Error", "Something went wrong")
             print(f"Error due to: {str(e)}.")
 
-
-    def customerClear(self):
+    def CustomerClear(self):
         self.txtCustomerFirstName.delete(0, tk.END)
         self.txtCustomerLastName.delete(0, tk.END)
         self.txtCustomerPhone.delete(0, tk.END)
@@ -1311,16 +1302,16 @@ class Reset(tk.Frame):
             elif self.RS_password.get() != self.RS_CFpassword.get():
                 messagebox.showerror("Error","Your new password and confirmation password do not match.")
             else:
-                if not EmployeeDB().fetch(userfetch):
+                if not AccountDB().fetch(userfetch):
                     messagebox.showerror("Error","Invalid username.")
-                elif not EmployeeDB().fetchSQ(fetchSQ):
+                elif not AccountDB().fetchSQ(fetchSQ):
                     messagebox.showerror("Error","Invalid security question.")
-                elif not bcrypt.checkpw(self.RS_SA.get().encode('utf8'), EmployeeDB().fetch(userfetch)[4].encode('utf8')):
+                elif not bcrypt.checkpw(self.RS_SA.get().encode('utf8'), AccountDB().fetch(userfetch)[4].encode('utf8')):
                     messagebox.showerror("Error","Invalid security answer.")
-                elif EmployeeDB().fetch(userfetch) and EmployeeDB().fetchSQ(fetchSQ) and bcrypt.checkpw(self.RS_SA.get().encode('utf8'), EmployeeDB().fetch(userfetch)[4].encode('utf8')):
+                elif AccountDB().fetch(userfetch) and AccountDB().fetchSQ(fetchSQ) and bcrypt.checkpw(self.RS_SA.get().encode('utf8'), AccountDB().fetch(userfetch)[4].encode('utf8')):
                     SAhashed=bcrypt.hashpw(self.RS_password.get().encode('utf8'), bcrypt.gensalt())
                     pwUpdate=(SAhashed,self.RS_username.get())
-                    EmployeeDB().Resetpassword(pwUpdate)
+                    AccountDB().Resetpassword(pwUpdate)
                     messagebox.showinfo("Success","Reset password successfully!")
                     self.RS_clear()
                 else:
@@ -1370,6 +1361,12 @@ class Feedback(tk.Frame):
         header = tk.Label(frame, text="Customer Feedback", font=("Segoe UI", 25, "bold"),bg="white")
         header.place(x=20, y=20)
 
+        # Retrieve from database directly later
+        # OPTIONS = [
+        #     "Nancy",
+        #     "Pham"
+        # ]
+
         # Employee Name
         self.employeeNameLabel = tk.Label(frame, text="Employee Name:", font=("Segoe UI", 14, "bold"),bg="white")
         self.employeeNameLabel.place(x=20, y=160)
@@ -1377,13 +1374,13 @@ class Feedback(tk.Frame):
         self.employeeId = []
         def run_sql(event):
             index = employeeNameEntry.current()
-            row = FeedbackDB().EmpfetchAll()[index]
+            row = EmployeeDB().EmpfetchAll()[index]
             
             self.employeeId.clear()
             self.employeeId.append(row[0])
             
         employeeNameEntry = ttk.Combobox(frame,font=("Segoe UI", 14),state="readonly",justify="center")
-        employeeNameEntry["values"] = [row[1] for row in FeedbackDB().EmpfetchAll()]
+        employeeNameEntry["values"] = [row[1] for row in EmployeeDB().EmpfetchAll()]
         employeeNameEntry.place(x=190, y=160)
         employeeNameEntry.bind("<<ComboboxSelected>>", run_sql)
 
@@ -1400,7 +1397,11 @@ class Feedback(tk.Frame):
 
         self.descriptionEntry = tk.Text(frame, font=("Segoe UI", 14, "bold"), bg="#EBECF0", borderwidth=2)
         self.descriptionEntry.place(x=20, y=360, width=400, height=150)
-       
+        #self.description = descriptionEntry.get("1.0",'end-1c')
+
+        # print(self.description)
+
+
         # Back Button (To Login Page)
         imgBack=Image.open("images/back.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageBack=ImageTk.PhotoImage(imgBack)
@@ -1413,7 +1414,16 @@ class Feedback(tk.Frame):
         submitButton = tk.Button(frame,image=self.photoimageSubmit,borderwidth=0,bg="white",activebackground="white",command=lambda: self.retrieve_input())
         submitButton.place(x=140,y=530)
 
+    # def load_employees(self):
+
+        # Load employee naem from database.
+        # print("Implementing")
+
+
     def retrieve_input(self):
+        # self.performanceScore = self.scale.get()
+        # self.description = self.descriptionEntry.get("1.0",'end-1c')
+        
         try:
             if not self.employeeId:
                 messagebox.showerror("Error","Please select an employee")
