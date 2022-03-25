@@ -49,7 +49,7 @@ class App(tk.Tk):
 
         # Initializing an empty frame array.
         self.frames = {}
-        for F in (Login, Register, Feedback, AdminDashboard, EmployeeDashboard):
+        for F in (Login, Register, Reset, Feedback, AdminDashboard, EmployeeDashboard):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
@@ -116,15 +116,17 @@ class Login(tk.Frame):
 
         # Register Button
         btnRegist=tk.Button(lblFrame,text="New User Register",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#e2479c", activeforeground="black",activebackground="#e2479c",command=lambda: controller.show_frame("Register"))
-        btnRegist.place(x=15,y=370,width=160)
+        btnRegist.place(x=15,y=360,width=160)
 
         # Forget password Button
-        btnForgetpw=tk.Button(lblFrame,text="Forget Password",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#e2479c", activeforeground="black",activebackground="#e2479c")
-        btnForgetpw.place(x=10,y=390,width=160)
+        btnForgetpw=tk.Button(lblFrame,text="Forget Password",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#e2479c", activeforeground="black",activebackground="#e2479c",command=lambda: controller.show_frame("Reset"))
+        btnForgetpw.place(x=10,y=380,width=160)
 
         # Feedback Button
-        btnFeedback = tk.Button(lblFrame, text="Feedback", font=("times new roman",10,"bold"), borderwidth=0, fg="black", bg="#FF80ED", activeforeground="black",activebackground="#e2479c", command=lambda: controller.show_frame("Feedback"))
-        btnFeedback.place(x=15, y=420, width=160)
+        img3FB=Image.open("images/feedback1.png").resize((160,43), Image.ANTIALIAS)
+        self.photoimage3FB=ImageTk.PhotoImage(img3FB)
+        btnFeedback = tk.Button(lblFrame,image=self.photoimage3FB,borderwidth=0, bg="#e2479c",activebackground="#e2479c", command=lambda: controller.show_frame("Feedback"))
+        btnFeedback.place(x=15, y=400)
 
     def login(self):
         userfetch = (self.username.get())
@@ -1134,6 +1136,164 @@ class AdminDashboard(tk.Frame):
         self.txtCustomerPhone.delete(0, tk.END)
         self.txtCustomerEmail.delete(0, tk.END)
 
+class Reset(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.config(bg="#e2479c")
+        self.controller = controller
+
+        # Set Variables
+        self.RS_username = tk.StringVar()
+        self.RS_password = tk.StringVar()
+        self.RS_CFpassword = tk.StringVar()
+        self.RS_SQ = tk.StringVar()
+        self.RS_SA = tk.StringVar()
+
+        # left image
+        bg1=Image.open("images/Nailwall.jpg").resize((470,610), Image.ANTIALIAS)
+        self.lblbg1=ImageTk.PhotoImage(bg1)
+        lblLeft=tk.Label(self, image=self.lblbg1)
+        lblLeft.place(x=255,y=50,width=470,height=610) #x=85
+
+        # main Frame
+        frame=tk.Frame(self,bg="white")
+        frame.place(x=725,y=50,width=370,height=610)  #x=710
+
+        imgResetKey=Image.open("images/ResetKey.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageResetKey=ImageTk.PhotoImage(imgResetKey)
+        lblResetKey = tk.Label(frame,image=self.photoimageResetKey,borderwidth=0,bg="white")
+        lblResetKey.place(x=0,y=0)
+        
+
+        lblReset=tk.Label(frame,text="RESET PASSWORD",font=("times new roman",24,"bold"),relief=GROOVE,borderwidth=1,fg="darkgreen",bg="white") ##fcfcfc
+        lblReset.place(x=72,height=66)
+
+        # label and entry
+
+        # =============Row1=============
+        imgResetuser=Image.open("images/Resetuser.png").resize((25,25),Image.ANTIALIAS)
+        self.photoimageResetuser=ImageTk.PhotoImage(imgResetuser)
+        lblResetuser = tk.Label(frame,image=self.photoimageResetuser,borderwidth=0,bg="white")
+        lblResetuser.place(x=50,y=100)
+        lblRS_username=tk.Label(frame,text="Username",font=("times new roman",15,"bold"),bg="white")
+        lblRS_username.place(x=75,y=100)
+
+        txtRS_username=ttk.Entry(frame,textvariable=self.RS_username,font=("times new roman",15))
+        txtRS_username.place(x=50,y=130,width=250)
+
+        # =============Row2=============
+        imgQuestion=Image.open("images/Question.png").resize((25,25),Image.ANTIALIAS)
+        self.photoimageQuestion=ImageTk.PhotoImage(imgQuestion)
+        lblQuestion = tk.Label(frame,image=self.photoimageQuestion,borderwidth=0,bg="white")
+        lblQuestion.place(x=50,y=170)
+        lblRS_SecurityQ=tk.Label(frame,text="Select Security Questions",font=("times new roman",15,"bold"),bg="white",fg="black")
+        lblRS_SecurityQ.place(x=75,y=170)
+
+        self.RS_txtSecurityQ=ttk.Combobox(frame,textvariable=self.RS_SQ,font=("times new roman",15,"bold"),state="readonly",justify="center")
+        self.RS_txtSecurityQ["values"]=("Select","Your Birth Place","Your Girlfriend name","Your Pet Name")
+        self.RS_txtSecurityQ.place(x=50,y=200,width=250)
+        self.RS_txtSecurityQ.current(0)
+
+        # =============Row3=============
+        imgAnswer=Image.open("images/Answer.png").resize((25,25),Image.ANTIALIAS)
+        self.photoimageAnswer=ImageTk.PhotoImage(imgAnswer)
+        lblAnswer = tk.Label(frame,image=self.photoimageAnswer,borderwidth=0,bg="white")
+        lblAnswer.place(x=50,y=240)
+        lblRS_SecurityA=tk.Label(frame,text="Security Answer",font=("times new roman",15,"bold"),bg="white",fg="black")
+        lblRS_SecurityA.place(x=75,y=240)
+
+        txtRS_SecurityA=ttk.Entry(frame,textvariable=self.RS_SA,font=("times new roman",15))
+        txtRS_SecurityA.place(x=50,y=270,width=250)
+
+        # =============Row4=============
+        def show():
+            txtRS_Password.config(show="")
+            txtRS_ConfirmPw.config(show="")
+            
+        def hide():
+            txtRS_Password.config(show="*")
+            txtRS_ConfirmPw.config(show="*")
+
+        imgLockpassword=Image.open("images/Lockpassword.png").resize((25,25),Image.ANTIALIAS)
+        self.photoimageLockpassword=ImageTk.PhotoImage(imgLockpassword)
+        lblLockpassword = tk.Label(frame,image=self.photoimageLockpassword,borderwidth=0,bg="white")
+        lblLockpassword.place(x=50,y=310)
+        lblRS_Password=tk.Label(frame,text="New Password",font=("times new roman",15,"bold"),bg="white",fg="black")
+        lblRS_Password.place(x=75,y=310)
+
+        txtRS_Password=ttk.Entry(frame,textvariable=self.RS_password,font=("times new roman",15),show="*")
+        txtRS_Password.place(x=50,y=340,width=250)
+
+        # =============Row5=============
+        imgLockpassword1=Image.open("images/Lockpassword.png").resize((25,25),Image.ANTIALIAS)
+        self.photoimageLockpassword1=ImageTk.PhotoImage(imgLockpassword1)
+        lblLockpassword1 = tk.Label(frame,image=self.photoimageLockpassword1,borderwidth=0,bg="white")
+        lblLockpassword1.place(x=50,y=380)
+        lblRS_ConfirmPw=tk.Label(frame,text="Confirm Password",font=("times new roman",15,"bold"),bg="white",fg="black")
+        lblRS_ConfirmPw.place(x=75,y=380)
+
+        txtRS_ConfirmPw=ttk.Entry(frame,textvariable=self.RS_CFpassword,font=("times new roman",15),show="*")
+        txtRS_ConfirmPw.place(x=50,y=410,width=250)
+
+        imgRS_Visible=Image.open("images/visible.png").resize((35,35),Image.ANTIALIAS)
+        self.photoimageRS_Visible=ImageTk.PhotoImage(imgRS_Visible)
+        RS_toggle_btn = tk.Button(frame,image=self.photoimageRS_Visible,borderwidth=0,cursor="hand2",font=("times new roman",15,"bold"),fg="white",bg="white",activebackground="white")
+        RS_toggle_btn.place(x=310,y=405)
+        RS_toggle_btn.bind("<ButtonPress>", lambda event:show())
+        RS_toggle_btn.bind("<ButtonRelease>", lambda event:hide())
+
+        # =============Row6=============
+        btnResetPassword=tk.Button(frame,text="Reset Password",font=("times new roman",20,"bold"),relief=RAISED,fg="white",bg="#e2479c", activeforeground="white",activebackground="#e2479c",command=self.Resetpw)
+        btnResetPassword.place(x=70,y=480,width=210,height=50)
+
+        # =============Row7=============
+        imgRS_back=Image.open("images/back1.png").resize((70,70),Image.ANTIALIAS)
+        self.photoimageRS_back=ImageTk.PhotoImage(imgRS_back)
+        RS_Back_btn = tk.Button(frame,image=self.photoimageRS_back,borderwidth=0,cursor="hand2",font=("times new roman",15,"bold"),bg="white",activebackground="white",command=lambda: controller.show_frame("Login"))
+        RS_Back_btn.place(x=145,y=540)
+
+    def Resetpw(self):
+        userfetch=(self.RS_username.get())
+        fetchSQ=(self.RS_username.get(),self.RS_SQ.get())
+
+        try:
+            if self.RS_username.get()=="":
+                messagebox.showerror("Error","Username missing.")
+            elif self.RS_SQ.get()=="Select":
+                messagebox.showerror("Error","Please select a security question.")
+            elif self.RS_SA.get()=="":
+                messagebox.showerror("Error","Security answer missing.")
+            elif self.RS_password.get()=="":
+                messagebox.showerror("Error","New password missing.")
+            elif self.RS_CFpassword.get()=="":
+                messagebox.showerror("Error","Confirm password missing.")
+            elif self.RS_password.get() != self.RS_CFpassword.get():
+                messagebox.showerror("Error","Your new password and confirmation password do not match.")
+            else:
+                if not EmployeeDB().fetch(userfetch):
+                    messagebox.showerror("Error","Invalid username.")
+                elif not EmployeeDB().fetchSQ(fetchSQ):
+                    messagebox.showerror("Error","Invalid security question.")
+                elif not bcrypt.checkpw(self.RS_SA.get().encode('utf8'), EmployeeDB().fetch(userfetch)[4].encode('utf8')):
+                    messagebox.showerror("Error","Invalid security answer.")
+                elif EmployeeDB().fetch(userfetch) and EmployeeDB().fetchSQ(fetchSQ) and bcrypt.checkpw(self.RS_SA.get().encode('utf8'), EmployeeDB().fetch(userfetch)[4].encode('utf8')):
+                    SAhashed=bcrypt.hashpw(self.RS_password.get().encode('utf8'), bcrypt.gensalt())
+                    pwUpdate=(SAhashed,self.RS_username.get())
+                    EmployeeDB().Resetpassword(pwUpdate)
+                    messagebox.showinfo("Success","Reset password successfully!")
+                    self.RS_clear()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error",f"Error due to: {str(e)}")
+            print(f"Something went wrong {e}.")
+
+    def RS_clear(self):
+        self.RS_username.set("")
+        self.RS_txtSecurityQ.current(0)
+        self.RS_SA.set("")
+        self.RS_password.set("")
+        self.RS_CFpassword.set("")
 
 class EmployeeDashboard(tk.Frame):
 
