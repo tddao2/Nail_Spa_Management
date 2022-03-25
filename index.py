@@ -116,15 +116,17 @@ class Login(tk.Frame):
 
         # Register Button
         btnRegist=tk.Button(lblFrame,text="New User Register",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#e2479c", activeforeground="black",activebackground="#e2479c",command=lambda: controller.show_frame("Register"))
-        btnRegist.place(x=15,y=370,width=160)
+        btnRegist.place(x=15,y=360,width=160)
 
         # Forget password Button
         btnForgetpw=tk.Button(lblFrame,text="Forget Password",font=("times new roman",10,"bold"),borderwidth=0,fg="black",bg="#e2479c", activeforeground="black",activebackground="#e2479c",command=lambda: controller.show_frame("Reset"))
-        btnForgetpw.place(x=10,y=390,width=160)
+        btnForgetpw.place(x=10,y=380,width=160)
 
         # Feedback Button
-        btnFeedback = tk.Button(lblFrame, text="Feedback", font=("times new roman",10,"bold"), borderwidth=0, fg="black", bg="#FF80ED", activeforeground="black",activebackground="#e2479c", command=lambda: controller.show_frame("Feedback"))
-        btnFeedback.place(x=15, y=420, width=160)
+        img3FB=Image.open("images/feedback1.png").resize((160,43), Image.ANTIALIAS)
+        self.photoimage3FB=ImageTk.PhotoImage(img3FB)
+        btnFeedback = tk.Button(lblFrame,image=self.photoimage3FB,borderwidth=0, bg="#e2479c",activebackground="#e2479c", command=lambda: controller.show_frame("Feedback"))
+        btnFeedback.place(x=15, y=400)
 
     def login(self):
         userfetch = (self.username.get())
