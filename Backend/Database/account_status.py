@@ -6,6 +6,20 @@ class AccountStatusDB:
         self.conn = mysql.connector.connect(**Connect)
         self.cursor = self.conn.cursor()
 
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    def AcctFetch(self):
+        self.cursor.execute("SELECT a.account_id, concat(first_name,' ',last_name) as full_name, username, role_name, acct_status \
+                            FROM employee e \
+                            INNER JOIN account a \
+                                ON e.account_id = a.account_id \
+                            INNER JOIN account_status asi \
+                                ON a.account_status_id = asi.account_status_id \
+                            INNER JOIN roles r \
+                                ON a.role_id = r.role_id \
+                            WHERE acct_status = 'active';")
+        rows = self.cursor.fetchall()
+        return rows
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     def getAccountStatusID(self, account_status):
         self.cursor.execute("SELECT * FROM account_status WHERE account_status = (?)", account_status)
