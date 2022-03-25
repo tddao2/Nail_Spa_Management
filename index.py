@@ -13,8 +13,9 @@ import re
 from Backend.createtables import CreateTables
 from Backend.admin import AdminDB
 from Backend.feedback import FeedbackDB
-from Backend.Database.employee import EmployeeDB
-# from Backend.Database.feedback import FeedbackDB
+from Backend.employee import EmployeeDB
+
+from Backend.Database.customer import CustomerDB
 
 # Database context
 # employeeDB = EmployeeDB()
@@ -360,6 +361,7 @@ class Register(tk.Frame):
         self.txtSecurityQ.current(0)
         self.SA.set("")
 
+
 class AdminDashboard(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -594,7 +596,77 @@ class AdminDashboard(tk.Frame):
       
     def client(self):
         self.hide_all_frames()
-        self.ClientFrame.place(x=200,y=30,width=1250,height=690)
+        self.ClientFrame.place(x=100, y=30, width=1250, height=690)
+
+        style = ttk.Style()
+        style.configure('Treeview.Heading', font=("times new roman",15,"bold"), foreground="black")
+        style.map('Treeview', background=[('selected','#e2479c')])
+
+        self.var_searchby = tk.StringVar()
+        self.var_searchtxt = tk.StringVar()
+
+        self.var_customer_id = tk.StringVar()
+        self.var_customer_firstname = tk.StringVar()
+        self.var_customer_lastname = tk.StringVar()
+        self.var_customer_phone = tk.StringVar()
+        self.var_customer_email = tk.StringVar()
+
+        # ============= LEFT FRAME ================
+        LeftFrame = tk.LabelFrame(self.ClientFrame, relief=RIDGE, font=("Segoe UI", 15), bd=1, bg="#e2479c", fg="white")
+        LeftFrame.place(x=0, y=0, width=370, height=690)
+
+        # Header
+        header = tk.Label(LeftFrame, text="Customer Details", font=("Segoe UI", 25, "bold"), bg="#e2479c", fg="black")
+        header.place(x=20, y=20)
+
+        # Customer ID
+        #lblCustomerId = tk.Label(LeftFrame, text="Customer ID", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
+        #lblCustomerId.place(x=15, y=80)
+
+        #txtCustomerId = ttk.Entry(LeftFrame, textvariable=self.var_customer_id, font=("Segoe UI", 18), state=DISABLED)
+        #txtCustomerId.place(x=140, y=80, width=200)
+
+        # First Name
+        lblFirstName = tk.Label(LeftFrame, text="First Name", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
+        lblFirstName.place(x=15, y=140)
+
+        self.txtCustomerFirstName = ttk.Entry(LeftFrame, textvariable=self.var_customer_firstname, font=("Segoe UI", 18))
+        self.txtCustomerFirstName.place(x=140, y=140, width=200)
+
+        # Last Name
+        lblLastName = tk.Label(LeftFrame, text="Last Name", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
+        lblLastName.place(x=15, y=200)
+
+        self.txtCustomerLastName = ttk.Entry(LeftFrame, textvariable=self.var_customer_lastname, font=("Segoe UI", 18))
+        self.txtCustomerLastName.place(x=140, y=200, width=200)
+
+        # Phone
+        lblPhone = tk.Label(LeftFrame, text="Phone", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
+        lblPhone.place(x=15, y=260)
+
+        self.txtCustomerPhone = ttk.Entry(LeftFrame, textvariable=self.var_customer_phone, font=("Segoe UI", 18))
+        self.txtCustomerPhone.place(x=140, y=260, width=200)
+
+        # Email
+        lblEmail = tk.Label(LeftFrame, text="Email", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
+        lblEmail.place(x=15, y=320)
+
+        self.txtCustomerEmail = ttk.Entry(LeftFrame, textvariable=self.var_customer_email, font=("Segoe UI", 18))
+        self.txtCustomerEmail.place(x=140, y=320, width=200)
+
+        # Save Button
+        imgSave = Image.open("images/save1.png")
+        self.photoIamgeSave = ImageTk.PhotoImage(imgSave)
+        btnSave = tk.Button(LeftFrame, image=self.photoIamgeSave, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.customerAddOrUpdate)
+        btnSave.place(x=20, y=400, width=80)
+
+        # Delete Button
+        imgDelete = Image.open("images/trash.png")
+        self.photoIamgeDelete = ImageTk.PhotoImage(imgDelete)
+        btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.customerAddOrUpdate)
+        btnDelete.place(x=140, y=400, width=80)
+
+
 
     def sale(self):
         self.hide_all_frames()
@@ -997,6 +1069,40 @@ class AdminDashboard(tk.Frame):
             self.var_Acctstatus.set(row[4])
         except:
             pass
+
+
+    # Customer Helper Function
+    def customerAddOrUpdate(self):
+        try:
+            # Check Input Field.
+            if self.var_customer_firstname.get() == '' or self.var_customer_lastname.get() == '' \
+                                                       or self.var_customer_phone.get() == '' \
+                                                       or self.var_customer_email.get() == '':
+                messagebox.showerror("Error", "Please input all required fields.")
+                return
+            
+            # Add Mode
+            if self.var_customer_id.get() == "":
+                CustomerDB().addCustomer(self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.var_customer_phone.get(), self.var_customer_email.get())
+                messagebox.showinfo("Success", "New Customer Record is Added Successfully!")
+                self.customerClear()
+            # Update Mode
+            else:
+                CustomerDB().addCustomer(self.var_customer_id.get(), self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.var_customer_phone.get(), self.var_customer_email.get())
+                messagebox.showinfo("Success", "Customer Record is updated Successfully!")
+                self.customerClear()
+
+        except Exception as e:
+            messagebox.showerror("Error", "Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+
+    def customerClear(self):
+        self.txtCustomerFirstName.delete(0, tk.END)
+        self.txtCustomerLastName.delete(0, tk.END)
+        self.txtCustomerPhone.delete(0, tk.END)
+        self.txtCustomerEmail.delete(0, tk.END)
+
 
 class EmployeeDashboard(tk.Frame):
 

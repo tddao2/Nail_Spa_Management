@@ -80,6 +80,17 @@ class CreateTables:
             ")"
         )
 
+        TABLES['customer'] = (
+            "CREATE TABLE `customer` ("
+            "   `customer_id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,"
+            "   `first_name` VARCHAR(50) NOT NULL,"
+            "   `last_name` VARCHAR(50) NOT NULL,"
+            "   `phone` VARCHAR(12) NOT NULL,"
+            "   `email` VARCHAR(50) NOT NULL,"
+            "   `acive` BIT NOT NULL DEFAULT 1"
+            ");"
+        )
+
         TABLES['test'] = (
             "CREATE TABLE `test` ("
             "  `test_id` int NOT NULL AUTO_INCREMENT,"
