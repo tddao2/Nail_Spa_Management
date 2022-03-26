@@ -658,11 +658,11 @@ class AdminDashboard(tk.Frame):
         btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerDelete)
         btnDelete.place(x=230, y=380, width=50, height=50)
 
-        # Refresh Button
-        imgRefresh = Image.open("images/icons8-available-updates-40.png")
-        self.photoIamgeRefresh = ImageTk.PhotoImage(imgRefresh)
-        btnRefresh = tk.Button(LeftFrame, image=self.photoIamgeRefresh, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerClear)
-        btnRefresh.place(x=290, y=380, width=50, height=50)
+        # Reset Form Button
+        imgResetForm = Image.open("images/icons8-available-updates-40.png")
+        self.photoIamgeResetForm = ImageTk.PhotoImage(imgResetForm)
+        btnResetForm = tk.Button(LeftFrame, image=self.photoIamgeResetForm, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerClear)
+        btnResetForm.place(x=290, y=380, width=50, height=50)
 
         # ============= RIGHT FRAME ================
         RightFrame = tk.LabelFrame(self.ClientFrame, relief=RIDGE, bd=1, bg="#e2479c")
@@ -681,13 +681,20 @@ class AdminDashboard(tk.Frame):
         self.cmbCustomerSearch.place(x=15, y=10, width=150)
         self.cmbCustomerSearch.current(0)
 
-        txtCustomerSearch = tk.Entry(SearchFrame, textvariable=self.var_customer_searchtxt, font=("Segoe UI",15), bg="white")
-        txtCustomerSearch.place(x=180, y=10, height=29)
+        self.txtCustomerSearch = tk.Entry(SearchFrame, textvariable=self.var_customer_searchtxt, font=("Segoe UI",15), bg="white")
+        self.txtCustomerSearch.place(x=180, y=10, height=29)
 
+        # Search Button
         imgSearch = Image.open("images/icons8-browse-folder-30.png").resize((20,20),Image.ANTIALIAS)
         self.photoImageSearch=ImageTk.PhotoImage(imgSearch)
         btnSearch = tk.Button(SearchFrame, image=self.photoImageSearch, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerSearch)
         btnSearch.place(x=385, y=10)
+
+        # Refresh Table Button
+        imgRefreshTable = Image.open("images/icons8-available-updates-30.png").resize((20,20),Image.ANTIALIAS)
+        self.photoIamgeRefreshTable = ImageTk.PhotoImage(imgRefreshTable)
+        btnRefreshTable = tk.Button(SearchFrame, image=self.photoIamgeRefreshTable, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerShow)
+        btnRefreshTable.place(x=420, y=10)
 
         # ============= RIGHT LOWER FRAME =============
         TableFrame = tk.LabelFrame(RightFrame, relief=RIDGE, bd=1, bg="white")
@@ -1219,15 +1226,15 @@ class AdminDashboard(tk.Frame):
         # Clear existing records.
         self.tblCustomer.delete(*self.tblCustomer.get_children())
 
-        try:
-            # Iterate through the data returned by the fetch method in Database Class
-            for row in CustomerDB().getAllCustomer():
-                self.tblCustomer.insert('', tk.END, values=row)
-        except Exception as e:
-            messagebox.showerror("Error", "Something went wrong")
-            print(f"Error due to: {str(e)}.")
+        # Iterate through the data returned by the fetch method in Database Class
+        for row in CustomerDB().getAllCustomer():
+            self.tblCustomer.insert('', tk.END, values=row)
 
-    
+        # Reset Search Bar.
+        self.cmbCustomerSearch.current(0)
+        self.txtCustomerSearch.delete(0, tk.END)
+        
+
     def CustomerSelect(self, event):
         focus = self.tblCustomer.focus()
         curCustomer = (self.tblCustomer.item(focus))
@@ -1255,6 +1262,10 @@ class AdminDashboard(tk.Frame):
         self.txtCustomerLastName.delete(0, tk.END)
         self.txtCustomerPhone.delete(0, tk.END)
         self.txtCustomerEmail.delete(0, tk.END)
+
+        # Reset Search Bar.
+        self.cmbCustomerSearch.current(0)
+        self.txtCustomerSearch.delete(0, tk.END)
 
 
 class Reset(tk.Frame):
