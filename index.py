@@ -60,7 +60,7 @@ class App(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         # Display the current page
-        self.show_frame("Feedback")
+        self.show_frame("AdminDashboard")
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
