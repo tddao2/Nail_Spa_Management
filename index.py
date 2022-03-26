@@ -618,13 +618,6 @@ class AdminDashboard(tk.Frame):
         header = tk.Label(LeftFrame, text="Customer Details", font=("Segoe UI", 25, "bold"), bg="#e2479c", fg="black")
         header.place(x=20, y=20)
 
-        # Customer ID
-        #lblCustomerId = tk.Label(LeftFrame, text="Customer ID", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
-        #lblCustomerId.place(x=15, y=80)
-
-        #txtCustomerId = ttk.Entry(LeftFrame, textvariable=self.var_customer_id, font=("Segoe UI", 18), state=DISABLED)
-        #txtCustomerId.place(x=140, y=80, width=200)
-
         # First Name
         lblFirstName = tk.Label(LeftFrame, text="First Name", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
         lblFirstName.place(x=15, y=140)
@@ -662,7 +655,7 @@ class AdminDashboard(tk.Frame):
         # Delete Button
         imgDelete = Image.open("images/icons8-trash-can-40.png")
         self.photoIamgeDelete = ImageTk.PhotoImage(imgDelete)
-        btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerAddOrUpdate)
+        btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerDelete)
         btnDelete.place(x=230, y=380, width=50, height=50)
 
         # Refresh Button
@@ -1152,6 +1145,32 @@ class AdminDashboard(tk.Frame):
 
             # Reload Customer Table.
             self.CustomerShow()
+
+        except Exception as e:
+            messagebox.showerror("Error", "Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+
+    def CustomerDelete(self):
+        try:
+            if self.var_customer_id.get() == "":
+                messagebox.showerror("Error", "Please select the customer record that you want to delete.")
+            else:
+                op = messagebox.askyesno("Confirm", "Do you really want to delete this record?")
+                if op == True:
+                    # Delete Customer Record.
+                    customerId = self.var_customer_id.get()
+                    CustomerDB().removeCustomer(customerId)
+                    messagebox.showinfo("Success", "Delete Successfully!")
+
+                    # Clear Input Field.
+                    self.CustomerClear()
+
+                    # Reload Customer Table.
+                    self.CustomerShow()
+
+                else:
+                    return
 
         except Exception as e:
             messagebox.showerror("Error", "Something went wrong")
