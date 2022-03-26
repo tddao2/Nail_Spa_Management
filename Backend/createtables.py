@@ -74,6 +74,7 @@ class CreateTables:
             "  `performance_score` int NOT NULL,"
             "  `description` varchar(500),"
             "  `dateFB` datetime NOT NULL,"
+            "  `active` BIT NOT NULL DEFAULT 1,"
             "  PRIMARY KEY (`feedback_id`),"
             "  CONSTRAINT `FK_feedback_employee_id` FOREIGN KEY (`employee_id`) "
             "     REFERENCES `employee` (`employee_id`)"
