@@ -406,7 +406,7 @@ class AdminDashboard(tk.Frame):
 
         imageFeedback = Image.open("images/feedback.png").resize((100,100))
         self.imageFeedback=ImageTk.PhotoImage(imageFeedback)
-        FeedbackBtn=tk.Button(LeftFrame, image=self.imageFeedback,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
+        FeedbackBtn=tk.Button(LeftFrame, image=self.imageFeedback,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.survey)
         FeedbackBtn.grid(row=5,column=1)
 
         imageusers = Image.open("images/users.png").resize((100,100))
@@ -434,6 +434,7 @@ class AdminDashboard(tk.Frame):
         self.ClientFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="red")
         self.SaleFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="yellow")
         self.UserFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
+        self.FeedbackFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
 
 
     def employee(self):
@@ -734,7 +735,87 @@ class AdminDashboard(tk.Frame):
     def sale(self):
         self.hide_all_frames()
         self.SaleFrame.place(x=250,y=30,width=1250,height=690)
-    
+
+    def survey(self):
+        self.hide_all_frames()
+        self.FeedbackFrame.place(x=100,y=30,width=1251,height=691)
+
+        style = ttk.Style()
+        # style.theme_use('clam')
+        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.map('Treeview',background=[('selected','#e2479c')])
+
+        self.var_SVsearchby=tk.StringVar()
+        self.var_SVsearchtxt=tk.StringVar()
+
+        # self.var_SV_id=tk.StringVar()
+        # self.var_username=tk.StringVar()
+        # self.var_rolename=tk.StringVar()
+        # self.var_SVstatus=tk.StringVar()
+
+        # =============Left Frame=============
+        SVLeftFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
+        SVLeftFrame.place(x=0,y=0,width=370,height=689)
+
+        # ==========================================================Right Frame=============================================================
+        SV_RightFrame=tk.Frame(self.FeedbackFrame,relief=RIDGE,bd=1,bg="#e2479c")
+        SV_RightFrame.place(x=370,y=12,width=880,height=678)
+
+        # =============Top Right Frame=============
+        SV_SearchFrame=tk.LabelFrame(SV_RightFrame,text="Search Feedback",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="white")
+        SV_SearchFrame.place(x=100,width=680,height=71) #550
+
+        self.SVcmb_search=ttk.Combobox(SV_SearchFrame,textvariable=self.var_SVsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.SVcmb_search["values"]=("Select","first_name","last_name","username","acct_status")
+        self.SVcmb_search.place(x=15,y=2,width=180)
+        self.SVcmb_search.current(0)
+
+        txt_SVsearch=tk.Entry(SV_SearchFrame,textvariable=self.var_SVsearchtxt,font=("times new roman",18),bg="white")
+        txt_SVsearch.place(x=215,y=2) #10
+
+        imgSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageSearch=ImageTk.PhotoImage(imgSearch)
+        btn_search=tk.Button(SV_SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        btn_search.place(x=465)
+
+        # btn_showHistory=tk.Button(SV_SearchFrame,text="Show All",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.AcctShowAll)
+        # btn_showHistory.place(x=510,width=150)
+
+        # =============Bottom Right Frame=============
+        FeedbackTableFrame=tk.LabelFrame(SV_RightFrame,relief=RIDGE,bd=1,bg="white")
+        FeedbackTableFrame.place(y=72,width=879,height=604) #608
+
+        scrollx=tk.Scrollbar(FeedbackTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(FeedbackTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+
+        self.FeedbackTable=ttk.Treeview(FeedbackTableFrame,columns=("Feedback ID","Full name","Score","Feedback","Date"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.FeedbackTable.xview)
+        scrolly.config(command=self.FeedbackTable.yview)
+
+        self.FeedbackTable.heading("Feedback ID",text="STT")
+        self.FeedbackTable.heading("Full name",text="Full name")
+        self.FeedbackTable.heading("Score",text="Score")
+        self.FeedbackTable.heading("Feedback",text="Feedback")
+        self.FeedbackTable.heading("Date",text="Date")
+
+        self.FeedbackTable["show"]="headings"
+
+        self.FeedbackTable.column("Feedback ID",anchor=CENTER)
+        self.FeedbackTable.column("Full name",anchor=CENTER)
+        self.FeedbackTable.column("Score",anchor=CENTER)
+        self.FeedbackTable.column("Feedback",anchor=CENTER)
+        self.FeedbackTable.column("Date",anchor=CENTER)
+
+        self.FeedbackTable.pack(fill=BOTH,expand=1)
+
+        self.SV_show()
+
     def user(self):
         self.hide_all_frames()
         self.UserFrame.place(x=100,y=30,width=1251,height=690)
@@ -861,6 +942,7 @@ class AdminDashboard(tk.Frame):
         self.ClientFrame.place_forget()
         self.SaleFrame.place_forget()
         self.UserFrame.place_forget()
+        self.FeedbackFrame.place_forget()
 
     def EmpUpdate(self):
         emp_status_New = 1
@@ -1126,6 +1208,18 @@ class AdminDashboard(tk.Frame):
             self.var_Acctstatus.set(row[4])
         except:
             pass
+
+    def SV_show(self):
+        self.FeedbackTable.delete(*self.FeedbackTable.get_children())
+        try:
+            if not FeedbackDB().getAllFB():
+                messagebox.showerror("Error", "No records found.")
+            else:
+                for row in FeedbackDB().getAllFB():
+                    self.FeedbackTable.insert("",END,values=row)
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
     
     # Customer Helper Function
     def CustomerAddOrUpdate(self):

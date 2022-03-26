@@ -11,6 +11,16 @@ class FeedbackDB:
         self.cursor.execute("INSERT INTO feedback(employee_id,performance_score,description,dateFB) values(%s,%s,%s,%s)",
                             (data[0],data[1],data[2],data[3]))
         self.conn.commit()
+
+    def getAllFB(self):
+        self.cursor.execute("SELECT feedback_id, concat(first_name,' ',last_name) as Name, performance_score, description, date_format(dateFB, '%b %d, %Y %h:%i:%s %p') as Date, a.active \
+                            FROM employee e \
+                            INNER JOIN feedback a  \
+                                ON e.employee_id = a.employee_id \
+                            WHERE a.active =1 \
+                            order by Name ASC;")
+        rows = self.cursor.fetchall()
+        return rows
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
