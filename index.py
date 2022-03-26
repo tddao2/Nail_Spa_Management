@@ -1449,6 +1449,8 @@ class Feedback(tk.Frame):
 
     def create_widgets(self, controller):
 
+        self.employeeName = tk.StringVar()
+
         # Main Frame
         frame = tk.Frame(self, bg="white")
         frame.place(x=435, y=50, width=480, height=620)
@@ -1474,7 +1476,7 @@ class Feedback(tk.Frame):
             self.employeeId.clear()
             self.employeeId.append(row[0])
             
-        employeeNameEntry = ttk.Combobox(frame,font=("Segoe UI", 14),state="readonly",justify="center")
+        employeeNameEntry = ttk.Combobox(frame,textvariable=self.employeeName,font=("Segoe UI", 14),state="readonly",justify="center")
         employeeNameEntry["values"] = [row[1] for row in EmployeeDB().EmpfetchAll()]
         employeeNameEntry.place(x=190, y=160)
         employeeNameEntry.bind("<<ComboboxSelected>>", run_sql)
@@ -1519,8 +1521,6 @@ class Feedback(tk.Frame):
                     self.thankyou.after(3000,self.thankyou.pack_forget)
                 else:
                     return
-            # elif len(self.descriptionEntry.get("1.0",'end-1c'))==0:
-            #     messagebox.showerror("Error","Please leave some comments")
             else:
                 data=(self.employeeId[0],self.scale.get(),self.descriptionEntry.get("1.0",'end-1c'),datetime.datetime.now())
                 FeedbackDB().AddFB(data)
@@ -1534,6 +1534,8 @@ class Feedback(tk.Frame):
     def FB_clear(self):
         self.scale.set(0)
         self.descriptionEntry.delete("1.0",END)
+        self.employeeName.set("")
+        self.employeeId.clear()
 
 if __name__ == "__main__":
     app = App()
