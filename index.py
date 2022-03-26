@@ -677,7 +677,7 @@ class AdminDashboard(tk.Frame):
         SearchFrame.place(x=20, y=60, width=680, height=60)
 
         self.cmbCustomerSearch = ttk.Combobox(SearchFrame, textvariable=self.var_customer_searchby, state="readonly", justify=CENTER, font=("Segoe UI", 15))
-        self.cmbCustomerSearch["values"] = ("Select", "First Name", "Last Name", "Phone", "Email")
+        self.cmbCustomerSearch["values"] = ("Select", "First Name", "Last Name")
         self.cmbCustomerSearch.place(x=15, y=10, width=150)
         self.cmbCustomerSearch.current(0)
 
@@ -686,7 +686,7 @@ class AdminDashboard(tk.Frame):
 
         imgSearch = Image.open("images/icons8-browse-folder-30.png").resize((20,20),Image.ANTIALIAS)
         self.photoImageSearch=ImageTk.PhotoImage(imgSearch)
-        btnSearch = tk.Button(SearchFrame, image=self.photoImageSearch, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.AcctSearch)
+        btnSearch = tk.Button(SearchFrame, image=self.photoImageSearch, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerSearch)
         btnSearch.place(x=385, y=10)
 
         # ============= RIGHT LOWER FRAME =============
@@ -1168,13 +1168,51 @@ class AdminDashboard(tk.Frame):
 
                     # Reload Customer Table.
                     self.CustomerShow()
-
                 else:
                     return
 
         except Exception as e:
             messagebox.showerror("Error", "Something went wrong")
             print(f"Error due to: {str(e)}.")
+
+
+    def CustomerSearch(self):
+        try:
+            if self.var_customer_searchby.get() == "Select":
+                messagebox.showerror("Error", "Select choose an option.")
+
+            elif self.var_customer_searchtxt.get() == "":
+                messagebox.showerror("Error", "Search keyword is required.")
+            
+            elif self.var_customer_searchby.get()=="First Name" and self.var_customer_searchtxt.get():
+                
+                # Filter by First Name.
+                firstName = self.var_customer_searchtxt.get()
+                rows = CustomerDB().getCustomerByFirstName(firstName)
+
+                # Clear Existing Records.
+                self.tblCustomer.delete(*self.tblCustomer.get_children())
+
+                # Load Records.
+                for row in rows:
+                    self.tblCustomer.insert('', tk.END, values=row)
+
+            elif self.var_customer_searchby.get()=="Last Name" and self.var_customer_searchtxt.get():
+                
+                # Filter by Last name.
+                lastName = self.var_customer_searchtxt.get()
+                rows = CustomerDB().getCustomerByLastName(lastName)
+
+                # Clear existing records.
+                self.tblCustomer.delete(*self.tblCustomer.get_children())
+
+                # Load record.
+                for row in rows:
+                    self.tblCustomer.insert('', tk.END, values=row)
+
+        except Exception as e:
+            messagebox.showerror("Error", f"Error due to: {str(e)}")
+            print(f"Something went wrong {e}.")
 
 
     def CustomerShow(self):
