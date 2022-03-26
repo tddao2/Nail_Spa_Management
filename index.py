@@ -657,13 +657,19 @@ class AdminDashboard(tk.Frame):
         imgSave = Image.open("images/icons8-save-close-40.png")
         self.photoIamgeSave = ImageTk.PhotoImage(imgSave)
         btnSave = tk.Button(LeftFrame, image=self.photoIamgeSave, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerAddOrUpdate)
-        btnSave.place(x=230, y=380, width=50, height=50)
+        btnSave.place(x=170, y=380, width=50, height=50) 
 
         # Delete Button
         imgDelete = Image.open("images/icons8-trash-can-40.png")
         self.photoIamgeDelete = ImageTk.PhotoImage(imgDelete)
         btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerAddOrUpdate)
-        btnDelete.place(x=290, y=380, width=50, height=50)
+        btnDelete.place(x=230, y=380, width=50, height=50)
+
+        # Refresh Button
+        imgRefresh = Image.open("images/icons8-available-updates-40.png")
+        self.photoIamgeRefresh = ImageTk.PhotoImage(imgRefresh)
+        btnRefresh = tk.Button(LeftFrame, image=self.photoIamgeRefresh, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerClear)
+        btnRefresh.place(x=290, y=380, width=50, height=50)
 
         # ============= RIGHT FRAME ================
         RightFrame = tk.LabelFrame(self.ClientFrame, relief=RIDGE, bd=1, bg="#e2479c")
@@ -721,7 +727,7 @@ class AdminDashboard(tk.Frame):
         self.tblCustomer.column("customer_email", anchor=CENTER)
 
         self.tblCustomer.pack(fill=BOTH, expand=1)
-        # self.tblCustomer.bind("<ButtonRelease-1>", self.EmpGetdata)
+        self.tblCustomer.bind("<ButtonRelease-1>", self.CustomerSelect)
         self.CustomerShow()
 
 
@@ -1138,7 +1144,7 @@ class AdminDashboard(tk.Frame):
             
             # Update Mode: Modify existing Customer Info.
             else:              
-                CustomerDB().addCustomer(self.var_customer_id.get(), self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.var_customer_phone.get(), self.var_customer_email.get())
+                CustomerDB().updateCustomer(self.var_customer_id.get(), self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.var_customer_phone.get(), self.var_customer_email.get())
                 messagebox.showinfo("Success", "Customer Record is updated Successfully!")
                 
             # Clear Input Field.
@@ -1150,6 +1156,7 @@ class AdminDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error", "Something went wrong")
             print(f"Error due to: {str(e)}.")
+
 
     def CustomerShow(self):
         # Clear existing records.
@@ -1163,11 +1170,35 @@ class AdminDashboard(tk.Frame):
             messagebox.showerror("Error", "Something went wrong")
             print(f"Error due to: {str(e)}.")
 
+    
+    def CustomerSelect(self, event):
+        focus = self.tblCustomer.focus()
+        curCustomer = (self.tblCustomer.item(focus))
+        row = curCustomer['values']
+
+        self.var_customer_id.set(row[0])
+        self.txtCustomerFirstName.delete(0, tk.END)
+        self.txtCustomerFirstName.insert(tk.END, row[1])
+        self.txtCustomerLastName.delete(0, tk.END)
+        self.txtCustomerLastName.insert(tk.END, row[2])
+        self.txtCustomerPhone.delete(0, tk.END)
+        self.txtCustomerPhone.insert(tk.END, row[3])
+        self.txtCustomerEmail.delete(0, tk.END)
+        self.txtCustomerEmail.insert(tk.END, row[4])
+
+
     def CustomerClear(self):
+        # Clear Table Selection.
+        for i in self.tblCustomer.selection():
+            self.tblCustomer.selection_remove(i)
+
+        # Clear Customer Id & Input Field.    
+        self.var_customer_id.set("")
         self.txtCustomerFirstName.delete(0, tk.END)
         self.txtCustomerLastName.delete(0, tk.END)
         self.txtCustomerPhone.delete(0, tk.END)
         self.txtCustomerEmail.delete(0, tk.END)
+
 
 class Reset(tk.Frame):
     def __init__(self, parent, controller):
