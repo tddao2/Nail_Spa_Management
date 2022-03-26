@@ -1400,23 +1400,18 @@ class Feedback(tk.Frame):
 
     def create_widgets(self, controller):
 
-        # self.employeeName = tk.StringVar()
-        # self.performanceScore = tk.IntVar()
-        # self.description = tk.StringVar()
-
         # Main Frame
         frame = tk.Frame(self, bg="white")
-        frame.place(x=435, y=50, width=480, height=620)  # x=400
+        frame.place(x=435, y=50, width=480, height=620)
+
+        # Thank you Frame
+        imgThankyou=Image.open("images/thankyou.png").resize((1350,720),Image.ANTIALIAS)
+        self.photoimageThankyou=ImageTk.PhotoImage(imgThankyou)
+        self.thankyou = tk.Label(self, image=self.photoimageThankyou)
 
         # Header
         header = tk.Label(frame, text="Customer Feedback", font=("Segoe UI", 25, "bold"),bg="white")
         header.place(x=20, y=20)
-
-        # Retrieve from database directly later
-        # OPTIONS = [
-        #     "Nancy",
-        #     "Pham"
-        # ]
 
         # Employee Name
         self.employeeNameLabel = tk.Label(frame, text="Employee Name:", font=("Segoe UI", 14, "bold"),bg="white")
@@ -1448,11 +1443,7 @@ class Feedback(tk.Frame):
 
         self.descriptionEntry = tk.Text(frame, font=("Segoe UI", 14, "bold"), bg="#EBECF0", borderwidth=2)
         self.descriptionEntry.place(x=20, y=360, width=400, height=150)
-        #self.description = descriptionEntry.get("1.0",'end-1c')
-
-        # print(self.description)
-
-
+        
         # Back Button (To Login Page)
         imgBack=Image.open("images/back.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageBack=ImageTk.PhotoImage(imgBack)
@@ -1465,23 +1456,18 @@ class Feedback(tk.Frame):
         submitButton = tk.Button(frame,image=self.photoimageSubmit,borderwidth=0,bg="white",activebackground="white",command=lambda: self.retrieve_input())
         submitButton.place(x=140,y=530)
 
-    # def load_employees(self):
-
-        # Load employee naem from database.
-        # print("Implementing")
-
-
     def retrieve_input(self):
-        # self.performanceScore = self.scale.get()
-        # self.description = self.descriptionEntry.get("1.0",'end-1c')
-        
         try:
             if not self.employeeId:
                 messagebox.showerror("Error","Please select an employee")
             elif self.scale.get()==0:
                 op=messagebox.askyesno("Confirm","Are you sure to evaluate 0?")
                 if op==True:
-                    pass
+                    data=(self.employeeId[0],self.scale.get(),self.descriptionEntry.get("1.0",'end-1c'),datetime.datetime.now())
+                    FeedbackDB().AddFB(data)
+                    self.FB_clear()
+                    self.thankyou.pack()
+                    self.thankyou.after(3000,self.thankyou.pack_forget)
                 else:
                     return
             # elif len(self.descriptionEntry.get("1.0",'end-1c'))==0:
@@ -1489,10 +1475,16 @@ class Feedback(tk.Frame):
             else:
                 data=(self.employeeId[0],self.scale.get(),self.descriptionEntry.get("1.0",'end-1c'),datetime.datetime.now())
                 FeedbackDB().AddFB(data)
-                messagebox.showinfo("Success","Record Successfully!")
+                self.FB_clear()
+                self.thankyou.pack()
+                self.thankyou.after(3000,self.thankyou.pack_forget)
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
+
+    def FB_clear(self):
+        self.scale.set(0)
+        self.descriptionEntry.delete("1.0",END)
 
 if __name__ == "__main__":
     app = App()
