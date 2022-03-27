@@ -21,6 +21,26 @@ class FeedbackDB:
                             order by Name ASC;")
         rows = self.cursor.fetchall()
         return rows
+
+    def deleteMonthly(self, month):
+        self.cursor.execute("SET SQL_SAFE_UPDATES = 0;")
+        self.cursor.execute("UPDATE feedback \
+                            SET active = 0 \
+                            WHERE month(dateFB) = %s;",
+                            (month,))
+        self.cursor.execute("SET SQL_SAFE_UPDATES = 1;")              
+
+        self.conn.commit()
+
+    def deletePeriod(self, period):
+        self.cursor.execute("SET SQL_SAFE_UPDATES = 0;")
+        self.cursor.execute("UPDATE feedback \
+                            SET active = 0 \
+                            WHERE dateFB BETWEEN DATE(%s) AND DATE(%s);",
+                            (period[0], period[1]))
+        self.cursor.execute("SET SQL_SAFE_UPDATES = 1;")              
+
+        self.conn.commit()
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
@@ -44,7 +64,7 @@ class FeedbackDB:
 
 
     def removeFeedback(self, feedback_id):
-        self.cursor.execute("UPDATE feedback SET active = 0 WHERE feedback_id = ?", (feedback_id,))
+        self.cursor.execute("UPDATE feedback SET active = 0 WHERE feedback_id = %s", (feedback_id,))
         self.conn.commit()
 
 

@@ -748,14 +748,92 @@ class AdminDashboard(tk.Frame):
         self.var_SVsearchby=tk.StringVar()
         self.var_SVsearchtxt=tk.StringVar()
 
-        # self.var_SV_id=tk.StringVar()
-        # self.var_username=tk.StringVar()
-        # self.var_rolename=tk.StringVar()
-        # self.var_SVstatus=tk.StringVar()
+        self.var_SV_id=tk.StringVar()
+        self.var_month=tk.StringVar()
+        
+        # ==========================================================Left Frame=============================================================
+        
+        # =============Top Left Frame=============
+        SVLeftTopFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
+        SVLeftTopFrame.place(x=0,y=0,width=370,height=389) # height = 689
 
-        # =============Left Frame=============
-        SVLeftFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
-        SVLeftFrame.place(x=0,y=0,width=370,height=689)
+        lblSVId=tk.Label(SVLeftTopFrame,text="STT",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblSVId.place(x=15,y=20)
+
+        txtSVId=ttk.Entry(SVLeftTopFrame,textvariable=self.var_SV_id,font=("times new roman",18),state=DISABLED) # ,state=DISABLED
+        txtSVId.place(x=140,y=20,width=200)
+
+        lblSV=tk.Label(SVLeftTopFrame,text="First Name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblSV.place(x=15,y=80)
+
+        self.txtSV=tk.Text(SVLeftTopFrame,font=("times new roman",12))
+        self.txtSV.place(x=140,y=80,width=200,height=170)
+
+        imgSVDelete=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageSVDelete=ImageTk.PhotoImage(imgSVDelete)
+        SVDeletebtn=tk.Button(SVLeftTopFrame, image=self.photoimageSVDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SVDelete)
+        SVDeletebtn.place(x=100,y=290)
+
+        imgSVRefresh=Image.open("images/Refresh.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageSVRefresh=ImageTk.PhotoImage(imgSVRefresh)
+        SVRefreshbtn=tk.Button(SVLeftTopFrame, image=self.photoimageSVRefresh,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SVClear)
+        SVRefreshbtn.place(x=200,y=290)
+
+        # =============Bottom Left Frame=============
+        SVLeftBottomFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Remove",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
+        SVLeftBottomFrame.place(y=389,width=370,height=300) 
+
+        
+
+        lblSV_Search=tk.Label(SVLeftBottomFrame,text="Delete by",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+        lblSV_Search.place(x=15,y=20)
+
+        self.SVcmb_Delete=ttk.Combobox(SVLeftBottomFrame,state="readonly",justify=CENTER,font=("times new roman",15))
+        self.SVcmb_Delete["values"]=("Select","Monthly","Period")
+        self.SVcmb_Delete.place(x=140,y=20,width=200)
+        self.SVcmb_Delete.current(0)
+        self.SVcmb_Delete.bind("<<ComboboxSelected>>", self.DeleteOptions)
+
+        Monthly = [
+            (1, 'Janurary'),
+            (2, 'February'),
+            (3, 'March'),
+            (4, 'April'),
+            (5, 'May'),
+            (6, 'June'),
+            (7, 'July'),
+            (8, 'August'),
+            (9, 'September'),
+            (10, 'October'),
+            (11, 'November'),
+            (12, 'December')
+        ]
+
+        def data_set(index):
+            index = self.SVcmb_Monthly.current()
+            self.var_month.set(Monthly[index][0])
+
+        self.lblMonthly=tk.Label(SVLeftBottomFrame,text="Monthly",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+
+        self.SVcmb_Monthly=ttk.Combobox(SVLeftBottomFrame,state="readonly",justify=CENTER,font=("times new roman",15))
+        self.SVcmb_Monthly["values"]=[row[1] for row in Monthly]
+        self.SVcmb_Monthly.bind("<<ComboboxSelected>>", data_set)
+
+        self.lblFrom=tk.Label(SVLeftBottomFrame,text="From",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+
+        self.txtFrom=DateEntry(SVLeftBottomFrame,selectmode='day',font=("times new roman",15),date_pattern='mm/dd/y')
+
+        self.lblTo=tk.Label(SVLeftBottomFrame,text="To",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+
+        self.txtTo=DateEntry(SVLeftBottomFrame,selectmode='day',font=("times new roman",15),date_pattern='mm/dd/y')
+
+        imgSVRemove=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageSVRemove=ImageTk.PhotoImage(imgSVRemove)
+        self.SVRemovebtn=tk.Button(SVLeftBottomFrame, image=self.photoimageSVRemove,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.deleteMonthly)
+
+        imgSVRemove1=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageSVRemove1=ImageTk.PhotoImage(imgSVRemove1)
+        self.SVRemove1btn=tk.Button(SVLeftBottomFrame, image=self.photoimageSVRemove1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.deletePeriod)
 
         # ==========================================================Right Frame=============================================================
         SV_RightFrame=tk.Frame(self.FeedbackFrame,relief=RIDGE,bd=1,bg="#e2479c")
@@ -782,8 +860,11 @@ class AdminDashboard(tk.Frame):
         # btn_showHistory.place(x=510,width=150)
 
         # =============Bottom Right Frame=============
+        # FeedbackTableFrame=tk.LabelFrame(SV_RightFrame,relief=RIDGE,bd=1,bg="white")
+        # FeedbackTableFrame.place(y=72,width=879,height=604) #608
+
         FeedbackTableFrame=tk.LabelFrame(SV_RightFrame,relief=RIDGE,bd=1,bg="white")
-        FeedbackTableFrame.place(y=72,width=879,height=604) #608
+        FeedbackTableFrame.place(x=20,y=82,width=839,height=574) #608
 
         scrollx=tk.Scrollbar(FeedbackTableFrame,orient=HORIZONTAL)
         scrollx.pack(side=BOTTOM,fill=X)
@@ -813,6 +894,7 @@ class AdminDashboard(tk.Frame):
         self.FeedbackTable.column("Date",anchor=CENTER)
 
         self.FeedbackTable.pack(fill=BOTH,expand=1)
+        self.FeedbackTable.bind("<ButtonRelease-1>",self.SVGetdata)
 
         self.SV_show()
 
@@ -1217,6 +1299,101 @@ class AdminDashboard(tk.Frame):
             else:
                 for row in FeedbackDB().getAllFB():
                     self.FeedbackTable.insert("",END,values=row)
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def SVGetdata(self,event):
+        f=self.FeedbackTable.focus()
+        curItem=(self.FeedbackTable.item(f))
+        row=curItem['values']
+
+        try:
+            self.var_SV_id.set(row[0])
+            self.txtSV.delete("1.0",END)
+            self.txtSV.insert(END,row[3]) 
+        except:
+            pass
+
+    def SVClear(self):
+        self.var_SV_id.set("")
+        self.txtSV.delete("1.0",END)
+
+        self.SV_show()
+
+    def SVDelete(self):
+        try:
+            if self.var_SV_id.get()=="":
+                messagebox.showerror("Error","No feedback info selected")
+            else:
+                op=messagebox.askyesno("Confirm","Do you really want to delete?")
+                if op==True:
+                    feedback_id = self.var_SV_id.get()
+                    FeedbackDB().removeFeedback(feedback_id)
+                    messagebox.showinfo("Success","Delete Successfully!")
+                    self.SVClear()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def DeleteOptions(self, event):
+        self.HideDeleteOptions()
+        if self.SVcmb_Delete.get()=="Monthly":
+            self.HideDeleteOptions()
+            self.lblMonthly.place(x=15,y=60)
+            self.SVcmb_Monthly.place(x=140,y=60,width=200)
+            self.SVRemovebtn.place(x=100,y=190)
+
+
+        if self.SVcmb_Delete.get()=="Period":
+            self.HideDeleteOptions()
+            self.lblFrom.place(x=15,y=60)
+            self.txtFrom.place(x=140,y=60,width=200)
+            self.lblTo.place(x=15,y=100)
+            self.txtTo.place(x=140,y=100,width=200)
+            self.SVRemove1btn.place(x=100,y=190)
+
+    def HideDeleteOptions(self):
+        self.SVcmb_Monthly.set("")
+        self.txtFrom.delete(0,"end")
+        self.txtTo.delete(0,"end")
+
+        self.lblMonthly.place_forget()
+        self.SVcmb_Monthly.place_forget()
+        self.lblFrom.place_forget()
+        self.txtFrom.place_forget()
+        self.lblTo.place_forget()
+        self.txtTo.place_forget()
+
+        self.SVRemovebtn.place_forget()
+        self.SVRemove1btn.place_forget()
+
+    def deleteMonthly(self):
+        try:
+            if self.var_month.get() == "":
+                messagebox.showerror("Error","Month input is required.")
+            else:
+                month=self.var_month.get()
+                FeedbackDB().deleteMonthly(month)
+                self.HideDeleteOptions()
+                self.SV_show()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def deletePeriod(self):
+        try:
+            if self.txtFrom.get_date() == "":
+                messagebox.showerror("Error","From input is required.")
+            elif self.txtTo.get_date() == "":
+                messagebox.showerror("Error","To input is required.")
+            else:
+                period=(self.txtFrom.get_date(),self.txtTo.get_date())
+                FeedbackDB().deletePeriod(period)
+                self.HideDeleteOptions()
+                self.SV_show()
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
