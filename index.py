@@ -844,7 +844,7 @@ class AdminDashboard(tk.Frame):
         SV_SearchFrame.place(x=100,width=680,height=71) #550
 
         self.SVcmb_search=ttk.Combobox(SV_SearchFrame,textvariable=self.var_SVsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
-        self.SVcmb_search["values"]=("Select","first_name","last_name","username","acct_status")
+        self.SVcmb_search["values"]=("Select","first_name","last_name","score","month")
         self.SVcmb_search.place(x=15,y=2,width=180)
         self.SVcmb_search.current(0)
 
@@ -853,18 +853,15 @@ class AdminDashboard(tk.Frame):
 
         imgSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageSearch=ImageTk.PhotoImage(imgSearch)
-        btn_search=tk.Button(SV_SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        btn_search=tk.Button(SV_SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SV_Search)
         btn_search.place(x=465)
 
-        # btn_showHistory=tk.Button(SV_SearchFrame,text="Show All",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.AcctShowAll)
-        # btn_showHistory.place(x=510,width=150)
+        btn_showHistory=tk.Button(SV_SearchFrame,text="Show All",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.SV_showAll)
+        btn_showHistory.place(x=510,width=150)
 
         # =============Bottom Right Frame=============
-        # FeedbackTableFrame=tk.LabelFrame(SV_RightFrame,relief=RIDGE,bd=1,bg="white")
-        # FeedbackTableFrame.place(y=72,width=879,height=604) #608
-
         FeedbackTableFrame=tk.LabelFrame(SV_RightFrame,relief=RIDGE,bd=1,bg="white")
-        FeedbackTableFrame.place(x=20,y=82,width=839,height=574) #608
+        FeedbackTableFrame.place(x=20,y=82,width=839,height=574)
 
         scrollx=tk.Scrollbar(FeedbackTableFrame,orient=HORIZONTAL)
         scrollx.pack(side=BOTTOM,fill=X)
@@ -1398,6 +1395,73 @@ class AdminDashboard(tk.Frame):
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
     
+    def SV_Search(self):
+        try:
+            if self.var_SVsearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_SVsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            elif self.var_SVsearchby.get()=="score" and self.var_SVsearchtxt.get().isnumeric()==False:
+                messagebox.showerror("Error","Input needs to be number")
+            elif self.var_SVsearchby.get()=="score" and self.var_SVsearchtxt.get().isnumeric()==True:
+                score = "performance_score"
+                FBoption=(score,self.var_SVsearchtxt.get())
+                rows = FeedbackDB().getFBbyOption(FBoption)
+                if len(rows)!=0:
+                    self.FeedbackTable.delete(*self.FeedbackTable.get_children())
+                    for row in rows:
+                        self.FeedbackTable.insert("",END,values=row)
+                    self.SV_ClearSearch()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.SV_ClearSearch()
+            elif self.var_SVsearchby.get()=="month" and self.var_SVsearchtxt.get().isnumeric()==False:
+                messagebox.showerror("Error","Input needs to be number")
+            elif self.var_SVsearchby.get()=="month" and self.var_SVsearchtxt.get().isnumeric()==True:
+                FBmonth=(self.var_SVsearchtxt.get())
+                rows = FeedbackDB().getFBbyMonth(FBmonth)
+                if len(rows)!=0:
+                    self.FeedbackTable.delete(*self.FeedbackTable.get_children())
+                    for row in rows:
+                        self.FeedbackTable.insert("",END,values=row)
+                    self.SV_ClearSearch()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.SV_ClearSearch()
+            else:
+                FBoption=(self.var_SVsearchby.get(),self.var_SVsearchtxt.get())
+                rows = FeedbackDB().getFBbyOption(FBoption)
+                if len(rows)!=0:
+                    self.FeedbackTable.delete(*self.FeedbackTable.get_children())
+                    for row in rows:
+                        self.FeedbackTable.insert("",END,values=row)
+                    self.SV_ClearSearch()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.SV_ClearSearch()
+        except Exception as e:
+            messagebox.showerror("Error",f"Error due to: {str(e)}")
+            print(f"Something went wrong {e}.")
+
+    def SV_ClearSearch(self):
+        self.SVcmb_search.current(0)
+        self.var_SVsearchtxt.set("")
+
+    def SV_showAll(self):
+        try:
+            rows = FeedbackDB().showAllFB()
+            if len(rows)!=0:
+                    self.FeedbackTable.delete(*self.FeedbackTable.get_children())
+                    for row in rows:
+                        self.FeedbackTable.insert("",END,values=row)
+                    self.SV_ClearSearch()
+            else:
+                messagebox.showerror("Error","No record found.")
+                self.SV_ClearSearch()
+        except Exception as e:
+            messagebox.showerror("Error",f"Error due to: {str(e)}")
+            print(f"Something went wrong {e}.")
+
     # Customer Helper Function
     def CustomerAddOrUpdate(self):
         try:

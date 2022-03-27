@@ -41,6 +41,35 @@ class FeedbackDB:
         self.cursor.execute("SET SQL_SAFE_UPDATES = 1;")              
 
         self.conn.commit()
+
+    def getFBbyOption(self, FBoption):
+        self.cursor.execute("SELECT feedback_id, concat(first_name,' ',last_name) as Name, performance_score, description, date_format(dateFB, '%b %d, %Y %h:%i:%s %p') as Date, a.active \
+                            FROM employee e \
+                            INNER JOIN feedback a \
+                                ON e.employee_id = a.employee_id \
+                            WHERE "+FBoption[0]+" LIKE '%"+FBoption[1]+"%' and a.active =1 \
+                            order by Name ASC;")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def getFBbyMonth(self, FBmonth):
+        self.cursor.execute("SELECT feedback_id, concat(first_name,' ',last_name) as Name, performance_score, description, date_format(dateFB, '%b %d, %Y %h:%i:%s %p') as Date, a.active \
+                            FROM employee e \
+                            INNER JOIN feedback a \
+                                ON e.employee_id = a.employee_id \
+                            WHERE month(dateFB) = "+FBmonth+" and a.active =1 \
+                            order by Name ASC;")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def showAllFB(self):
+        self.cursor.execute("SELECT feedback_id, concat(first_name,' ',last_name) as Name, performance_score, description, date_format(dateFB, '%b %d, %Y %h:%i:%s %p') as Date, a.active \
+                            FROM employee e \
+                            INNER JOIN feedback a  \
+                                ON e.employee_id = a.employee_id \
+                            order by Name ASC;")
+        rows = self.cursor.fetchall()
+        return rows
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
