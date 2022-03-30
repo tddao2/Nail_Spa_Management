@@ -8,8 +8,8 @@ class FeedbackDB:
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     def AddFB(self,data):
-        self.cursor.execute("INSERT INTO feedback(employee_id,performance_score,description,dateFB) values(%s,%s,%s,%s)",
-                            (data[0],data[1],data[2],data[3]))
+        self.cursor.execute("INSERT INTO feedback(employee_id,performance_score,description) values(%s,%s,%s)",
+                            (data[0],data[1],data[2]))
         self.conn.commit()
 
     def getAllFB(self):
@@ -67,6 +67,7 @@ class FeedbackDB:
                             FROM employee e \
                             INNER JOIN feedback a  \
                                 ON e.employee_id = a.employee_id \
+                            WHERE a.active = 0 \
                             order by Name ASC;")
         rows = self.cursor.fetchall()
         return rows

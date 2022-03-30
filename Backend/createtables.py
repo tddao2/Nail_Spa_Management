@@ -73,7 +73,7 @@ class CreateTables:
             "  `employee_id` int NOT NULL,"
             "  `performance_score` int NOT NULL,"
             "  `description` varchar(500),"
-            "  `dateFB` datetime NOT NULL,"
+            "  `dateFB` datetime DEFAULT CURRENT_TIMESTAMP,"
             "  `active` BIT NOT NULL DEFAULT 1,"
             "  PRIMARY KEY (`feedback_id`),"
             "  CONSTRAINT `FK_feedback_employee_id` FOREIGN KEY (`employee_id`) "

@@ -750,20 +750,20 @@ class AdminDashboard(tk.Frame):
 
         self.var_SV_id=tk.StringVar()
         self.var_month=tk.StringVar()
-        
+        self.var_SV_Emp=tk.StringVar()
         # ==========================================================Left Frame=============================================================
         
         # =============Top Left Frame=============
         SVLeftTopFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
         SVLeftTopFrame.place(x=0,y=0,width=370,height=389) # height = 689
 
-        lblSVId=tk.Label(SVLeftTopFrame,text="STT",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
-        lblSVId.place(x=15,y=20)
+        lblSV_Emp=tk.Label(SVLeftTopFrame,text="Employee",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblSV_Emp.place(x=15,y=20)
 
-        txtSVId=ttk.Entry(SVLeftTopFrame,textvariable=self.var_SV_id,font=("times new roman",18),state=DISABLED) # ,state=DISABLED
-        txtSVId.place(x=140,y=20,width=200)
+        txtSV_Emp=ttk.Entry(SVLeftTopFrame,textvariable=self.var_SV_Emp,font=("times new roman",18),state=DISABLED)
+        txtSV_Emp.place(x=140,y=20,width=200)
 
-        lblSV=tk.Label(SVLeftTopFrame,text="First Name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblSV=tk.Label(SVLeftTopFrame,text="Feedback",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblSV.place(x=15,y=80)
 
         self.txtSV=tk.Text(SVLeftTopFrame,font=("times new roman",12))
@@ -771,8 +771,8 @@ class AdminDashboard(tk.Frame):
 
         imgSVDelete=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageSVDelete=ImageTk.PhotoImage(imgSVDelete)
-        SVDeletebtn=tk.Button(SVLeftTopFrame, image=self.photoimageSVDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SVDelete)
-        SVDeletebtn.place(x=100,y=290)
+        self.SVDeletebtn=tk.Button(SVLeftTopFrame, image=self.photoimageSVDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SVDelete)
+        self.SVDeletebtn.place(x=100,y=290)
 
         imgSVRefresh=Image.open("images/Refresh.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageSVRefresh=ImageTk.PhotoImage(imgSVRefresh)
@@ -783,10 +783,8 @@ class AdminDashboard(tk.Frame):
         SVLeftBottomFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Remove",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
         SVLeftBottomFrame.place(y=389,width=370,height=300) 
 
-        
-
-        lblSV_Search=tk.Label(SVLeftBottomFrame,text="Delete by",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
-        lblSV_Search.place(x=15,y=20)
+        self.lblSV_Search=tk.Label(SVLeftBottomFrame,text="Delete by",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+        self.lblSV_Search.place(x=15,y=20)
 
         self.SVcmb_Delete=ttk.Combobox(SVLeftBottomFrame,state="readonly",justify=CENTER,font=("times new roman",15))
         self.SVcmb_Delete["values"]=("Select","Monthly","Period")
@@ -856,7 +854,7 @@ class AdminDashboard(tk.Frame):
         btn_search=tk.Button(SV_SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SV_Search)
         btn_search.place(x=465)
 
-        btn_showHistory=tk.Button(SV_SearchFrame,text="Show All",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.SV_showAll)
+        btn_showHistory=tk.Button(SV_SearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.SV_showAll)
         btn_showHistory.place(x=510,width=150)
 
         # =============Bottom Right Frame=============
@@ -1292,7 +1290,10 @@ class AdminDashboard(tk.Frame):
         self.FeedbackTable.delete(*self.FeedbackTable.get_children())
         try:
             if not FeedbackDB().getAllFB():
-                messagebox.showerror("Error", "No records found.")
+                self.Hide_Delete_Options()
+                messagebox.showerror("Error", "No Feedback records available!!!.")
+
+
             else:
                 for row in FeedbackDB().getAllFB():
                     self.FeedbackTable.insert("",END,values=row)
@@ -1307,16 +1308,50 @@ class AdminDashboard(tk.Frame):
 
         try:
             self.var_SV_id.set(row[0])
+            self.var_SV_Emp.set(row[1])
+            self.txtSV.config(state=NORMAL)
             self.txtSV.delete("1.0",END)
-            self.txtSV.insert(END,row[3]) 
+            self.txtSV.insert(END,row[3])
+            self.txtSV.config(state=DISABLED) 
         except:
             pass
 
     def SVClear(self):
-        self.var_SV_id.set("")
-        self.txtSV.delete("1.0",END)
+        self.Show_Delete_Options()
 
+        self.var_SV_Emp.set("")
+        self.txtSV.config(state=NORMAL)
+        self.txtSV.delete("1.0",END)
+        self.txtSV.config(state=DISABLED) 
+
+        self.HideDeleteOptions()
+        self.SV_ClearSearch()
         self.SV_show()
+
+    def Hide_Delete_Options(self):
+        self.SVDeletebtn.place_forget()
+        self.lblSV_Search.place_forget()
+        self.SVcmb_Delete.place_forget()
+        self.lblMonthly.place_forget()
+        self.SVcmb_Monthly.place_forget()
+        self.lblFrom.place_forget()
+        self.txtFrom.place_forget()
+        self.lblTo.place_forget()
+        self.txtTo.place_forget()
+
+        self.SVRemovebtn.place_forget()
+        self.SVRemove1btn.place_forget()
+
+    def Show_Delete_Options(self):
+        self.SVDeletebtn.place(x=100,y=290)
+        self.lblSV_Search.place(x=15,y=20)
+        self.SVcmb_Delete.place(x=140,y=20,width=200)
+
+    def FeedbackDetails(self):
+        self.var_SV_Emp.set("")
+        self.txtSV.config(state=NORMAL)
+        self.txtSV.delete("1.0",END)
+        self.txtSV.config(state=DISABLED)
 
     def SVDelete(self):
         try:
@@ -1353,6 +1388,7 @@ class AdminDashboard(tk.Frame):
             self.SVRemove1btn.place(x=100,y=190)
 
     def HideDeleteOptions(self):
+
         self.SVcmb_Monthly.set("")
         self.txtFrom.delete(0,"end")
         self.txtTo.delete(0,"end")
@@ -1372,10 +1408,16 @@ class AdminDashboard(tk.Frame):
             if self.var_month.get() == "":
                 messagebox.showerror("Error","Month input is required.")
             else:
-                month=self.var_month.get()
-                FeedbackDB().deleteMonthly(month)
-                self.HideDeleteOptions()
-                self.SV_show()
+                op=messagebox.askyesno("Confirm","Do you really want to delete?")
+                if op==True:
+                    month=self.var_month.get()
+                    FeedbackDB().deleteMonthly(month)
+                    messagebox.showinfo("Success","Delete Successfully!")
+                    self.HideDeleteOptions()
+                    self.SVcmb_Delete.current(0)
+                    self.SVClear()
+                else:
+                    return
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
@@ -1386,15 +1428,23 @@ class AdminDashboard(tk.Frame):
                 messagebox.showerror("Error","From input is required.")
             elif self.txtTo.get_date() == "":
                 messagebox.showerror("Error","To input is required.")
+            elif self.txtFrom.get_date() > self.txtTo.get_date():
+                messagebox.showerror("Error","Date From must be less than or equal Date To!!!")
             else:
-                period=(self.txtFrom.get_date(),self.txtTo.get_date())
-                FeedbackDB().deletePeriod(period)
-                self.HideDeleteOptions()
-                self.SV_show()
+                op=messagebox.askyesno("Confirm","Do you really want to delete?")
+                if op==True:
+                    period=(self.txtFrom.get_date(),self.txtTo.get_date())
+                    FeedbackDB().deletePeriod(period)
+                    messagebox.showinfo("Success","Delete Successfully!")
+                    self.HideDeleteOptions()
+                    self.SVcmb_Delete.current(0)
+                    self.SVClear()
+                else:
+                    return
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
-    
+
     def SV_Search(self):
         try:
             if self.var_SVsearchby.get()=="Select":
@@ -1412,9 +1462,13 @@ class AdminDashboard(tk.Frame):
                     for row in rows:
                         self.FeedbackTable.insert("",END,values=row)
                     self.SV_ClearSearch()
+                    self.FeedbackDetails()
+                    self.HideDeleteOptions()
                 else:
                     messagebox.showerror("Error","No record found.")
                     self.SV_ClearSearch()
+                    self.FeedbackDetails()
+                    self.HideDeleteOptions()
             elif self.var_SVsearchby.get()=="month" and self.var_SVsearchtxt.get().isnumeric()==False:
                 messagebox.showerror("Error","Input needs to be number")
             elif self.var_SVsearchby.get()=="month" and self.var_SVsearchtxt.get().isnumeric()==True:
@@ -1425,9 +1479,13 @@ class AdminDashboard(tk.Frame):
                     for row in rows:
                         self.FeedbackTable.insert("",END,values=row)
                     self.SV_ClearSearch()
+                    self.FeedbackDetails()
+                    self.HideDeleteOptions()
                 else:
                     messagebox.showerror("Error","No record found.")
                     self.SV_ClearSearch()
+                    self.FeedbackDetails()
+                    self.HideDeleteOptions()
             else:
                 FBoption=(self.var_SVsearchby.get(),self.var_SVsearchtxt.get())
                 rows = FeedbackDB().getFBbyOption(FBoption)
@@ -1446,17 +1504,19 @@ class AdminDashboard(tk.Frame):
     def SV_ClearSearch(self):
         self.SVcmb_search.current(0)
         self.var_SVsearchtxt.set("")
+        self.SVcmb_Delete.current(0)
 
     def SV_showAll(self):
         try:
             rows = FeedbackDB().showAllFB()
             if len(rows)!=0:
-                    self.FeedbackTable.delete(*self.FeedbackTable.get_children())
-                    for row in rows:
-                        self.FeedbackTable.insert("",END,values=row)
-                    self.SV_ClearSearch()
+                self.FeedbackTable.delete(*self.FeedbackTable.get_children())
+                for row in rows:
+                    self.FeedbackTable.insert("",END,values=row)
+                self.SV_ClearSearch()
+                self.Hide_Delete_Options()
             else:
-                messagebox.showerror("Error","No record found.")
+                messagebox.showerror("Error","No historial records available!!!.")
                 self.SV_ClearSearch()
         except Exception as e:
             messagebox.showerror("Error",f"Error due to: {str(e)}")
@@ -1849,7 +1909,7 @@ class Feedback(tk.Frame):
             elif self.scale.get()==0:
                 op=messagebox.askyesno("Confirm","Are you sure to evaluate 0?")
                 if op==True:
-                    data=(self.employeeId[0],self.scale.get(),self.descriptionEntry.get("1.0",'end-1c'),datetime.datetime.now())
+                    data=(self.employeeId[0],self.scale.get(),self.descriptionEntry.get("1.0",'end-1c'))
                     FeedbackDB().AddFB(data)
                     self.FB_clear()
                     self.thankyou.pack()
@@ -1857,7 +1917,7 @@ class Feedback(tk.Frame):
                 else:
                     return
             else:
-                data=(self.employeeId[0],self.scale.get(),self.descriptionEntry.get("1.0",'end-1c'),datetime.datetime.now())
+                data=(self.employeeId[0],self.scale.get(),self.descriptionEntry.get("1.0",'end-1c'))
                 FeedbackDB().AddFB(data)
                 self.FB_clear()
                 self.thankyou.pack()
