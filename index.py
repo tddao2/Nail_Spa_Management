@@ -3106,8 +3106,13 @@ class EmployeeDashboard(tk.Frame):
                     self.Selected_password_Id.append(self.retrieved_password_Id[index])
                     
                     Customer_name = HumanName(self.cname.get())
+                    last = ""
+                    if len(Customer_name.middle) == 0:
+                        last = Customer_name.last
+                    else:
+                        last = Customer_name.middle +" "+ Customer_name.last
+
                     first = Customer_name.first
-                    last = Customer_name.last
                     phone = self.cphn.get()
                     email = self.c_email.get()
 
