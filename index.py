@@ -2181,7 +2181,6 @@ class EmployeeDashboard(tk.Frame):
             SPW_btn1.grid_forget()
             SPW_btn2.grid(row=0,column=2,pady=4)
             SPW.set(self.ServicePrice[0])
-            print(f"SPW = {SPW.get()}")
 
         global BackSPW_btn2    
 
@@ -2189,7 +2188,6 @@ class EmployeeDashboard(tk.Frame):
             SPW_btn2.grid_forget()
             SPW_btn1.grid(row=0,column=1,pady=4)
             SPW.set(0)
-            print(f"SPW = {SPW.get()}")
       
         imgSPW_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageSPW_btn1=ImageTk.PhotoImage(imgSPW_btn1)
@@ -2209,16 +2207,14 @@ class EmployeeDashboard(tk.Frame):
             sp_btn1.grid_forget()
             sp_btn2.grid(row=1,column=2,pady=4)
             SP.set(self.ServicePrice[1])
-            print(f"SP = {SP.get()}")
-
+            
         global Backsp_btn2    
 
         def Backsp_btn2():
             sp_btn2.grid_forget()
             sp_btn1.grid(row=1,column=1,pady=4)
             SP.set(0)
-            print(f"SP = {SP.get()}")
-
+            
         imgsp_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimagesp_btn1=ImageTk.PhotoImage(imgsp_btn1)
         sp_btn1=tk.Button(self.F2,image=self.photoimagesp_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -2237,7 +2233,6 @@ class EmployeeDashboard(tk.Frame):
             CPFS_btn1.grid_forget()
             CPFS_btn2.grid(row=2,column=2,pady=4)
             SPFS.set(self.ServicePrice[2])
-            print(f"SPFS = {SPFS.get()}")
 
         global BackCPFS_btn2    
 
@@ -2245,7 +2240,6 @@ class EmployeeDashboard(tk.Frame):
             CPFS_btn2.grid_forget()
             CPFS_btn1.grid(row=2,column=1,pady=4)
             SPFS.set(0)
-            print(f"SPFS = {SPFS.get()}")
 
         imgCPFS_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageCPFS_btn1=ImageTk.PhotoImage(imgCPFS_btn1)
@@ -2265,7 +2259,6 @@ class EmployeeDashboard(tk.Frame):
             RA_btn1.grid_forget()
             RA_btn2.grid(row=3,column=2,pady=4)
             RA.set(self.ServicePrice[3])
-            print(f"RA = {RA.get()}")
 
         global BackRA_btn2  
 
@@ -2273,7 +2266,6 @@ class EmployeeDashboard(tk.Frame):
             RA_btn2.grid_forget()
             RA_btn1.grid(row=3,column=1,pady=4)
             RA.set(0)
-            print(f"RA = {RA.get()}")
 
         imgRA_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageRA_btn1=ImageTk.PhotoImage(imgRA_btn1)
@@ -2297,15 +2289,13 @@ class EmployeeDashboard(tk.Frame):
             M_btn1.grid_forget()
             M_btn2.grid(row=0,column=2,pady=3)
             M.set(self.ServicePrice[4])
-            print(f"M = {M.get()}")
-
+            
         global BackM_btn2 
 
         def BackM_btn2():
             M_btn2.grid_forget()
             M_btn1.grid(row=0,column=1,pady=3)
             M.set(0)
-            print(f"M = {M.get()}")
 
         imgM_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageM_btn1=ImageTk.PhotoImage(imgM_btn1)
@@ -2325,7 +2315,6 @@ class EmployeeDashboard(tk.Frame):
             P_btn1.grid_forget()
             P_btn2.grid(row=1,column=2,pady=4)
             P.set(self.ServicePrice[5])
-            print(f"P = {P.get()}")
 
         global BackP_btn2
 
@@ -2333,7 +2322,6 @@ class EmployeeDashboard(tk.Frame):
             P_btn2.grid_forget()
             P_btn1.grid(row=1,column=1,pady=4)
             P.set(0)
-            print(f"P = {P.get()}")
 
         imgP_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageP_btn1=ImageTk.PhotoImage(imgP_btn1)
@@ -2353,7 +2341,6 @@ class EmployeeDashboard(tk.Frame):
             MP_btn1.grid_forget()
             MP_btn2.grid(row=2,column=2,pady=4) 
             MP.set(self.ServicePrice[6])
-            print(f"MP = {MP.get()}")
 
         global BackMP_btn2
 
@@ -2361,7 +2348,6 @@ class EmployeeDashboard(tk.Frame):
             MP_btn2.grid_forget()
             MP_btn1.grid(row=2,column=1,pady=4)
             MP.set(0)
-            print(f"MP = {MP.get()}")
 
         imgMP_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageMP_btn1=ImageTk.PhotoImage(imgMP_btn1)
@@ -2381,7 +2367,6 @@ class EmployeeDashboard(tk.Frame):
             R_btn1.grid_forget()
             R_btn2.grid(row=3,column=2,pady=4)
             R.set(self.ServicePrice[7])
-            print(f"R = {R.get()}")
 
         global BackR_btn2
 
@@ -2389,7 +2374,6 @@ class EmployeeDashboard(tk.Frame):
             R_btn2.grid_forget()
             R_btn1.grid(row=3,column=1,pady=4)
             R.set(0)
-            print(f"R = {R.get()}")
 
         imgR_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageR_btn1=ImageTk.PhotoImage(imgR_btn1)
@@ -2409,7 +2393,6 @@ class EmployeeDashboard(tk.Frame):
             PC_btn1.grid_forget()
             PC_btn2.grid(row=4,column=2,pady=4) 
             PC.set(self.ServicePrice[8])
-            print(f"PC = {PC.get()}")
 
         global BackPC_btn2
 
@@ -2417,7 +2400,6 @@ class EmployeeDashboard(tk.Frame):
             PC_btn2.grid_forget()
             PC_btn1.grid(row=4,column=1,pady=4)
             PC.set(0)
-            print(f"PC = {PC.get()}")
 
         imgPC_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimagePC_btn1=ImageTk.PhotoImage(imgPC_btn1)
@@ -2437,7 +2419,6 @@ class EmployeeDashboard(tk.Frame):
             EFA_btn1.grid_forget()
             EFA_btn2.grid(row=5,column=2,pady=4) 
             EFA.set(self.ServicePrice[9])
-            print(f"EFA = {EFA.get()}")
 
         global BackEFA_btn2
 
@@ -2445,7 +2426,6 @@ class EmployeeDashboard(tk.Frame):
             EFA_btn2.grid_forget()
             EFA_btn1.grid(row=5,column=1,pady=4)
             EFA.set(0)
-            print(f"EFA = {EFA.get()}")
 
         imgEFA_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageEFA_btn1=ImageTk.PhotoImage(imgEFA_btn1)
@@ -2465,7 +2445,6 @@ class EmployeeDashboard(tk.Frame):
             D_btn1.grid_forget()
             D_btn2.grid(row=6,column=2,pady=4)
             D.set(self.ServicePrice[10])
-            print(f"D = {D.get()}")
 
         global BackD_btn2
 
@@ -2473,7 +2452,6 @@ class EmployeeDashboard(tk.Frame):
             D_btn2.grid_forget()
             D_btn1.grid(row=6,column=1,pady=4)
             D.set(0)
-            print(f"D = {D.get()}")
 
         imgD_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageD_btn1=ImageTk.PhotoImage(imgD_btn1)
@@ -2493,7 +2471,6 @@ class EmployeeDashboard(tk.Frame):
             CD_btn1.grid_forget()
             CD_btn2.grid(row=7,column=2,pady=4)
             CD.set(self.ServicePrice[11])
-            print(f"CD = {CD.get()}")
 
         global BackCD_btn2
 
@@ -2501,7 +2478,6 @@ class EmployeeDashboard(tk.Frame):
             CD_btn2.grid_forget()
             CD_btn1.grid(row=7,column=1,pady=4)
             CD.set(0)
-            print(f"CD = {CD.get()}")
 
         imgCD_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageCD_btn1=ImageTk.PhotoImage(imgCD_btn1)
@@ -2521,7 +2497,6 @@ class EmployeeDashboard(tk.Frame):
             BC__btn1.grid_forget()
             BC__btn2.grid(row=8,column=2,pady=4)
             BC.set(self.ServicePrice[12])
-            print(f"BC = {BC.get()}")
 
         global BackBC__btn2
 
@@ -2529,7 +2504,6 @@ class EmployeeDashboard(tk.Frame):
             BC__btn2.grid_forget()
             BC__btn1.grid(row=8,column=1,pady=4)
             BC.set(0)
-            print(f"BC = {BC.get()}")
 
         imgBC__btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageBC__btn1=ImageTk.PhotoImage(imgBC__btn1)
@@ -2549,7 +2523,6 @@ class EmployeeDashboard(tk.Frame):
             TN__btn1.grid_forget()
             TN__btn2.grid(row=9,column=2,pady=4)
             TN.set(self.ServicePrice[13])
-            print(f"TN = {TN.get()}")
 
         global BackTN__btn2
 
@@ -2557,7 +2530,6 @@ class EmployeeDashboard(tk.Frame):
             TN__btn2.grid_forget()
             TN__btn1.grid(row=9,column=1,pady=4)
             TN.set(0)
-            print(f"TN = {TN.get()}")
 
         imgTN__btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageTN__btn1=ImageTk.PhotoImage(imgTN__btn1)
@@ -2587,7 +2559,6 @@ class EmployeeDashboard(tk.Frame):
             E_btn1.grid_forget()
             E_btn2.grid(row=0,column=2,pady=4)
             E.set(self.ServicePrice[14])
-            print(f"E = {E.get()}")
 
         global BackE_btn2
 
@@ -2595,7 +2566,6 @@ class EmployeeDashboard(tk.Frame):
             E_btn2.grid_forget()
             E_btn1.grid(row=0,column=1,pady=4)
             E.set(0)
-            print(f"E = {E.get()}")
 
         imgE_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageE_btn1=ImageTk.PhotoImage(imgE_btn1)
@@ -2615,15 +2585,13 @@ class EmployeeDashboard(tk.Frame):
             UL_btn1.grid_forget()
             UL_btn2.grid(row=1,column=2,pady=4)
             UL.set(self.ServicePrice[15])
-            print(f"UL = {UL.get()}")
-
+            
         global BackUL_btn2
 
         def BackUL_btn2():
             UL_btn2.grid_forget()
             UL_btn1.grid(row=1,column=1,pady=4)
             UL.set(0)
-            print(f"UL = {UL.get()}")
 
         imgUL_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageUL_btn1=ImageTk.PhotoImage(imgUL_btn1)
@@ -2643,7 +2611,6 @@ class EmployeeDashboard(tk.Frame):
             C_btn1.grid_forget()
             C_btn2.grid(row=2,column=2,pady=4)
             C.set(self.ServicePrice[16])
-            print(f"C = {C.get()}")
 
         global BackC_btn2
 
@@ -2651,7 +2618,6 @@ class EmployeeDashboard(tk.Frame):
             C_btn2.grid_forget()
             C_btn1.grid(row=2,column=1,pady=4)
             C.set(0)
-            print(f"C = {C.get()}")
 
         imgC_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageC_btn1=ImageTk.PhotoImage(imgC_btn1)
@@ -2671,7 +2637,6 @@ class EmployeeDashboard(tk.Frame):
             HL_btn1.grid_forget()
             HL_btn2.grid(row=3,column=2,pady=4)
             HL.set(self.ServicePrice[17])
-            print(f"HL = {HL.get()}")
 
         global BackHL_btn2
 
@@ -2679,7 +2644,6 @@ class EmployeeDashboard(tk.Frame):
             HL_btn2.grid_forget()
             HL_btn1.grid(row=3,column=1,pady=4)
             HL.set(0)
-            print(f"HL = {HL.get()}")
 
         imgHL_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageHL_btn1=ImageTk.PhotoImage(imgHL_btn1)
@@ -2699,7 +2663,6 @@ class EmployeeDashboard(tk.Frame):
             FL_btn1.grid_forget()
             FL_btn2.grid(row=4,column=2,pady=4)
             FL.set(self.ServicePrice[18])
-            print(f"FL = {FL.get()}")
 
         global BackFL_btn2
 
@@ -2707,7 +2670,6 @@ class EmployeeDashboard(tk.Frame):
             FL_btn2.grid_forget()
             FL_btn1.grid(row=4,column=1,pady=4)
             FL.set(0)
-            print(f"FL = {FL.get()}")
 
         imgFL_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageFL_btn1=ImageTk.PhotoImage(imgFL_btn1)
@@ -2727,7 +2689,6 @@ class EmployeeDashboard(tk.Frame):
             B_btn1.grid_forget()
             B_btn2.grid(row=5,column=2,pady=4)
             B.set(self.ServicePrice[19])
-            print(f"B = {B.get()}")
 
         global BackB_btn2
 
@@ -2735,7 +2696,6 @@ class EmployeeDashboard(tk.Frame):
             B_btn2.grid_forget()
             B_btn1.grid(row=5,column=1,pady=4)
             B.set(0)
-            print(f"B = {B.get()}")
 
         imgB_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageB_btn1=ImageTk.PhotoImage(imgB_btn1)
@@ -2755,7 +2715,6 @@ class EmployeeDashboard(tk.Frame):
             U_btn1.grid_forget()
             U_btn2.grid(row=6,column=2,pady=4)
             U.set(self.ServicePrice[20])
-            print(f"U = {U.get()}")
 
         global BackU_btn2
 
@@ -2763,7 +2722,6 @@ class EmployeeDashboard(tk.Frame):
             U_btn2.grid_forget()
             U_btn1.grid(row=6,column=1,pady=4)
             U.set(0)
-            print(f"U = {U.get()}")
 
         imgU_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageU_btn1=ImageTk.PhotoImage(imgU_btn1)
@@ -2783,7 +2741,6 @@ class EmployeeDashboard(tk.Frame):
             Face_btn1.grid_forget()
             Face_btn2.grid(row=7,column=2,pady=4)
             Face.set(self.ServicePrice[21])
-            print(f"Face = {Face.get()}")
 
         global BackFace_btn2
 
@@ -2791,7 +2748,6 @@ class EmployeeDashboard(tk.Frame):
             Face_btn2.grid_forget()
             Face_btn1.grid(row=7,column=1,pady=4)
             Face.set(0)
-            print(f"Face = {Face.get()}")
 
         imgFace_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageFace_btn1=ImageTk.PhotoImage(imgFace_btn1)
@@ -2811,7 +2767,6 @@ class EmployeeDashboard(tk.Frame):
             Facial_btn1.grid_forget()
             Facial_btn2.grid(row=8,column=2,pady=4)
             Facial.set(self.ServicePrice[22])
-            print(f"Facial = {Facial.get()}")
 
         global BackFacial_btn2
 
@@ -2819,7 +2774,6 @@ class EmployeeDashboard(tk.Frame):
             Facial_btn2.grid_forget()
             Facial_btn1.grid(row=8,column=1,pady=4)
             Facial.set(0)
-            print(f"Facial = {Facial.get()}")
 
         imgFacial_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageFacial_btn1=ImageTk.PhotoImage(imgFacial_btn1)
@@ -2839,7 +2793,6 @@ class EmployeeDashboard(tk.Frame):
             EP_btn1.grid_forget()
             EP_btn2.grid(row=9,column=2,pady=4)
             EP.set(self.ServicePrice[23])
-            print(f"EP = {EP.get()}")
 
         global BackEP_btn2
 
@@ -2847,7 +2800,6 @@ class EmployeeDashboard(tk.Frame):
             EP_btn2.grid_forget()
             EP_btn1.grid(row=9,column=1,pady=4)
             EP.set(0)
-            print(f"EP = {EP.get()}")
 
         imgEP_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageEP_btn1=ImageTk.PhotoImage(imgEP_btn1)
@@ -2867,7 +2819,6 @@ class EmployeeDashboard(tk.Frame):
             Duralash_btn1.grid_forget()
             Duralash_btn2.grid(row=10,column=2,pady=4)
             Duralash.set(self.ServicePrice[24])
-            print(f"Duralash = {Duralash.get()}")
 
         global BackDuralash_btn2
 
@@ -2875,7 +2826,6 @@ class EmployeeDashboard(tk.Frame):
             Duralash_btn2.grid_forget()
             Duralash_btn1.grid(row=10,column=1,pady=4)
             Duralash.set(0)
-            print(f"Duralash = {Duralash.get()}")
 
         imgDuralash_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageDuralash_btn1=ImageTk.PhotoImage(imgDuralash_btn1)
@@ -2895,7 +2845,6 @@ class EmployeeDashboard(tk.Frame):
             MEE_btn1.grid_forget()
             MEE_btn2.grid(row=11,column=2,pady=4)
             MEE.set(self.ServicePrice[25])
-            print(f"MEE = {MEE.get()}")
 
         global BackMEE_btn2
 
@@ -2903,7 +2852,6 @@ class EmployeeDashboard(tk.Frame):
             MEE_btn2.grid_forget()
             MEE_btn1.grid(row=11,column=1,pady=4)
             MEE.set(0)
-            print(f"MEE = {MEE.get()}")
 
         imgMEE_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageMEE_btn1=ImageTk.PhotoImage(imgMEE_btn1)
@@ -3118,7 +3066,6 @@ class EmployeeDashboard(tk.Frame):
 
         for index in self.Selected_Services_Id:
             self.Selected_Services_name.append(self.ServiceName[index-1])
-            print(self.Selected_Services_name)
 
         if  self.ServiceName[0] == "N/A":
             messagebox.showerror("Error","No services available!!!")
@@ -3157,8 +3104,6 @@ class EmployeeDashboard(tk.Frame):
                 
                 if bcrypt.checkpw(self.Retrievedpw.get().encode('utf8'), self.retrieved_password[index].encode('utf8')):
                     self.Selected_password_Id.append(self.retrieved_password_Id[index])
-                    print(self.Selected_password_Id[0])
-                    print("Correct")
                     
                     Customer_name = HumanName(self.cname.get())
                     first = Customer_name.first
@@ -3174,7 +3119,6 @@ class EmployeeDashboard(tk.Frame):
                     SerId = self.Selected_Services_Id
 
                     if not CustomerDB().fetchCusId(first, last):
-                        print("No matched customer.")
                         CustomerId = []
                         InvoiceId = []
                         
