@@ -9,8 +9,11 @@ from PIL import Image, ImageTk
 import bcrypt
 import phonenumbers
 import re
+from itertools import repeat
+from nameparser import HumanName
 
 from Backend.createtables import CreateTables
+from Additional_features import myentry
 
 from Backend.Database.account import AccountDB
 from Backend.Database.account_status import AccountStatusDB
@@ -60,7 +63,7 @@ class App(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         # Display the current page
-        self.show_frame("AdminDashboard")
+        self.show_frame("EmployeeDashboard")
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
@@ -1822,13 +1825,6 @@ class Reset(tk.Frame):
         self.RS_password.set("")
         self.RS_CFpassword.set("")
 
-class EmployeeDashboard(tk.Frame):
-
-    def __init__(self, parent, controller):
-        tk.Frame.__init__(self, parent)
-        self.controller = controller
-        self.config(bg="yellow")
-
 # Feedback Window
 class Feedback(tk.Frame):
 
@@ -1931,6 +1927,1331 @@ class Feedback(tk.Frame):
         self.descriptionEntry.delete("1.0",END)
         self.employeeName.set("")
         self.employeeId.clear()
+
+class EmployeeDashboard(tk.Frame):
+
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        self.controller = controller
+        
+        self.Start()
+
+    def Start(self):
+
+        #==========Set variables=============
+        global SPW
+        global SP
+        global SPFS
+        global RA
+        global M
+        global P
+        global MP
+        global R
+        global PC
+        global EFA
+        global D
+        global CD
+        global BC
+        global TN
+
+        global E
+        global UL
+        global C
+        global HL
+        global FL
+        global B
+        global U
+        global Face
+        global Facial
+        global EP
+        global Duralash
+        global MEE
+
+
+        SPW=tk.DoubleVar()
+        SP=tk.DoubleVar()
+        SPFS=tk.DoubleVar()
+        RA=tk.DoubleVar()
+
+        M=tk.DoubleVar()
+        P=tk.DoubleVar()
+        MP=tk.DoubleVar()
+        R=tk.DoubleVar()
+        PC=tk.DoubleVar()
+        EFA=tk.DoubleVar()
+        D=tk.DoubleVar()
+        CD=tk.DoubleVar()
+        BC=tk.DoubleVar()
+        TN=tk.DoubleVar()
+
+        E=tk.DoubleVar()
+        UL=tk.DoubleVar()
+        C=tk.DoubleVar()
+        HL=tk.DoubleVar()
+        FL=tk.DoubleVar()
+        B=tk.DoubleVar()
+        U=tk.DoubleVar()
+        Face=tk.DoubleVar()
+        Facial=tk.DoubleVar()
+        EP=tk.DoubleVar()
+        Duralash=tk.DoubleVar()
+        MEE=tk.DoubleVar()
+
+        self.cname=tk.StringVar()
+        self.cphn=tk.StringVar()
+        self.c_email=tk.StringVar()
+
+        self.totalMoney=tk.DoubleVar()
+        self.totalTip=tk.DoubleVar()
+        self.totalDiscount=tk.IntVar()
+
+        self.Retrievedpw = tk.StringVar()
+
+
+        SPW.set(0)
+        SP.set(0)
+        SPFS.set(0)
+        RA.set(0)
+
+        M.set(0)
+        P.set(0)
+        MP.set(0)
+        R.set(0)
+        PC.set(0)
+        EFA.set(0)
+        D.set(0)
+        CD.set(0)
+        BC.set(0)
+        TN.set(0)
+
+        E.set(0)
+        UL.set(0)
+        C.set(0)
+        HL.set(0)
+        FL.set(0)
+        B.set(0)
+        U.set(0)
+        Face.set(0)
+        Facial.set(0)
+        EP.set(0)
+        Duralash.set(0)
+        MEE.set(0)
+
+        
+        self.ServiceId = []
+        
+        self.ServicePrice = []
+        self.ServiceName = []
+        self.ServiceType = []
+
+        self.Selected_Services = []
+        self.Selected_Services_Id = []
+        self.Selected_Services_name = []
+
+        self.retrieved_customers = []
+        self.retrieved_customer_Id = []
+
+
+        self.Selected_customer_Id = []
+        
+        self.retrieved_password = []
+        self.retrieved_password_Id = []
+
+        self.Selected_password_Id = []
+
+        self.Service_id_price_name()
+        self.Service_Type()
+        self.get_All_Users()
+        
+        
+        global SPW_btn1
+        global SPW_btn2
+        global sp_btn1
+        global sp_btn2
+        global CPFS_btn1
+        global CPFS_btn2
+        global RA_btn1
+        global RA_btn2
+        global M_btn1
+        global M_btn2
+        global P_btn1
+        global P_btn2
+        global MP_btn1
+        global MP_btn2
+        global R_btn1
+        global R_btn2
+        global PC_btn1
+        global PC_btn2
+        global EFA_btn1
+        global EFA_btn2
+        global D_btn1
+        global D_btn2
+        global CD_btn1
+        global CD_btn2
+        global BC__btn1
+        global BC__btn2
+        global TN__btn1
+        global TN__btn2
+        global E_btn1
+        global E_btn2
+        global UL_btn1
+        global UL_btn2
+        global C_btn1
+        global C_btn2
+        global HL_btn1
+        global HL_btn2
+        global FL_btn1
+        global FL_btn2
+        global B_btn1
+        global B_btn2
+        global U_btn1
+        global U_btn2
+        global Face_btn1
+        global Face_btn2
+        global Facial_btn1
+        global Facial_btn2
+        global EP_btn1
+        global EP_btn2
+        global Duralash_btn1
+        global Duralash_btn2
+        global MEE_btn1
+        global MEE_btn2
+               
+        
+        #========================Title==============================
+
+        title=tk.Label(self,text="Billing Software",bd="12",relief=GROOVE,bg="#e2479c",fg="white",font=("time new roman",25,"bold"),pady=2)
+        title.pack(fill=X)
+
+        #========================Creating Frame==============================
+        self.BillFrame=tk.Frame(self,relief=RIDGE)
+        self.BillFrame.place(x=40,y=67,width=1310,height=652)
+
+        F1=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text="Customer Details",font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
+        F1.place(relwidth=1)
+
+        lblcname=tk.Label(F1,text="Customer Name",bg="#e2479c",fg="white",font=("time new roman",11,"bold"))
+        lblcname.grid(row=0,column=0,padx=5,pady=5)
+
+        self.txtcname=myentry(F1,textvariable=self.cname,width=15,font="arial 15",bd=3,relief=SUNKEN)
+        self.txtcname.grid(row=0,column=1,pady=5)
+
+        rows = CustomerDB().getAllCustByIdAndFname()
+        cname = []
+        cphn = []
+        c_email = []
+        
+        for i in range(0, len(rows)):
+            cname.append(rows[i][1])
+            cphn.append(rows[i][2])
+            c_email.append(rows[i][3])
+        self.txtcname.set_completion_list(cname)
+
+        lblcphn=tk.Label(F1,text="Phone No.",bg="#e2479c",fg="white",font=("time new roman",11,"bold"))
+        lblcphn.grid(row=0,column=2,padx=5,pady=5)
+
+        self.txtcphn=myentry(F1,textvariable=self.cphn,width=15,font="arial 15",bd=3,relief=SUNKEN)
+        self.txtcphn.grid(row=0,column=3,pady=5,padx=5)
+        self.txtcphn.set_completion_list(cphn)
+
+        lblc_email=tk.Label(F1,text="Email",bg="#e2479c",fg="white",font=("time new roman",11,"bold"))
+        lblc_email.grid(row=0,column=4,padx=5,pady=5)
+
+        self.txtc_email=myentry(F1,textvariable=self.c_email,width=25,font="arial 15",bd=3,relief=SUNKEN)
+        self.txtc_email.grid(row=0,column=5,pady=5,padx=5)
+        self.txtc_email.set_completion_list(c_email)
+
+        lblbill=tk.Label(F1,text="Bill Number",bg="#e2479c",fg="white",font=("time new roman",11,"bold"))
+        lblbill.grid(row=0,column=6,padx=20,pady=10)
+
+        self.txtbill=tk.Entry(F1,width=15,font="arial 15",bd=3,relief=SUNKEN)
+        self.txtbill.grid(row=0,column=7,pady=10)
+
+        self.bill_btn=tk.Button(F1,text="Find",width=5,bd=3,font="arial 11 bold",bg="#a50060",fg="white")
+        self.bill_btn.grid(row=0,column=8,pady=10,padx=5)
+
+        #========================Enhancement Services Set Frame==============================
+        self.F2=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text=self.ServiceType[0],font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
+        self.F2.place(y=100,width=325,height=429)
+   
+        SPW_lbl=tk.Label(self.F2,text=f"{self.ServiceName[0]} (${self.ServicePrice[0]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        SPW_lbl.grid(row=0,column=0,padx=5,pady=4,sticky="w")
+
+        def AddSPW_btn1():
+            SPW_btn1.grid_forget()
+            SPW_btn2.grid(row=0,column=2,pady=4)
+            SPW.set(self.ServicePrice[0])
+            print(f"SPW = {SPW.get()}")
+
+        global BackSPW_btn2    
+
+        def BackSPW_btn2():
+            SPW_btn2.grid_forget()
+            SPW_btn1.grid(row=0,column=1,pady=4)
+            SPW.set(0)
+            print(f"SPW = {SPW.get()}")
+      
+        imgSPW_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageSPW_btn1=ImageTk.PhotoImage(imgSPW_btn1)
+        SPW_btn1=tk.Button(self.F2,image=self.photoimageSPW_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        SPW_btn1.grid(row=0,column=1,pady=4)
+        SPW_btn1.bind("<ButtonRelease-1>",lambda event:AddSPW_btn1())
+
+        imgSPW_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageSPW_btn2=ImageTk.PhotoImage(imgSPW_btn2)
+        SPW_btn2=tk.Button(self.F2,image=self.photoimageSPW_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        SPW_btn2.bind("<ButtonRelease-1>",lambda event:BackSPW_btn2())
+
+        sp_lbl=tk.Label(self.F2,text=f"{self.ServiceName[1]} (${self.ServicePrice[1]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        sp_lbl.grid(row=1,column=0,padx=5,pady=4,sticky="w")
+
+        def Addsp_btn1():
+            sp_btn1.grid_forget()
+            sp_btn2.grid(row=1,column=2,pady=4)
+            SP.set(self.ServicePrice[1])
+            print(f"SP = {SP.get()}")
+
+        global Backsp_btn2    
+
+        def Backsp_btn2():
+            sp_btn2.grid_forget()
+            sp_btn1.grid(row=1,column=1,pady=4)
+            SP.set(0)
+            print(f"SP = {SP.get()}")
+
+        imgsp_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimagesp_btn1=ImageTk.PhotoImage(imgsp_btn1)
+        sp_btn1=tk.Button(self.F2,image=self.photoimagesp_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        sp_btn1.grid(row=1,column=1,pady=4)
+        sp_btn1.bind("<ButtonRelease-1>",lambda event:Addsp_btn1())
+
+        imgsp_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimagesp_btn2=ImageTk.PhotoImage(imgsp_btn2)
+        sp_btn2=tk.Button(self.F2,image=self.photoimagesp_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        sp_btn2.bind("<ButtonRelease-1>",lambda event:Backsp_btn2())
+
+        CPFS_lbl=tk.Label(self.F2,text=f"{self.ServiceName[2]} (${self.ServicePrice[2]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        CPFS_lbl.grid(row=2,column=0,padx=5,pady=4,sticky="w")
+
+        def AddCPFS_btn1():
+            CPFS_btn1.grid_forget()
+            CPFS_btn2.grid(row=2,column=2,pady=4)
+            SPFS.set(self.ServicePrice[2])
+            print(f"SPFS = {SPFS.get()}")
+
+        global BackCPFS_btn2    
+
+        def BackCPFS_btn2():
+            CPFS_btn2.grid_forget()
+            CPFS_btn1.grid(row=2,column=1,pady=4)
+            SPFS.set(0)
+            print(f"SPFS = {SPFS.get()}")
+
+        imgCPFS_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageCPFS_btn1=ImageTk.PhotoImage(imgCPFS_btn1)
+        CPFS_btn1=tk.Button(self.F2,image=self.photoimageCPFS_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        CPFS_btn1.grid(row=2,column=1,pady=4)
+        CPFS_btn1.bind("<ButtonRelease-1>",lambda event:AddCPFS_btn1())
+
+        imgCPFS_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageCPFS_btn2=ImageTk.PhotoImage(imgCPFS_btn2)
+        CPFS_btn2=tk.Button(self.F2,image=self.photoimageCPFS_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        CPFS_btn2.bind("<ButtonRelease-1>",lambda event:BackCPFS_btn2())
+ 
+        RA_lbl=tk.Label(self.F2,text=f"{self.ServiceName[3]} (${self.ServicePrice[3]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        RA_lbl.grid(row=3,column=0,padx=5,pady=4,sticky="w")
+
+        def AddRA_btn1():
+            RA_btn1.grid_forget()
+            RA_btn2.grid(row=3,column=2,pady=4)
+            RA.set(self.ServicePrice[3])
+            print(f"RA = {RA.get()}")
+
+        global BackRA_btn2  
+
+        def BackRA_btn2():
+            RA_btn2.grid_forget()
+            RA_btn1.grid(row=3,column=1,pady=4)
+            RA.set(0)
+            print(f"RA = {RA.get()}")
+
+        imgRA_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageRA_btn1=ImageTk.PhotoImage(imgRA_btn1)
+        RA_btn1=tk.Button(self.F2,image=self.photoimageRA_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        RA_btn1.grid(row=3,column=1,pady=4)
+        RA_btn1.bind("<ButtonRelease-1>",lambda event:AddRA_btn1())
+
+        imgRA_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageRA_btn2=ImageTk.PhotoImage(imgRA_btn2)
+        RA_btn2=tk.Button(self.F2,image=self.photoimageRA_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        RA_btn2.bind("<ButtonRelease-1>",lambda event:BackRA_btn2())
+
+        #========================Natural Nail Services Frame==============================
+        self.F3=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text=self.ServiceType[1],font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
+        self.F3.place(x=326,y=100,width=325,height=429)
+  
+        M_lbl=tk.Label(self.F3,text=f"{self.ServiceName[4]} (${self.ServicePrice[4]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        M_lbl.grid(row=0,column=0,padx=5,pady=4,sticky="w")
+
+        def AddM_btn1():
+            M_btn1.grid_forget()
+            M_btn2.grid(row=0,column=2,pady=3)
+            M.set(self.ServicePrice[4])
+            print(f"M = {M.get()}")
+
+        global BackM_btn2 
+
+        def BackM_btn2():
+            M_btn2.grid_forget()
+            M_btn1.grid(row=0,column=1,pady=3)
+            M.set(0)
+            print(f"M = {M.get()}")
+
+        imgM_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageM_btn1=ImageTk.PhotoImage(imgM_btn1)
+        M_btn1=tk.Button(self.F3,image=self.photoimageM_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        M_btn1.grid(row=0,column=1,pady=4)
+        M_btn1.bind("<ButtonRelease-1>",lambda event:AddM_btn1())
+        
+        imgM_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageM_btn2=ImageTk.PhotoImage(imgM_btn2)
+        M_btn2=tk.Button(self.F3,image=self.photoimageM_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        M_btn2.bind("<ButtonRelease-1>",lambda event:BackM_btn2())
+        
+        P_lbl=tk.Label(self.F3,text=f"{self.ServiceName[5]} (${self.ServicePrice[5]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        P_lbl.grid(row=1,column=0,padx=5,pady=4,sticky="w")
+
+        def AddP_btn1():
+            P_btn1.grid_forget()
+            P_btn2.grid(row=1,column=2,pady=4)
+            P.set(self.ServicePrice[5])
+            print(f"P = {P.get()}")
+
+        global BackP_btn2
+
+        def BackP_btn2():
+            P_btn2.grid_forget()
+            P_btn1.grid(row=1,column=1,pady=4)
+            P.set(0)
+            print(f"P = {P.get()}")
+
+        imgP_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageP_btn1=ImageTk.PhotoImage(imgP_btn1)
+        P_btn1=tk.Button(self.F3,image=self.photoimageP_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        P_btn1.grid(row=1,column=1,pady=4)
+        P_btn1.bind("<ButtonRelease-1>",lambda event:AddP_btn1())
+        
+        imgP_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageP_btn2=ImageTk.PhotoImage(imgP_btn2)
+        P_btn2=tk.Button(self.F3,image=self.photoimageP_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        P_btn2.bind("<ButtonRelease-1>",lambda event:BackP_btn2())
+
+        MP_lbl=tk.Label(self.F3,text=f"{self.ServiceName[6]} (${self.ServicePrice[6]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        MP_lbl.grid(row=2,column=0,padx=5,pady=4,sticky="w")
+
+        def AddMP_btn1():
+            MP_btn1.grid_forget()
+            MP_btn2.grid(row=2,column=2,pady=4) 
+            MP.set(self.ServicePrice[6])
+            print(f"MP = {MP.get()}")
+
+        global BackMP_btn2
+
+        def BackMP_btn2():
+            MP_btn2.grid_forget()
+            MP_btn1.grid(row=2,column=1,pady=4)
+            MP.set(0)
+            print(f"MP = {MP.get()}")
+
+        imgMP_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageMP_btn1=ImageTk.PhotoImage(imgMP_btn1)
+        MP_btn1=tk.Button(self.F3,image=self.photoimageMP_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        MP_btn1.grid(row=2,column=1,pady=4)
+        MP_btn1.bind("<ButtonRelease-1>",lambda event:AddMP_btn1()) 
+        
+        imgMP_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageMP_btn2=ImageTk.PhotoImage(imgMP_btn2)
+        MP_btn2=tk.Button(self.F3,image=self.photoimageMP_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        MP_btn2.bind("<ButtonRelease-1>",lambda event:BackMP_btn2()) 
+ 
+        R_lbl=tk.Label(self.F3,text=f"{self.ServiceName[7]} (${self.ServicePrice[7]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        R_lbl.grid(row=3,column=0,padx=5,pady=4,sticky="w")
+
+        def AddR_btn1():
+            R_btn1.grid_forget()
+            R_btn2.grid(row=3,column=2,pady=4)
+            R.set(self.ServicePrice[7])
+            print(f"R = {R.get()}")
+
+        global BackR_btn2
+
+        def BackR_btn2():
+            R_btn2.grid_forget()
+            R_btn1.grid(row=3,column=1,pady=4)
+            R.set(0)
+            print(f"R = {R.get()}")
+
+        imgR_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageR_btn1=ImageTk.PhotoImage(imgR_btn1)
+        R_btn1=tk.Button(self.F3,image=self.photoimageR_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        R_btn1.grid(row=3,column=1,pady=4)
+        R_btn1.bind("<ButtonRelease-1>",lambda event:AddR_btn1()) 
+        
+        imgR_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageR_btn2=ImageTk.PhotoImage(imgR_btn2)
+        R_btn2=tk.Button(self.F3,image=self.photoimageR_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        R_btn2.bind("<ButtonRelease-1>",lambda event:BackR_btn2()) 
+
+        PC_lbl=tk.Label(self.F3,text=f"{self.ServiceName[8]} (${self.ServicePrice[8]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        PC_lbl.grid(row=4,column=0,padx=5,pady=4,sticky="w")
+
+        def AddPC_btn1():
+            PC_btn1.grid_forget()
+            PC_btn2.grid(row=4,column=2,pady=4) 
+            PC.set(self.ServicePrice[8])
+            print(f"PC = {PC.get()}")
+
+        global BackPC_btn2
+
+        def BackPC_btn2():
+            PC_btn2.grid_forget()
+            PC_btn1.grid(row=4,column=1,pady=4)
+            PC.set(0)
+            print(f"PC = {PC.get()}")
+
+        imgPC_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimagePC_btn1=ImageTk.PhotoImage(imgPC_btn1)
+        PC_btn1=tk.Button(self.F3,image=self.photoimagePC_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        PC_btn1.grid(row=4,column=1,pady=4)
+        PC_btn1.bind("<ButtonRelease-1>",lambda event:AddPC_btn1())
+        
+        imgPC_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimagePC_btn2=ImageTk.PhotoImage(imgPC_btn2)
+        PC_btn2=tk.Button(self.F3,image=self.photoimagePC_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c") 
+        PC_btn2.bind("<ButtonRelease-1>",lambda event:BackPC_btn2())
+       
+        EFA_lbl=tk.Label(self.F3,text=f"{self.ServiceName[9]} (${self.ServicePrice[9]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        EFA_lbl.grid(row=5,column=0,padx=5,pady=4,sticky="w")
+
+        def AddEFA_btn1():
+            EFA_btn1.grid_forget()
+            EFA_btn2.grid(row=5,column=2,pady=4) 
+            EFA.set(self.ServicePrice[9])
+            print(f"EFA = {EFA.get()}")
+
+        global BackEFA_btn2
+
+        def BackEFA_btn2():
+            EFA_btn2.grid_forget()
+            EFA_btn1.grid(row=5,column=1,pady=4)
+            EFA.set(0)
+            print(f"EFA = {EFA.get()}")
+
+        imgEFA_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageEFA_btn1=ImageTk.PhotoImage(imgEFA_btn1)
+        EFA_btn1=tk.Button(self.F3,image=self.photoimageEFA_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        EFA_btn1.grid(row=5,column=1,pady=4)
+        EFA_btn1.bind("<ButtonRelease-1>",lambda event:AddEFA_btn1())
+        
+        imgEFA_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageEFA_btn2=ImageTk.PhotoImage(imgEFA_btn2)
+        EFA_btn2=tk.Button(self.F3,image=self.photoimageEFA_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        EFA_btn2.bind("<ButtonRelease-1>",lambda event:BackEFA_btn2()) 
+
+        D_lbl=tk.Label(self.F3,text=f"{self.ServiceName[10]} (${self.ServicePrice[10]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        D_lbl.grid(row=6,column=0,padx=5,pady=4,sticky="w")
+
+        def AddD_btn1():
+            D_btn1.grid_forget()
+            D_btn2.grid(row=6,column=2,pady=4)
+            D.set(self.ServicePrice[10])
+            print(f"D = {D.get()}")
+
+        global BackD_btn2
+
+        def BackD_btn2():
+            D_btn2.grid_forget()
+            D_btn1.grid(row=6,column=1,pady=4)
+            D.set(0)
+            print(f"D = {D.get()}")
+
+        imgD_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageD_btn1=ImageTk.PhotoImage(imgD_btn1)
+        D_btn1=tk.Button(self.F3,image=self.photoimageD_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        D_btn1.grid(row=6,column=1,pady=4)
+        D_btn1.bind("<ButtonRelease-1>",lambda event:AddD_btn1())
+        
+        imgD_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageD_btn2=ImageTk.PhotoImage(imgD_btn2)
+        D_btn2=tk.Button(self.F3,image=self.photoimageD_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        D_btn2.bind("<ButtonRelease-1>",lambda event:BackD_btn2())
+
+        CD_lbl=tk.Label(self.F3,text=f"{self.ServiceName[11]} (${self.ServicePrice[11]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        CD_lbl.grid(row=7,column=0,padx=5,pady=4,sticky="w")
+
+        def AddCD_btn1():
+            CD_btn1.grid_forget()
+            CD_btn2.grid(row=7,column=2,pady=4)
+            CD.set(self.ServicePrice[11])
+            print(f"CD = {CD.get()}")
+
+        global BackCD_btn2
+
+        def BackCD_btn2():
+            CD_btn2.grid_forget()
+            CD_btn1.grid(row=7,column=1,pady=4)
+            CD.set(0)
+            print(f"CD = {CD.get()}")
+
+        imgCD_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageCD_btn1=ImageTk.PhotoImage(imgCD_btn1)
+        CD_btn1=tk.Button(self.F3,image=self.photoimageCD_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        CD_btn1.grid(row=7,column=1,pady=4)
+        CD_btn1.bind("<ButtonRelease-1>",lambda event:AddCD_btn1())
+        
+        imgCD_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageCD_btn2=ImageTk.PhotoImage(imgCD_btn2)
+        CD_btn2=tk.Button(self.F3,image=self.photoimageCD_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        CD_btn2.bind("<ButtonRelease-1>",lambda event:BackCD_btn2())
+        
+        BC_lbl=tk.Label(self.F3,text=f"{self.ServiceName[12]} (${self.ServicePrice[12]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        BC_lbl.grid(row=8,column=0,padx=5,pady=4,sticky="w")
+
+        def AddBC__btn1():
+            BC__btn1.grid_forget()
+            BC__btn2.grid(row=8,column=2,pady=4)
+            BC.set(self.ServicePrice[12])
+            print(f"BC = {BC.get()}")
+
+        global BackBC__btn2
+
+        def BackBC__btn2():
+            BC__btn2.grid_forget()
+            BC__btn1.grid(row=8,column=1,pady=4)
+            BC.set(0)
+            print(f"BC = {BC.get()}")
+
+        imgBC__btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageBC__btn1=ImageTk.PhotoImage(imgBC__btn1)
+        BC__btn1=tk.Button(self.F3,image=self.photoimageBC__btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        BC__btn1.grid(row=8,column=1,pady=4)
+        BC__btn1.bind("<ButtonRelease-1>",lambda event:AddBC__btn1())
+        
+        imgBC__btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageBC__btn2=ImageTk.PhotoImage(imgBC__btn2)
+        BC__btn2=tk.Button(self.F3,image=self.photoimageBC__btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        BC__btn2.bind("<ButtonRelease-1>",lambda event:BackBC__btn2())
+
+        TN_lbl=tk.Label(self.F3,text=f"{self.ServiceName[13]} (${self.ServicePrice[13]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        TN_lbl.grid(row=9,column=0,padx=5,pady=4,sticky="w")
+
+        def AddTN__btn1():
+            TN__btn1.grid_forget()
+            TN__btn2.grid(row=9,column=2,pady=4)
+            TN.set(self.ServicePrice[13])
+            print(f"TN = {TN.get()}")
+
+        global BackTN__btn2
+
+        def BackTN__btn2():
+            TN__btn2.grid_forget()
+            TN__btn1.grid(row=9,column=1,pady=4)
+            TN.set(0)
+            print(f"TN = {TN.get()}")
+
+        imgTN__btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageTN__btn1=ImageTk.PhotoImage(imgTN__btn1)
+        TN__btn1=tk.Button(self.F3,image=self.photoimageTN__btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        TN__btn1.grid(row=9,column=1,pady=4)
+        TN__btn1.bind("<ButtonRelease-1>",lambda event:AddTN__btn1())
+        
+        imgTN__btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageTN__btn2=ImageTk.PhotoImage(imgTN__btn2)
+        TN__btn2=tk.Button(self.F3,image=self.photoimageTN__btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        TN__btn2.bind("<ButtonRelease-1>",lambda event:BackTN__btn2())
+
+        self.lblEnterPassword = tk.Label(self.BillFrame, text="Enter password:",font=("time new roman",20,"bold"),bg="#f0f0f0")
+
+        self.txtEnterPassword = ttk.Entry(self.BillFrame,textvariable=self.Retrievedpw,font=("time new roman",20,"bold"),show="*")
+
+        self.BtnEnterPassword = tk.Button(self.BillFrame,text="Submit",font=("time new roman",10,"bold"),bg="#a50060",fg="white",activebackground="#a50060",activeforeground="white",command=self.SubmitPassword)
+
+        #========================Waxing Services Frame==============================
+        self.F4=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text=self.ServiceType[2],font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
+        self.F4.place(x=652,y=100,width=325,height=429)    
+
+        E_lbl=tk.Label(self.F4,text=f"{self.ServiceName[14]} (${self.ServicePrice[14]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        E_lbl.grid(row=0,column=0,padx=5,pady=4,sticky="w")
+
+        def AddE_btn1():
+            E_btn1.grid_forget()
+            E_btn2.grid(row=0,column=2,pady=4)
+            E.set(self.ServicePrice[14])
+            print(f"E = {E.get()}")
+
+        global BackE_btn2
+
+        def BackE_btn2():
+            E_btn2.grid_forget()
+            E_btn1.grid(row=0,column=1,pady=4)
+            E.set(0)
+            print(f"E = {E.get()}")
+
+        imgE_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageE_btn1=ImageTk.PhotoImage(imgE_btn1)
+        E_btn1=tk.Button(self.F4,image=self.photoimageE_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        E_btn1.grid(row=0,column=1,pady=4)
+        E_btn1.bind("<ButtonRelease-1>",lambda event:AddE_btn1())
+
+        imgE_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageE_btn2=ImageTk.PhotoImage(imgE_btn2)
+        E_btn2=tk.Button(self.F4,image=self.photoimageE_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        E_btn2.bind("<ButtonRelease-1>",lambda event:BackE_btn2())
+
+        UL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[15]} (${self.ServicePrice[15]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        UL_lbl.grid(row=1,column=0,padx=5,pady=4,sticky="w")
+
+        def AddUL_btn1():
+            UL_btn1.grid_forget()
+            UL_btn2.grid(row=1,column=2,pady=4)
+            UL.set(self.ServicePrice[15])
+            print(f"UL = {UL.get()}")
+
+        global BackUL_btn2
+
+        def BackUL_btn2():
+            UL_btn2.grid_forget()
+            UL_btn1.grid(row=1,column=1,pady=4)
+            UL.set(0)
+            print(f"UL = {UL.get()}")
+
+        imgUL_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageUL_btn1=ImageTk.PhotoImage(imgUL_btn1)
+        UL_btn1=tk.Button(self.F4,image=self.photoimageUL_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        UL_btn1.grid(row=1,column=1,pady=4)
+        UL_btn1.bind("<ButtonRelease-1>",lambda event:AddUL_btn1()) 
+
+        imgUL_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageUL_btn2=ImageTk.PhotoImage(imgUL_btn2)
+        UL_btn2=tk.Button(self.F4,image=self.photoimageUL_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        UL_btn2.bind("<ButtonRelease-1>",lambda event:BackUL_btn2()) 
+ 
+        C_lbl=tk.Label(self.F4,text=f"{self.ServiceName[16]} (${self.ServicePrice[16]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        C_lbl.grid(row=2,column=0,padx=5,pady=4,sticky="w")
+
+        def AddC_btn1():
+            C_btn1.grid_forget()
+            C_btn2.grid(row=2,column=2,pady=4)
+            C.set(self.ServicePrice[16])
+            print(f"C = {C.get()}")
+
+        global BackC_btn2
+
+        def BackC_btn2():
+            C_btn2.grid_forget()
+            C_btn1.grid(row=2,column=1,pady=4)
+            C.set(0)
+            print(f"C = {C.get()}")
+
+        imgC_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageC_btn1=ImageTk.PhotoImage(imgC_btn1)
+        C_btn1=tk.Button(self.F4,image=self.photoimageC_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        C_btn1.grid(row=2,column=1,pady=4)
+        C_btn1.bind("<ButtonRelease-1>",lambda event:AddC_btn1()) 
+
+        imgC_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageC_btn2=ImageTk.PhotoImage(imgC_btn2)
+        C_btn2=tk.Button(self.F4,image=self.photoimageC_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        C_btn2.bind("<ButtonRelease-1>",lambda event:BackC_btn2()) 
+  
+        HL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[17]} (${self.ServicePrice[17]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        HL_lbl.grid(row=3,column=0,padx=5,pady=4,sticky="w")
+
+        def AddHL_btn1():
+            HL_btn1.grid_forget()
+            HL_btn2.grid(row=3,column=2,pady=4)
+            HL.set(self.ServicePrice[17])
+            print(f"HL = {HL.get()}")
+
+        global BackHL_btn2
+
+        def BackHL_btn2():
+            HL_btn2.grid_forget()
+            HL_btn1.grid(row=3,column=1,pady=4)
+            HL.set(0)
+            print(f"HL = {HL.get()}")
+
+        imgHL_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageHL_btn1=ImageTk.PhotoImage(imgHL_btn1)
+        HL_btn1=tk.Button(self.F4,image=self.photoimageHL_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        HL_btn1.grid(row=3,column=1,pady=4)
+        HL_btn1.bind("<ButtonRelease-1>",lambda event:AddHL_btn1())
+
+        imgHL_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageHL_btn2=ImageTk.PhotoImage(imgHL_btn2)
+        HL_btn2=tk.Button(self.F4,image=self.photoimageHL_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        HL_btn2.bind("<ButtonRelease-1>",lambda event:BackHL_btn2())
+
+        FL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[18]} (${self.ServicePrice[18]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        FL_lbl.grid(row=4,column=0,padx=5,pady=4,sticky="w")
+
+        def AddFL_btn1():
+            FL_btn1.grid_forget()
+            FL_btn2.grid(row=4,column=2,pady=4)
+            FL.set(self.ServicePrice[18])
+            print(f"FL = {FL.get()}")
+
+        global BackFL_btn2
+
+        def BackFL_btn2():
+            FL_btn2.grid_forget()
+            FL_btn1.grid(row=4,column=1,pady=4)
+            FL.set(0)
+            print(f"FL = {FL.get()}")
+
+        imgFL_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageFL_btn1=ImageTk.PhotoImage(imgFL_btn1)
+        FL_btn1=tk.Button(self.F4,image=self.photoimageFL_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        FL_btn1.grid(row=4,column=1,pady=4)
+        FL_btn1.bind("<ButtonRelease-1>",lambda event:AddFL_btn1()) 
+
+        imgFL_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageFL_btn2=ImageTk.PhotoImage(imgFL_btn2)
+        FL_btn2=tk.Button(self.F4,image=self.photoimageFL_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        FL_btn2.bind("<ButtonRelease-1>",lambda event:BackFL_btn2()) 
+          
+        B_lbl=tk.Label(self.F4,text=f"{self.ServiceName[19]} (${self.ServicePrice[19]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        B_lbl.grid(row=5,column=0,padx=5,pady=4,sticky="w")
+
+        def AddB_btn1():
+            B_btn1.grid_forget()
+            B_btn2.grid(row=5,column=2,pady=4)
+            B.set(self.ServicePrice[19])
+            print(f"B = {B.get()}")
+
+        global BackB_btn2
+
+        def BackB_btn2():
+            B_btn2.grid_forget()
+            B_btn1.grid(row=5,column=1,pady=4)
+            B.set(0)
+            print(f"B = {B.get()}")
+
+        imgB_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageB_btn1=ImageTk.PhotoImage(imgB_btn1)
+        B_btn1=tk.Button(self.F4,image=self.photoimageB_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        B_btn1.grid(row=5,column=1,pady=4)
+        B_btn1.bind("<ButtonRelease-1>",lambda event:AddB_btn1())
+
+        imgB_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageB_btn2=ImageTk.PhotoImage(imgB_btn2)
+        B_btn2=tk.Button(self.F4,image=self.photoimageB_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        B_btn2.bind("<ButtonRelease-1>",lambda event:BackB_btn2())
+
+        U_lbl=tk.Label(self.F4,text=f"{self.ServiceName[20]} (${self.ServicePrice[20]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        U_lbl.grid(row=6,column=0,padx=5,pady=4,sticky="w")
+
+        def AddU_btn1():
+            U_btn1.grid_forget()
+            U_btn2.grid(row=6,column=2,pady=4)
+            U.set(self.ServicePrice[20])
+            print(f"U = {U.get()}")
+
+        global BackU_btn2
+
+        def BackU_btn2():
+            U_btn2.grid_forget()
+            U_btn1.grid(row=6,column=1,pady=4)
+            U.set(0)
+            print(f"U = {U.get()}")
+
+        imgU_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageU_btn1=ImageTk.PhotoImage(imgU_btn1)
+        U_btn1=tk.Button(self.F4,image=self.photoimageU_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        U_btn1.grid(row=6,column=1,pady=4)
+        U_btn1.bind("<ButtonRelease-1>",lambda event:AddU_btn1())
+
+        imgU_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageU_btn2=ImageTk.PhotoImage(imgU_btn2)
+        U_btn2=tk.Button(self.F4,image=self.photoimageU_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        U_btn2.bind("<ButtonRelease-1>",lambda event:BackU_btn2())
+
+        Face_lbl=tk.Label(self.F4,text=f"{self.ServiceName[21]} (${self.ServicePrice[21]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        Face_lbl.grid(row=7,column=0,padx=5,pady=4,sticky="w")
+
+        def AddFace_btn1():
+            Face_btn1.grid_forget()
+            Face_btn2.grid(row=7,column=2,pady=4)
+            Face.set(self.ServicePrice[21])
+            print(f"Face = {Face.get()}")
+
+        global BackFace_btn2
+
+        def BackFace_btn2():
+            Face_btn2.grid_forget()
+            Face_btn1.grid(row=7,column=1,pady=4)
+            Face.set(0)
+            print(f"Face = {Face.get()}")
+
+        imgFace_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageFace_btn1=ImageTk.PhotoImage(imgFace_btn1)
+        Face_btn1=tk.Button(self.F4,image=self.photoimageFace_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        Face_btn1.grid(row=7,column=1,pady=4)
+        Face_btn1.bind("<ButtonRelease-1>",lambda event:AddFace_btn1())
+
+        imgFace_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageFace_btn2=ImageTk.PhotoImage(imgFace_btn2)
+        Face_btn2=tk.Button(self.F4,image=self.photoimageFace_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        Face_btn2.bind("<ButtonRelease-1>",lambda event:BackFace_btn2())
+        
+        Facial_lbl=tk.Label(self.F4,text=f"{self.ServiceName[22]} (${self.ServicePrice[22]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        Facial_lbl.grid(row=8,column=0,padx=5,pady=4,sticky="w")
+
+        def AddFacial_btn1():
+            Facial_btn1.grid_forget()
+            Facial_btn2.grid(row=8,column=2,pady=4)
+            Facial.set(self.ServicePrice[22])
+            print(f"Facial = {Facial.get()}")
+
+        global BackFacial_btn2
+
+        def BackFacial_btn2():
+            Facial_btn2.grid_forget()
+            Facial_btn1.grid(row=8,column=1,pady=4)
+            Facial.set(0)
+            print(f"Facial = {Facial.get()}")
+
+        imgFacial_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageFacial_btn1=ImageTk.PhotoImage(imgFacial_btn1)
+        Facial_btn1=tk.Button(self.F4,image=self.photoimageFacial_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        Facial_btn1.grid(row=8,column=1,pady=4)
+        Facial_btn1.bind("<ButtonRelease-1>",lambda event:AddFacial_btn1())
+
+        imgFacial_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageFacial_btn2=ImageTk.PhotoImage(imgFacial_btn2)
+        Facial_btn2=tk.Button(self.F4,image=self.photoimageFacial_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        Facial_btn2.bind("<ButtonRelease-1>",lambda event:BackFacial_btn2())
+
+        EP_lbl=tk.Label(self.F4,text=f"{self.ServiceName[23]} (${self.ServicePrice[23]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        EP_lbl.grid(row=9,column=0,padx=5,pady=4,sticky="w")
+
+        def AddEP_btn1():
+            EP_btn1.grid_forget()
+            EP_btn2.grid(row=9,column=2,pady=4)
+            EP.set(self.ServicePrice[23])
+            print(f"EP = {EP.get()}")
+
+        global BackEP_btn2
+
+        def BackEP_btn2():
+            EP_btn2.grid_forget()
+            EP_btn1.grid(row=9,column=1,pady=4)
+            EP.set(0)
+            print(f"EP = {EP.get()}")
+
+        imgEP_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageEP_btn1=ImageTk.PhotoImage(imgEP_btn1)
+        EP_btn1=tk.Button(self.F4,image=self.photoimageEP_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        EP_btn1.grid(row=9,column=1,pady=4)
+        EP_btn1.bind("<ButtonRelease-1>",lambda event:AddEP_btn1())
+
+        imgEP_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageEP_btn2=ImageTk.PhotoImage(imgEP_btn2)
+        EP_btn2=tk.Button(self.F4,image=self.photoimageEP_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        EP_btn2.bind("<ButtonRelease-1>",lambda event:BackEP_btn2())
+
+        Duralash_lbl=tk.Label(self.F4,text=f"{self.ServiceName[24]} (${self.ServicePrice[24]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        Duralash_lbl.grid(row=10,column=0,padx=5,pady=4,sticky="w")
+
+        def AddDuralash_btn1():
+            Duralash_btn1.grid_forget()
+            Duralash_btn2.grid(row=10,column=2,pady=4)
+            Duralash.set(self.ServicePrice[24])
+            print(f"Duralash = {Duralash.get()}")
+
+        global BackDuralash_btn2
+
+        def BackDuralash_btn2():
+            Duralash_btn2.grid_forget()
+            Duralash_btn1.grid(row=10,column=1,pady=4)
+            Duralash.set(0)
+            print(f"Duralash = {Duralash.get()}")
+
+        imgDuralash_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageDuralash_btn1=ImageTk.PhotoImage(imgDuralash_btn1)
+        Duralash_btn1=tk.Button(self.F4,image=self.photoimageDuralash_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        Duralash_btn1.grid(row=10,column=1,pady=4)
+        Duralash_btn1.bind("<ButtonRelease-1>",lambda event:AddDuralash_btn1())
+
+        imgDuralash_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageDuralash_btn2=ImageTk.PhotoImage(imgDuralash_btn2)
+        Duralash_btn2=tk.Button(self.F4,image=self.photoimageDuralash_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        Duralash_btn2.bind("<ButtonRelease-1>",lambda event:BackDuralash_btn2())
+
+        MEE_lbl=tk.Label(self.F4,text=f"{self.ServiceName[25]} (${self.ServicePrice[25]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        MEE_lbl.grid(row=11,column=0,padx=5,pady=4,sticky="w")
+
+        def AddMEE_btn1():
+            MEE_btn1.grid_forget()
+            MEE_btn2.grid(row=11,column=2,pady=4)
+            MEE.set(self.ServicePrice[25])
+            print(f"MEE = {MEE.get()}")
+
+        global BackMEE_btn2
+
+        def BackMEE_btn2():
+            MEE_btn2.grid_forget()
+            MEE_btn1.grid(row=11,column=1,pady=4)
+            MEE.set(0)
+            print(f"MEE = {MEE.get()}")
+
+        imgMEE_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageMEE_btn1=ImageTk.PhotoImage(imgMEE_btn1)
+        MEE_btn1=tk.Button(self.F4,image=self.photoimageMEE_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        MEE_btn1.grid(row=11,column=1,pady=4)
+        MEE_btn1.bind("<ButtonRelease-1>",lambda event:AddMEE_btn1())
+
+        imgMEE_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
+        self.photoimageMEE_btn2=ImageTk.PhotoImage(imgMEE_btn2)
+        MEE_btn2=tk.Button(self.F4,image=self.photoimageMEE_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        MEE_btn2.bind("<ButtonRelease-1>",lambda event:BackMEE_btn2())
+
+        #========================Bill Area==============================
+        self.F5=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE)
+        self.F5.place(x=978,y=100,width=332,height=429)
+  
+        bill_title=tk.Label(self.F5,text="Bill Area",font="arial 15 bold",bd=7,relief=GROOVE)
+        bill_title.pack(fill=X)
+
+        scrol_y=tk.Scrollbar(self.F5,orient=VERTICAL)
+        self.txtarea=tk.Text(self.F5,yscrollcommand=scrol_y.set)
+        scrol_y.pack(side=RIGHT,fill=Y)
+        scrol_y.config(command=self.txtarea.yview)
+        self.txtarea.pack(fill=BOTH,expand=1)
+
+        #========================Button Frame==============================
+        F6=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text="Bill Menu",font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
+        F6.place(x=0,y=530,relwidth=1,height=122)
+
+        Total_lbl=Label(F6,text="Total Price:   $",bg="#e2479c",fg="white",font=("time new roman",14,"bold"))   
+        Total_lbl.grid(row=0,column=0,pady=25,sticky="w")
+
+        self.Total_txt=tk.Entry(F6,textvariable=self.totalMoney,width=12,font="arial 10 bold",bd=3,relief=SUNKEN,state=DISABLED)
+        self.Total_txt.grid(row=0,column=1,pady=25)
+
+        Tip_lbl=Label(F6,text="Tip:   $",bg="#e2479c",fg="white",font=("time new roman",14,"bold"))   
+        Tip_lbl.grid(row=0,column=2,pady=25,sticky="w")
+
+        self.Tip_txt=tk.Entry(F6,textvariable=self.totalTip,width=12,font="arial 10 bold",bd=3,relief=SUNKEN)
+        self.Tip_txt.grid(row=0,column=3,pady=25)
+
+        Discount_lbl=Label(F6,text="% Discount",bg="#e2479c",fg="white",font=("time new roman",14,"bold"))   
+        Discount_lbl.grid(row=0,column=4,padx=5,pady=25,sticky="w")
+
+        self.Discount_txt=ttk.Combobox(F6,textvariable=self.totalDiscount,font=("arial",10,"bold"),state="readonly",justify="center")
+        self.Discount_txt["values"]=(0,5,10,15,20,25,30)
+        self.Discount_txt.grid(row=0,column=5,pady=25)
+
+        btn_F=tk.Frame(F6,bd=2,relief=GROOVE,bg="#e2479c")
+        btn_F.place(x=700,width=579,height=80)
+
+        total_btn=tk.Button(btn_F,text="Total",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=self.total)
+        total_btn.grid(row=0,column=0,padx=7,pady=3)
+
+        GBill_btn=tk.Button(btn_F,text="Generate Bill",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=self.generate_bill)
+        GBill_btn.grid(row=0,column=1,padx=7,pady=3)
+
+        Clear_btn=tk.Button(btn_F,text="Refresh",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=self.Start)
+        Clear_btn.grid(row=0,column=2,padx=7,pady=3)
+
+        Exit_btn=tk.Button(btn_F,text="Exit",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold")
+        Exit_btn.grid(row=0,column=3,padx=7,pady=3)
+
+        self.ApptFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
+        self.CusFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
+
+        #========================Button switch Frame==============================
+        
+        btnFrame=tk.Frame(self,relief=GROOVE,bg="#e2479c",bd=1)
+        btnFrame.place(y=67,width=40,height=653)
+        
+        font = tkfont.nametofont("TkDefaultFont")
+        font = tkfont.Font(family="time new roman", size=13, weight=tkfont.BOLD)
+        
+        BillLabel = "Billing"
+        Apptlabel = "Appointment"
+        CusLabel = "Customer"
+        Apptheight = font.measure(Apptlabel) + 170
+        Billheight = font.measure(BillLabel) + 170
+        Cusheight = font.measure(CusLabel) + 170
+
+        width = font.metrics()['linespace'] + 20
+
+        Billcanvas = tk.Canvas(btnFrame, height=Billheight, width=width, bg="#ffcae5",borderwidth=1, relief="raised")
+        Billcanvas.create_text((18, 110), angle="90", anchor="center", text=BillLabel, fill="#e2479c", font=font)
+
+        Billcanvas.bind("<ButtonPress-1>", lambda ev: ev.widget.configure(relief="sunken"))
+        Billcanvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
+        Billcanvas.bind("<ButtonPress-1>", lambda ev: self.bill(), add=True)
+
+        Apptcanvas = tk.Canvas(btnFrame, height=Apptheight, width=width, bg="#ffcae5", borderwidth=1, relief="raised")
+        Apptcanvas.create_text((18, 116), angle="90", anchor="center", text=Apptlabel, fill="#e2479c", font=font)
+
+        Apptcanvas.bind("<ButtonPress-1>", lambda ev: ev.widget.configure(relief="sunken"))
+        Apptcanvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
+               
+        Cuscanvas = tk.Canvas(btnFrame, height=Cusheight, width=width, bg="#ffcae5",borderwidth=1, relief="raised")
+        Cuscanvas.create_text((18, 75), angle="90", anchor="center", text=CusLabel, fill="#e2479c", font=font)
+
+        Cuscanvas.bind("<ButtonPress-1>", lambda ev: ev.widget.configure(relief="sunken"))
+        Cuscanvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
+        
+        Billcanvas.pack(fill=Y)
+        Apptcanvas.pack(fill=Y)
+        Cuscanvas.pack(fill=Y)
+
+    
+
+    def bill(self):
+        self.hide_usr_all_frames()
+        self.BillFrame.place(x=40,y=67,width=1310,height=652)
+
+    def hide_usr_all_frames(self):
+        self.Retrievedpw.set("")
+        self.cname.set("")
+        self.cphn.set("")
+        self.c_email.set("")
+
+        self.totalMoney.set(0)
+        self.totalTip.set(0)
+        self.totalDiscount.set(0)
+
+        BackSPW_btn2()
+        Backsp_btn2()
+        BackCPFS_btn2()
+        BackRA_btn2()
+
+        BackM_btn2()
+        BackP_btn2()
+        BackMP_btn2()
+        BackR_btn2()
+        BackPC_btn2()
+        BackEFA_btn2()
+        BackD_btn2()
+        BackCD_btn2()
+        BackBC__btn2()
+        BackTN__btn2()
+
+        BackE_btn2()
+        BackUL_btn2()
+        BackC_btn2()
+        BackHL_btn2()
+        BackFL_btn2()
+        BackB_btn2()
+        BackU_btn2()
+        BackFace_btn2()
+        BackFacial_btn2()
+        BackEP_btn2()
+        BackDuralash_btn2()
+        BackMEE_btn2()
+
+        self.BillFrame.place_forget()
+        self.ApptFrame.place_forget()
+        self.CusFrame.place_forget()
+
+    #========================Retrieve Service ID and price==============================
+    def Service_id_price_name(self):
+
+        self.ServiceId.clear()
+        self.ServicePrice.clear()
+        self.ServiceName.clear()
+
+        try:
+            Times = 26
+            Price = "?"
+            Name = "N/A"
+            if not ServiceDB().getAllServices():
+                self.ServicePrice.extend(repeat(Price, Times))
+                self.ServiceName.extend(repeat(Name, Times))
+                print(type(self.ServicePrice[0]))
+            else:
+                for row in ServiceDB().getAllServices():
+                    self.ServiceId.append(row[0])
+                    self.ServiceName.append(row[1])
+                    self.ServicePrice.append(row[2])
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def Service_Type(self):
+        self.ServiceType.clear()
+        try:
+            Times = 3
+            TypeName = "N/A"
+            if not ServiceDB().getAllServicesType():
+                messagebox.showerror("Error","No services type available!!!")
+                self.ServiceType.extend(repeat(TypeName, Times))
+            else:
+                for row in ServiceDB().getAllServicesType():
+                    self.ServiceType.append(row[0])
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def total(self):
+        self.Selected_Services.clear()
+        self.Selected_Services_Id.clear()
+        self.Selected_Services_name.clear()
+        
+        Services = [
+                SPW.get(),SP.get(),SPFS.get(),RA.get(),M.get(),P.get(),MP.get(),R.get(),PC.get(),
+                EFA.get(),D.get(),CD.get(),BC.get(),TN.get(),E.get(),UL.get(),C.get(),HL.get(),
+                FL.get(),B.get(),U.get(),Face.get(),Facial.get(),EP.get(),Duralash.get(),MEE.get()
+            ]
+
+        for index in range(len(Services)):   
+            value = Services[index]
+            
+            if value != 0 and type(value) != str:
+                self.Selected_Services.append(value)
+                self.Selected_Services_Id.append(index + 1)
+
+        for index in self.Selected_Services_Id:
+            self.Selected_Services_name.append(self.ServiceName[index-1])
+            print(self.Selected_Services_name)
+
+        if  self.ServiceName[0] == "N/A":
+            messagebox.showerror("Error","No services available!!!")
+            return
+        elif sum(self.Selected_Services) == 0:
+            messagebox.showerror("Error","No services selected!!!")
+            self.totalMoney.set(0.0)
+            self.totalTip.set(0.0)  
+        elif (self.totalDiscount.get() == 0) and (sum(self.Selected_Services) != 0):
+            Tip = self.totalTip.get()
+            self.totalMoney.set(sum(self.Selected_Services) + Tip)
+        elif (self.totalDiscount.get() != 0) and (sum(self.Selected_Services) != 0):
+            Discount = self.totalDiscount.get()
+            Tip = self.totalTip.get()
+            self.totalMoney.set((sum(self.Selected_Services) + Tip) - ((sum(self.Selected_Services) + Tip) * (Discount/100)))
+            
+    def get_All_Users(self):
+        self.retrieved_password.clear()
+        self.retrieved_password_Id.clear()
+        try:
+            if not AccountDB().getEmpByPass():
+                pass
+            else:
+                for row in AccountDB().getEmpByPass():
+                    self.retrieved_password_Id.append(row[0])
+                    self.retrieved_password.append(row[1])
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def SubmitPassword(self):
+        try:
+            self.Selected_password_Id.clear()
+            value_found = False
+            for index in range(len(self.retrieved_password)):
+                
+                if bcrypt.checkpw(self.Retrievedpw.get().encode('utf8'), self.retrieved_password[index].encode('utf8')):
+                    self.Selected_password_Id.append(self.retrieved_password_Id[index])
+                    print(self.Selected_password_Id[0])
+                    print("Correct")
+                    
+                    Customer_name = HumanName(self.cname.get())
+                    first = Customer_name.first
+                    last = Customer_name.last
+                    phone = self.cphn.get()
+                    email = self.c_email.get()
+
+                    empId = self.Selected_password_Id[0]
+                    tip = self.totalTip.get()
+                    discount = self.totalDiscount.get()
+                    total = self.totalMoney.get()
+
+                    SerId = self.Selected_Services_Id
+
+                    if not CustomerDB().fetchCusId(first, last):
+                        print("No matched customer.")
+                        CustomerId = []
+                        InvoiceId = []
+                        
+                        RetrievedCustomerId = CustomerDB().addCustomerAndGetId(first, last, phone, email)
+                        CustomerId.append(RetrievedCustomerId)
+
+                        cusId = CustomerId[0]
+
+                        RetrievedInvoiceId = InvoiceDB().Add_Invoice(empId, cusId, tip, discount, total)
+                        InvoiceId.append(RetrievedInvoiceId)
+
+                        InvId = InvoiceId[0]
+
+                        InvoiceLineItemDB().Add_InvoiceItem(InvId, SerId)
+
+                        messagebox.showinfo("Success","Invoice is submitted successfully!!!")
+
+                        value_found = True
+                        self.after_Submit_order()
+                        break
+                    else:
+                        CustomerId = []
+                        InvoiceId = []
+
+                        RetrievedCustomerId = CustomerDB().fetchCusId(first, last)
+                        CustomerId.append(RetrievedCustomerId)
+
+                        cusId = CustomerId[0]
+
+                        RetrievedInvoiceId = InvoiceDB().Add_Invoice(empId, cusId, tip, discount, total)
+                        InvoiceId.append(RetrievedInvoiceId)
+
+                        InvId = InvoiceId[0]
+
+                        InvoiceLineItemDB().Add_InvoiceItem(InvId, SerId)
+
+                        messagebox.showinfo("Success","Invoice is submitted successfully!!!")
+                        value_found = True
+                        self.after_Submit_order()
+                        
+                        break
+
+            if not value_found:
+                messagebox.showerror("Error","Wrong password")
+                self.lblEnterPassword.place_forget()
+                self.txtEnterPassword.place_forget()
+                self.BtnEnterPassword.place_forget()
+
+                self.F2.place(y=100,width=325,height=429)
+                self.F3.place(x=326,y=100,width=325,height=429)
+                self.F4.place(x=652,y=100,width=325,height=429)
+                self.F5.place(x=978,y=100,width=332,height=429)
+
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def generate_bill(self):
+        if  self.ServiceName[0] == "N/A":
+            messagebox.showerror("Error","No services available!!!")
+            return
+        elif sum(self.Selected_Services) == 0:
+            messagebox.showerror("Error","No services selected!!!")
+        elif self.cname.get() == "":
+            messagebox.showerror("Error","Missing customer name!!!")
+        else:
+            self.F2.place_forget()
+            self.F3.place_forget()
+            self.F4.place_forget()
+            self.F5.place_forget()
+
+            self.lblEnterPassword.place(x=340, y=326)
+            self.txtEnterPassword.place(x=600, y=326)
+            self.BtnEnterPassword.place(x=470, y=390, width=80)
+
+    def after_Submit_order(self):
+        self.Start()
 
 if __name__ == "__main__":
     app = App()

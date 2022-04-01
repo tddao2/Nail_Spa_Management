@@ -6,6 +6,21 @@ class ServiceDB:
         self.conn = mysql.connector.connect(**Connect)
         self.cursor = self.conn.cursor()
 
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    def getAllServices(self):
+        self.cursor.execute("SELECT service_id, service_name, price FROM service ORDER BY service_id ASC;")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def getAllServicesType(self):        
+        self.cursor.execute("SELECT service_type_desc from service_type order by service_type_desc ASC;")
+        rows = self.cursor.fetchall()
+        return rows
+
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
     def getAllService(self):
         self.cursor.execute("SELECT * FROM service")

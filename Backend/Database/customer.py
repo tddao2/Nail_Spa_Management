@@ -6,6 +6,38 @@ class CustomerDB:
         self.conn = mysql.connector.connect(**Connect)
         self.cursor = self.conn.cursor()
 
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    def getAllCustByIdAndFname(self):
+        self.cursor.execute("SELECT customer_id, concat(first_name,' ',last_name) as Name, phone, email \
+                            FROM customer \
+                            ORDER BY Name ASC")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def fetchCusId(self, first, last):
+        self.cursor.execute("SELECT customer_id FROM customer \
+                            WHERE first_name LIKE '%"+first+"%' and last_name LIKE '%"+last+"%' and active = 1;")
+        row = self.cursor.fetchone()
+        if row:
+            return row[0]
+        else:
+            return None
+
+    def addCustomerAndGetId(self, first, last, phone, email):
+        self.cursor.execute("INSERT INTO customer (first_name, last_name, phone, email) VALUES (%s, %s, %s, %s)",
+                            (first, last, phone, email))
+        self.conn.commit()
+
+        self.cursor.execute("SELECT LAST_INSERT_ID();")
+        row = self.cursor.fetchone()
+        print("addCustomerAndGetId", row)
+        return row[0]
+
+
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
     def getAllCustomer(self):
         self.cursor.execute("SELECT * FROM customer WHERE active = 1")

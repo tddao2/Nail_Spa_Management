@@ -60,6 +60,17 @@ class AccountDB:
                             WHERE "+data[0]+" LIKE '%"+data[1]+"%'") 
         rows = self.cursor.fetchall()
         return rows
+
+    def getEmpByPass(self):
+        self.cursor.execute("SELECT employee_id, password \
+                            from employee e \
+                            INNER JOIN account a \
+                                ON e.account_id = a.account_id \
+                            INNER JOIN account_status asi \
+                                ON a.account_status_id = asi.account_status_id \
+                            WHERE acct_status = 'active';") 
+        rows = self.cursor.fetchall()
+        return rows
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

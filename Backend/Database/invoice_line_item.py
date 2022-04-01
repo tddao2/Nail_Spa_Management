@@ -6,6 +6,19 @@ class InvoiceLineItemDB:
         self.conn = mysql.connector.connect(**Connect)
         self.cursor = self.conn.cursor()
 
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    def Add_InvoiceItem(self, InvId, SerId):
+
+        for index in range(len(SerId)):
+            self.cursor.execute("INSERT INTO invoice_line_item(invoice_id, service_id) VALUES (%s, %s)",
+                                (InvId, SerId[index]))
+            self.conn.commit()
+
+
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
     def getAllInvoiceLineItem(self):
         self.cursor.execute("SELECT * FROM invoice_line_item WHERE active = 1")

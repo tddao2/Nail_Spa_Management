@@ -6,6 +6,21 @@ class InvoiceDB:
         self.conn = mysql.connector.connect(**Connect)
         self.cursor = self.conn.cursor()
 
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    def Add_Invoice(self, empId, cusId, tip, discount, total):
+        self.cursor.execute("INSERT INTO invoice(employee_id, customer_id, tip, discount, invoice_total) VALUES (%s, %s, %s, %s, %s)",
+                            (empId, cusId, tip, discount, total))
+        self.conn.commit()
+
+        self.cursor.execute("SELECT LAST_INSERT_ID();")
+        row = self.cursor.fetchone()
+        # print("Add_Invoice ", row)
+        return row[0]
+
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
     def getAllActiveInvoice(self):
         self.cursor.execute("SELECT * FROM invoice WHERE active = 1")
