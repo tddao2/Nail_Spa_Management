@@ -1942,6 +1942,8 @@ class EmployeeDashboard(tk.Frame):
         self.CusHLname = []
         self.CusHPhone = []
 
+        self.virtualCusInfo()
+        
     def Start(self):
 
         #==========Set variables=============
@@ -3052,18 +3054,21 @@ class EmployeeDashboard(tk.Frame):
 
         # ====================================================
         self.txt_CusFsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusFsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_CusFsearch.set_completion_list(self.CusFname)
  
         imgFSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageFSearch=ImageTk.PhotoImage(imgFSearch)
         self.btn_Fsearch=tk.Button(Cus_SearchFrame,image=self.photoimageFSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.Fsearch)
 
         self.txt_CusLsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusLsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_CusLsearch.set_completion_list(self.CusLname)
 
         imgLSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageLSearch=ImageTk.PhotoImage(imgLSearch)
         self.btn_Lsearch=tk.Button(Cus_SearchFrame,image=self.photoimageLSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.Lsearch)
 
         self.txt_CusPsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusPsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_CusPsearch.set_completion_list(self.CusPhone)
 
         imgPSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimagePSearch=ImageTk.PhotoImage(imgPSearch)
@@ -3083,18 +3088,21 @@ class EmployeeDashboard(tk.Frame):
         self.HCuscmb_search.bind("<<ComboboxSelected>>", self.CusHSearchSelection)
 
         self.txt_CusHFsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusHFsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_CusHFsearch.set_completion_list(self.CusHFname)
  
         imgHFSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageHFSearch=ImageTk.PhotoImage(imgHFSearch)
         self.btn_HFsearch=tk.Button(Cus_SearchFrame,image=self.photoimageFSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.HFsearch)
 
         self.txt_CusHLsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusHLsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_CusHLsearch.set_completion_list(self.CusHLname)
 
         imgHLSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageHLSearch=ImageTk.PhotoImage(imgHLSearch)
         self.btn_HLsearch=tk.Button(Cus_SearchFrame,image=self.photoimageHLSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.HLsearch)
 
         self.txt_CusHPsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusHPsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_CusHPsearch.set_completion_list(self.CusHPhone)
 
         imgHPSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageHPSearch=ImageTk.PhotoImage(imgHPSearch)
@@ -3527,18 +3535,11 @@ class EmployeeDashboard(tk.Frame):
             for i in range(0, len(rows)):
                 self.CusFname.append(rows[i][1])
                 self.CusLname.append(rows[i][2])
-                self.CusPhone.append(rows[i][3])
-            self.txt_CusFsearch.set_completion_list(self.CusFname)
-            self.txt_CusLsearch.set_completion_list(self.CusLname)
-            self.txt_CusPsearch.set_completion_list(self.CusPhone)
-
+                self.CusPhone.append(rows[i][3])  
             for i in range(0, len(row1s)):
                 self.CusHFname.append(row1s[i][1])
                 self.CusHLname.append(row1s[i][2])
                 self.CusHPhone.append(row1s[i][3])
-            self.txt_CusHFsearch.set_completion_list(self.CusHFname)
-            self.txt_CusHLsearch.set_completion_list(self.CusHLname)
-            self.txt_CusHPsearch.set_completion_list(self.CusHPhone)
         else:
             pass
 
