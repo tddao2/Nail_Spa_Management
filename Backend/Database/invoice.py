@@ -14,8 +14,11 @@ class InvoiceDB:
 
         self.cursor.execute("SELECT LAST_INSERT_ID();")
         row = self.cursor.fetchone()
-        # print("Add_Invoice ", row)
-        return row[0]
+        if row:
+            return row[0]
+        else:
+            return None
+        # return row[0]
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

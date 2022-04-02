@@ -1035,8 +1035,6 @@ class AdminDashboard(tk.Frame):
                 messagebox.showerror("Error","First Name missing")
             elif self.var_lname.get()=="":
                 messagebox.showerror("Error","Last Name missing")
-            elif self.var_lname.get()=="":
-                messagebox.showerror("Error","Last Name missing")
             elif self.txtDOB.get_date()==datetime.datetime.now().date():
                 messagebox.showerror("Error","Invalid Date of Birth")
             # elif self.var_email.get()=="":
@@ -1935,6 +1933,14 @@ class EmployeeDashboard(tk.Frame):
         self.controller = controller
         
         self.Start()
+
+        self.CusFname = []
+        self.CusLname = []
+        self.CusPhone = []
+
+        self.CusHFname = []
+        self.CusHLname = []
+        self.CusHPhone = []
 
     def Start(self):
 
@@ -2964,6 +2970,173 @@ class EmployeeDashboard(tk.Frame):
         self.hide_usr_all_frames()
         self.BillFrame.place(x=40,y=67,width=1310,height=652)
 
+    def Cus(self):
+        self.hide_usr_all_frames()
+        self.CusFrame.place(x=39,y=67,width=1312,height=653)
+
+        style = ttk.Style()
+        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.map('Treeview',background=[('selected','#e2479c')])
+
+        # =============Creating variables=============
+        self.var_Cussearchby=tk.StringVar()
+        self.var_CusHsearchby=tk.StringVar()
+
+        self.var_CusFsearchtxt=tk.StringVar()
+        self.var_CusLsearchtxt=tk.StringVar()
+        self.var_CusPsearchtxt=tk.StringVar()
+
+        self.var_CusHFsearchtxt=tk.StringVar()
+        self.var_CusHLsearchtxt=tk.StringVar()
+        self.var_CusHPsearchtxt=tk.StringVar()
+
+        self.var_Cus_id=tk.StringVar()
+        self.var_Cus_F=tk.StringVar()
+        self.var_Cus_L=tk.StringVar()
+        self.var_Cus_P=tk.StringVar()
+        self.var_Cus_E=tk.StringVar()
+        # ==========================================================Left Frame=============================================================
+        
+        # =============Top Left Frame=============
+        CusLeftTopFrame=tk.LabelFrame(self.CusFrame,text="Customer Details",relief=RIDGE,font=("times new roman",18),bd=1,bg="#e2479c",fg="gold")
+        CusLeftTopFrame.place(width=370,height=653)
+
+        lblCusF=tk.Label(CusLeftTopFrame,text="First name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblCusF.grid(row=0,column=0,padx=20,pady=20,sticky="w")
+
+        self.CusF_txt=tk.Entry(CusLeftTopFrame,textvariable=self.var_Cus_F,width=14,font=("time new roman",18))
+        self.CusF_txt.grid(row=0,column=1)
+
+        lblCusL=tk.Label(CusLeftTopFrame,text="Last name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblCusL.grid(row=1,column=0,padx=20,pady=20,sticky="w")
+
+        self.CusL_txt=tk.Entry(CusLeftTopFrame,textvariable=self.var_Cus_L,width=14,font=("time new roman",18))
+        self.CusL_txt.grid(row=1,column=1)
+
+        lblCusP=tk.Label(CusLeftTopFrame,text="Phone",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblCusP.grid(row=2,column=0,padx=20,pady=20,sticky="w")
+
+        self.CusP_txt=tk.Entry(CusLeftTopFrame,textvariable=self.var_Cus_P,width=14,font=("time new roman",18))
+        self.CusP_txt.grid(row=2,column=1)
+
+        lblCusE=tk.Label(CusLeftTopFrame,text="Email",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblCusE.grid(row=3,column=0,padx=20,pady=20,sticky="w")
+
+        self.CusE_txt=tk.Entry(CusLeftTopFrame,textvariable=self.var_Cus_E,width=23,font=("time new roman",11))
+        self.CusE_txt.grid(row=3,column=1,ipady=5)
+
+        imgCus_Updatebtn=Image.open("images/update.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageCus_Updatebtn=ImageTk.PhotoImage(imgCus_Updatebtn)
+        self.Cus_Updatebtn=tk.Button(CusLeftTopFrame,image=self.photoimageCus_Updatebtn,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.CusUpdate)
+        self.Cus_Updatebtn.place(x=70,y=500)
+
+        imgCusRefresh=Image.open("images/refresh.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageCusRefresh=ImageTk.PhotoImage(imgCusRefresh)
+        CusRefreshbtn=tk.Button(CusLeftTopFrame, image=self.photoimageCusRefresh,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.CusClear)
+        CusRefreshbtn.place(x=220,y=500)
+
+        # ==========================================================Right Frame=============================================================
+        Cus_RightFrame=tk.Frame(self.CusFrame,relief=RIDGE,bd=1,bg="#e2479c")
+        Cus_RightFrame.place(x=370,y=14,width=942,height=639)
+
+        # =============Top Right Frame=============
+        Cus_SearchFrame=tk.LabelFrame(Cus_RightFrame,text="Search Customer",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="gold")
+        Cus_SearchFrame.place(x=100,width=680,height=71) #550
+
+        self.Cuscmb_search=ttk.Combobox(Cus_SearchFrame,textvariable=self.var_Cussearchby,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.Cuscmb_search["values"]=("Select","first_name","last_name","phone")
+        self.Cuscmb_search.place(x=15,y=2,width=180)
+        self.Cuscmb_search.current(0)
+        self.Cuscmb_search.bind("<<ComboboxSelected>>", self.CusSearchSelection)
+
+        # ====================================================
+        self.txt_CusFsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusFsearchtxt,font=("times new roman",18),bg="white")
+ 
+        imgFSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageFSearch=ImageTk.PhotoImage(imgFSearch)
+        self.btn_Fsearch=tk.Button(Cus_SearchFrame,image=self.photoimageFSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.Fsearch)
+
+        self.txt_CusLsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusLsearchtxt,font=("times new roman",18),bg="white")
+
+        imgLSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageLSearch=ImageTk.PhotoImage(imgLSearch)
+        self.btn_Lsearch=tk.Button(Cus_SearchFrame,image=self.photoimageLSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.Lsearch)
+
+        self.txt_CusPsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusPsearchtxt,font=("times new roman",18),bg="white")
+
+        imgPSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimagePSearch=ImageTk.PhotoImage(imgPSearch)
+        self.btn_Psearch=tk.Button(Cus_SearchFrame,image=self.photoimagePSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.Psearch)
+
+        # ==================================================== 
+        
+        btn_showHistory=tk.Button(Cus_SearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.CusHistory)
+        btn_showHistory.place(x=510,width=150)
+        
+
+        # ====================================================
+        self.HCuscmb_search=ttk.Combobox(Cus_SearchFrame,textvariable=self.var_CusHsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.HCuscmb_search["values"]=("Select","first_name","last_name","phone")
+        # self.HCuscmb_search.place(x=15,y=2,width=180)
+        self.HCuscmb_search.current(0)
+        self.HCuscmb_search.bind("<<ComboboxSelected>>", self.CusHSearchSelection)
+
+        self.txt_CusHFsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusHFsearchtxt,font=("times new roman",18),bg="white")
+ 
+        imgHFSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageHFSearch=ImageTk.PhotoImage(imgHFSearch)
+        self.btn_HFsearch=tk.Button(Cus_SearchFrame,image=self.photoimageFSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.HFsearch)
+
+        self.txt_CusHLsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusHLsearchtxt,font=("times new roman",18),bg="white")
+
+        imgHLSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageHLSearch=ImageTk.PhotoImage(imgHLSearch)
+        self.btn_HLsearch=tk.Button(Cus_SearchFrame,image=self.photoimageHLSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.HLsearch)
+
+        self.txt_CusHPsearch=myentry(Cus_SearchFrame,textvariable=self.var_CusHPsearchtxt,font=("times new roman",18),bg="white")
+
+        imgHPSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageHPSearch=ImageTk.PhotoImage(imgHPSearch)
+        self.btn_HPsearch=tk.Button(Cus_SearchFrame,image=self.photoimageHPSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.HPsearch)
+
+        # ====================================================
+
+        # =============Bottom Right Frame=============
+        CusTableFrame=tk.LabelFrame(Cus_RightFrame,relief=RIDGE,bd=1,bg="white")
+        CusTableFrame.place(x=20,y=82,width=902,height=538) #608
+
+        scrollx=tk.Scrollbar(CusTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(CusTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+
+        self.CusTable=ttk.Treeview(CusTableFrame,columns=("Customer ID","First name","Last name","Phone","Email"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.CusTable.xview)
+        scrolly.config(command=self.CusTable.yview)
+
+        self.CusTable.heading("Customer ID",text="Cus Id")
+        self.CusTable.heading("First name",text="First name")
+        self.CusTable.heading("Last name",text="Last name")
+        self.CusTable.heading("Phone",text="Phone")
+        self.CusTable.heading("Email",text="Email")
+
+        self.CusTable["show"]="headings"
+
+        self.CusTable.column("Customer ID",anchor=CENTER)
+        self.CusTable.column("First name",anchor=CENTER)
+        self.CusTable.column("Last name",anchor=CENTER)
+        self.CusTable.column("Phone",anchor=CENTER)
+        self.CusTable.column("Email",anchor=CENTER)
+
+        self.CusTable.pack(fill=BOTH,expand=1)
+        self.CusTable.bind("<ButtonRelease-1>", self.CusGetdata)
+
+        self.Cus_show()
+
     def hide_usr_all_frames(self):
         self.Retrievedpw.set("")
         self.cname.set("")
@@ -3202,6 +3375,367 @@ class EmployeeDashboard(tk.Frame):
     def after_Submit_order(self):
         self.Start()
 
+    def Cus_show(self):
+        self.CusTable.delete(*self.CusTable.get_children())
+        try:
+            if not CustomerDB().getAllCustomer():
+                messagebox.showerror("Error", "No Customer records available!!!.")
+            else:
+                for row in CustomerDB().getAllCustomer():
+                    self.CusTable.insert("",END,values=row)
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def CusGetdata(self,event):
+        f=self.CusTable.focus()
+        curItem=(self.CusTable.item(f))
+        row=curItem['values']
+        try:
+            self.var_Cus_id.set(row[0])
+            self.var_Cus_F.set(row[1])
+            self.var_Cus_L.set(row[2])
+            self.var_Cus_P.set(row[3])
+            self.var_Cus_E.set(row[4]) 
+        except:
+            pass
+
+    def CusClear(self):
+        self.Hide_var_Cus_idFLPE()
+        
+        self.Hide_varCusFLPsearchtxt()
+
+        self.Hide_varCus_H_FLPsearchtxt()
+
+        self.CusF_txt.config(state=NORMAL)
+        self.CusL_txt.config(state=NORMAL)
+        self.CusP_txt.config(state=NORMAL)
+        self.CusE_txt.config(state=NORMAL)
+        self.Cus_Updatebtn.place(x=70,y=500)
+
+        self.Cuscmb_search.current(0)
+        self.HCuscmb_search.current(0)
+
+        self.Hide_txtbtn_CusSearchFLP()
+
+        self.Hide_txtbtn_H_CusSearchFLP()
+
+        self.HCuscmb_search.place_forget()
+        self.Cuscmb_search.place(x=15,y=2,width=180)
+        
+        self.virtualCusInfo()
+     
+        self.Cus_show()
+
+    def CusUpdate(self):
+        try:
+            if self.var_Cus_id.get()=="":
+                messagebox.showerror("Error","No customer info selected")
+            elif self.var_Cus_F.get()=="":
+                messagebox.showerror("Error","First Name missing")
+            elif self.var_Cus_L.get()=="":
+                messagebox.showerror("Error","Last Name missing")
+            else:
+                CustomerDB().updateCustomer(self.var_Cus_id.get(),self.var_Cus_F.get(),self.var_Cus_L.get(),self.var_Cus_P.get(),self.var_Cus_E.get())
+                messagebox.showinfo("Success","Update Successfully!")
+                self.CusClear()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def CusHistory(self):
+        try:
+            rows = CustomerDB().getAllHisCustomer()
+            if len(rows)!=0:
+                self.CusTable.delete(*self.CusTable.get_children())
+                for row in rows:
+                    self.CusTable.insert("",END,values=row)
+                self.CusF_txt.config(state=DISABLED)
+                self.CusL_txt.config(state=DISABLED)
+                self.CusP_txt.config(state=DISABLED)
+                self.CusE_txt.config(state=DISABLED)
+
+                self.Cus_Updatebtn.place_forget()
+                self.Cuscmb_search.place_forget()
+
+                self.Hide_txtbtn_CusSearchFLP()
+               
+                self.Hide_var_Cus_idFLPE()
+                
+                self.Hide_varCusFLPsearchtxt()
+
+                self.HCuscmb_search.current(0)
+                self.HCuscmb_search.place(x=15,y=2,width=180)
+
+                self.Hide_txtbtn_H_CusSearchFLP()
+
+            else:
+                messagebox.showerror("Error","No historial records available!!!.")
+                self.CusClear()
+        except Exception as e:
+            messagebox.showerror("Error",f"Error due to: {str(e)}")
+            print(f"Something went wrong {e}.")
+
+    def CusSearchSelection(self, event):
+        if self.Cuscmb_search.get() == "Select":
+            self.Hide_var_Cus_idFLPE()
+            
+            self.Hide_varCusFLPsearchtxt()
+
+            self.Hide_txtbtn_CusSearchFLP()
+
+        elif self.Cuscmb_search.get() == "first_name":
+            self.Hide_var_Cus_idFLPE()
+            
+            self.Hide_varCusFLPsearchtxt()
+
+            self.Hide_txtbtn_CusSearchFLP()
+           
+            self.txt_CusFsearch.place(x=215,y=2)
+            self.btn_Fsearch.place(x=465)
+        elif self.Cuscmb_search.get() == "last_name":
+            self.Hide_var_Cus_idFLPE()
+            
+            self.Hide_varCusFLPsearchtxt()
+
+            self.Hide_txtbtn_CusSearchFLP()
+           
+            self.txt_CusLsearch.place(x=215,y=2)
+            self.btn_Lsearch.place(x=465)
+        elif self.Cuscmb_search.get() == "phone":
+            self.Hide_var_Cus_idFLPE()
+            
+            self.Hide_varCusFLPsearchtxt()
+            
+            self.Hide_txtbtn_CusSearchFLP()
+
+            self.txt_CusPsearch.place(x=215,y=2)
+            self.btn_Psearch.place(x=465)
+
+    def virtualCusInfo(self):
+        self.CusFname.clear()
+        self.CusLname.clear()
+        self.CusPhone.clear()
+
+        self.CusHFname.clear()
+        self.CusHLname.clear()
+        self.CusHPhone.clear()
+        rows = CustomerDB().getAllCustomer()
+        row1s = CustomerDB().getAllHisCustomer()
+        if rows or row1s:
+            for i in range(0, len(rows)):
+                self.CusFname.append(rows[i][1])
+                self.CusLname.append(rows[i][2])
+                self.CusPhone.append(rows[i][3])
+            self.txt_CusFsearch.set_completion_list(self.CusFname)
+            self.txt_CusLsearch.set_completion_list(self.CusLname)
+            self.txt_CusPsearch.set_completion_list(self.CusPhone)
+
+            for i in range(0, len(row1s)):
+                self.CusHFname.append(row1s[i][1])
+                self.CusHLname.append(row1s[i][2])
+                self.CusHPhone.append(row1s[i][3])
+            self.txt_CusHFsearch.set_completion_list(self.CusHFname)
+            self.txt_CusHLsearch.set_completion_list(self.CusHLname)
+            self.txt_CusHPsearch.set_completion_list(self.CusHPhone)
+        else:
+            pass
+
+    def Fsearch(self):
+        try:
+            if self.var_Cussearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_CusFsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = CustomerDB().FLPsearch(self.var_Cussearchby.get(),self.var_CusFsearchtxt.get())
+                if len(rows)!=0:
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    for row in rows:
+                        self.CusTable.insert("",END,values=row)
+                    self.Hide_var_Cus_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    self.Hide_var_Cus_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def Lsearch(self):
+        try:
+            if self.var_Cussearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_CusLsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = CustomerDB().FLPsearch(self.var_Cussearchby.get(),self.var_CusLsearchtxt.get())
+                if len(rows)!=0:
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    for row in rows:
+                        self.CusTable.insert("",END,values=row)
+                    self.Hide_var_Cus_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    self.Hide_var_Cus_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def Psearch(self):
+        try:
+            if self.var_Cussearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_CusPsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = CustomerDB().FLPsearch(self.var_Cussearchby.get(),self.var_CusPsearchtxt.get())
+                if len(rows)!=0:
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    for row in rows:
+                        self.CusTable.insert("",END,values=row)
+                    self.Hide_var_Cus_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    self.Hide_var_Cus_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def CusHSearchSelection(self, event):
+        if self.HCuscmb_search.get() == "Select":
+            self.Hide_var_Cus_idFLPE()
+            
+            self.Hide_varCus_H_FLPsearchtxt()
+
+            self.Hide_txtbtn_H_CusSearchFLP()
+
+        elif self.HCuscmb_search.get() == "first_name":
+            self.Hide_var_Cus_idFLPE()
+            
+            self.Hide_varCus_H_FLPsearchtxt()
+            
+            self.Hide_txtbtn_H_CusSearchFLP()
+            
+            self.txt_CusHFsearch.place(x=215,y=2)
+            self.btn_HFsearch.place(x=465)
+        elif self.HCuscmb_search.get() == "last_name":
+            self.Hide_var_Cus_idFLPE()
+            
+            self.Hide_varCus_H_FLPsearchtxt()
+            
+            self.Hide_txtbtn_H_CusSearchFLP()      
+            
+            self.txt_CusHLsearch.place(x=215,y=2)
+            self.btn_HLsearch.place(x=465)
+        elif self.HCuscmb_search.get() == "phone":
+            self.Hide_var_Cus_idFLPE()
+
+            self.Hide_varCus_H_FLPsearchtxt()
+    
+            self.Hide_txtbtn_H_CusSearchFLP()
+            
+            self.txt_CusHPsearch.place(x=215,y=2)
+            self.btn_HPsearch.place(x=465)
+
+    def HFsearch(self):
+        try:
+            if self.var_CusHsearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_CusHFsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = CustomerDB().HFLPsearch(self.var_CusHsearchby.get(),self.var_CusHFsearchtxt.get())
+                if len(rows)!=0:
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    for row in rows:
+                        self.CusTable.insert("",END,values=row)
+                    self.Hide_var_Cus_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    self.Hide_var_Cus_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def HLsearch(self):
+        try:
+            if self.var_CusHsearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_CusHLsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = CustomerDB().HFLPsearch(self.var_CusHsearchby.get(),self.var_CusHLsearchtxt.get())
+                if len(rows)!=0:
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    for row in rows:
+                        self.CusTable.insert("",END,values=row)
+                    self.Hide_var_Cus_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    self.Hide_var_Cus_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def HPsearch(self):
+        try:
+            if self.var_CusHsearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_CusHPsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = CustomerDB().HFLPsearch(self.var_CusHsearchby.get(),self.var_CusHPsearchtxt.get())
+                if len(rows)!=0:
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    for row in rows:
+                        self.CusTable.insert("",END,values=row)
+                    self.Hide_var_Cus_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.CusTable.delete(*self.CusTable.get_children())
+                    self.Hide_var_Cus_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def Hide_var_Cus_idFLPE(self):
+        self.var_Cus_id.set("")
+        self.var_Cus_F.set("")
+        self.var_Cus_L.set("")
+        self.var_Cus_P.set("")
+        self.var_Cus_E.set("")
+
+    def Hide_varCusFLPsearchtxt(self):
+        self.var_CusFsearchtxt.set("")
+        self.var_CusLsearchtxt.set("")
+        self.var_CusPsearchtxt.set("")
+
+    def Hide_varCus_H_FLPsearchtxt(self):
+        self.var_CusHFsearchtxt.set("")
+        self.var_CusHLsearchtxt.set("")
+        self.var_CusHPsearchtxt.set("")
+
+    def Hide_txtbtn_CusSearchFLP(self):
+        self.txt_CusFsearch.place_forget()
+        self.btn_Fsearch.place_forget()
+        self.txt_CusLsearch.place_forget()
+        self.btn_Lsearch.place_forget()
+        self.txt_CusPsearch.place_forget()
+        self.btn_Psearch.place_forget()
+
+    def Hide_txtbtn_H_CusSearchFLP(self):
+        self.txt_CusHFsearch.place_forget()
+        self.btn_HFsearch.place_forget()
+        self.txt_CusHLsearch.place_forget()
+        self.btn_HLsearch.place_forget()
+        self.txt_CusHPsearch.place_forget()
+        self.btn_HPsearch.place_forget()
+    
 if __name__ == "__main__":
     app = App()
     app.mainloop()

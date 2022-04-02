@@ -33,6 +33,24 @@ class CustomerDB:
         print("addCustomerAndGetId", row)
         return row[0]
 
+    # >>>Used updateCustomer() <<<<
+
+    def getAllHisCustomer(self):
+        self.cursor.execute("SELECT * FROM customer WHERE active = 0")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def FLPsearch(self, selection, FLP):
+        self.cursor.execute("SELECT * FROM customer \
+                            WHERE "+selection+" LIKE '%"+FLP+"%' and active = 1")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def HFLPsearch(self, selection, HFLP):
+        self.cursor.execute("SELECT * FROM customer \
+                            WHERE "+selection+" LIKE '%"+HFLP+"%' and active = 0")
+        rows = self.cursor.fetchall()
+        return rows
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
