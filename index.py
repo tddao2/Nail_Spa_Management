@@ -2959,6 +2959,7 @@ class EmployeeDashboard(tk.Frame):
 
         Cuscanvas.bind("<ButtonPress-1>", lambda ev: ev.widget.configure(relief="sunken"))
         Cuscanvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
+        Cuscanvas.bind("<ButtonPress-1>", lambda ev: self.Cus(), add=True)
         
         Billcanvas.pack(fill=Y)
         Apptcanvas.pack(fill=Y)
