@@ -33,6 +33,13 @@ class CustomerDB:
         print("addCustomerAndGetId", row)
         return row[0]
 
+    def getAllCusByFN(self):
+        self.cursor.execute("SELECT concat(first_name,' ',last_name) as Name \
+                            FROM customer \
+                            ORDER BY Name ASC")
+        rows = self.cursor.fetchall()
+        return rows
+
     # >>>Used updateCustomer() <<<<
 
     def getAllHisCustomer(self):
@@ -52,6 +59,25 @@ class CustomerDB:
         rows = self.cursor.fetchall()
         return rows
 
+    def getAllApptFLP(self):
+        self.cursor.execute("SELECT c.first_name, c.last_name, c.phone\
+                            FROM appointment a \
+                            JOIN customer c \
+                                ON a.customer_id = c.customer_id \
+                            WHERE a.active = 1 \
+                            ORDER BY time_appt ASC;")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def FNPByApptHistory(self):
+        self.cursor.execute("SELECT c.first_name, c.last_name, c.phone \
+                            FROM appointment a \
+                            JOIN customer c \
+	                            ON a.customer_id = c.customer_id \
+                            WHERE a.active = 0 or (date_appt >= DATE_ADD(CURDATE(), INTERVAL -3 DAY) and date_appt <= CURDATE()) \
+                            ORDER BY time_appt ASC;")
+        rows = self.cursor.fetchall()
+        return rows
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

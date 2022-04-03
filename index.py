@@ -1931,7 +1931,7 @@ class EmployeeDashboard(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        
+        self.ApptFNN = []
         self.Start()
 
         self.CusFname = []
@@ -1942,10 +1942,12 @@ class EmployeeDashboard(tk.Frame):
         self.CusHLname = []
         self.CusHPhone = []
 
+        self.virtualCustomerFN()
+
         self.virtualCusInfo()
         
     def Start(self):
-
+        self.virtualCustomerFN()
         #==========Set variables=============
         global SPW
         global SP
@@ -2955,6 +2957,7 @@ class EmployeeDashboard(tk.Frame):
 
         Apptcanvas.bind("<ButtonPress-1>", lambda ev: ev.widget.configure(relief="sunken"))
         Apptcanvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
+        Apptcanvas.bind("<ButtonPress-1>", lambda ev: self.Appt(), add=True)
                
         Cuscanvas = tk.Canvas(btnFrame, height=Cusheight, width=width, bg="#ffcae5",borderwidth=1, relief="raised")
         Cuscanvas.create_text((18, 75), angle="90", anchor="center", text=CusLabel, fill="#e2479c", font=font)
@@ -2972,6 +2975,228 @@ class EmployeeDashboard(tk.Frame):
     def bill(self):
         self.hide_usr_all_frames()
         self.BillFrame.place(x=40,y=67,width=1310,height=652)
+
+    def Appt(self):
+        self.hide_usr_all_frames()
+        self.ApptFrame.place(x=39,y=67,width=1312,height=653)
+        self.ApptFname = []
+        self.ApptLname = []
+        self.ApptPhone = []
+
+        self.ApptHFname = []
+        self.ApptHLname = []
+        self.ApptHPhone = []
+        self.virtualCusFNP()
+        style = ttk.Style()
+        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.map('Treeview',background=[('selected','#e2479c')])
+
+        # =============Creating variables=============
+        self.var_Apptsearchby=tk.StringVar()
+        self.var_ApptHsearchby=tk.StringVar()
+
+        self.var_ApptFsearchtxt=tk.StringVar()
+        self.var_ApptLsearchtxt=tk.StringVar()
+        self.var_ApptPsearchtxt=tk.StringVar()
+
+        self.var_ApptHFsearchtxt=tk.StringVar()
+        self.var_ApptHLsearchtxt=tk.StringVar()
+        self.var_ApptHPsearchtxt=tk.StringVar()
+
+        self.var_Appt_id=tk.StringVar()
+        self.var_Appt_FN=tk.StringVar()
+        self.var_Appt_E=tk.StringVar()
+        self.var_Appt_P=tk.StringVar()
+        self.var_Appt_T=tk.StringVar()
+        
+        # ==========================================================Left Frame=============================================================
+        
+        # =============Top Left Frame=============
+        ApptLeftTopFrame=tk.LabelFrame(self.ApptFrame,text="Appointment Details",relief=RIDGE,font=("times new roman",18),bd=1,bg="#e2479c",fg="gold")
+        ApptLeftTopFrame.place(width=440,height=653)
+
+        lblApptFN=tk.Label(ApptLeftTopFrame,text="Full name",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+        lblApptFN.grid(row=0,column=0,padx=25,pady=15,sticky="w")
+
+        self.ApptFN_txt=myentry(ApptLeftTopFrame,textvariable=self.var_Appt_FN,width=20,font=("time new roman",18))
+        self.ApptFN_txt.grid(row=0,column=1)
+        self.ApptFN_txt.set_completion_list(self.ApptFNN)
+
+        lblApptP=tk.Label(ApptLeftTopFrame,text="Phone",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+        lblApptP.grid(row=1,column=0,padx=25,pady=15,sticky="w")
+
+        self.ApptP_txt=tk.Entry(ApptLeftTopFrame,textvariable=self.var_Appt_P,width=20,font=("time new roman",18))
+        self.ApptP_txt.grid(row=1,column=1)
+
+        lblApptE=tk.Label(ApptLeftTopFrame,text="Email",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+        lblApptE.grid(row=2,column=0,padx=25,pady=15,sticky="w")
+
+        self.ApptE_txt=tk.Entry(ApptLeftTopFrame,textvariable=self.var_Appt_E,width=20,font=("time new roman",18))
+        self.ApptE_txt.grid(row=2,column=1)
+
+        lblAppD=tk.Label(ApptLeftTopFrame,text="Date",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+        lblAppD.grid(row=3,column=0,padx=25,pady=15,sticky="w")
+
+        self.ApptD_txt=DateEntry(ApptLeftTopFrame,width=27,selectmode='day',font=("times new roman",13),date_pattern='mm/dd/y',justify='center')
+        self.ApptD_txt.grid(row=3,column=1)
+
+        lblApptT=tk.Label(ApptLeftTopFrame,text="Time",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+        lblApptT.grid(row=4,column=0,padx=25,pady=15,sticky="w")
+
+        Time = [
+            "Select","9:30 AM","9:45 AM","10:00 AM","10:15 AM","10:30 AM","10:45 AM","11:00 AM","11:15 AM","11:30 AM","11:45 AM","12:00 PM","12:15 PM",
+            "12:30 PM","12:45 PM","1:00 PM","1:15 PM","1:30 PM","1:45 PM","2:00 PM","2:15 PM","2:30 PM","2:45 PM","3:00 PM","3:15 PM","3:30 PM",
+            "3:45 PM","4:00 PM","4:15 PM","4:30 PM","4:45 PM","5:00 PM","5:15 PM","5:30 PM","5:45 PM","6:00 PM","6:15 PM","6:30 PM"
+        ]
+
+        self.ApptT_txt=ttk.Combobox(ApptLeftTopFrame,textvariable=self.var_Appt_T,font=("times new roman",12,"bold"),state="readonly",justify="center",width=30)
+        self.ApptT_txt["values"]=Time
+        self.ApptT_txt.grid(row=4,column=1,ipady=2)
+        self.ApptT_txt.current(0)
+
+        lblApptDesc=tk.Label(ApptLeftTopFrame,text="Description",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
+        lblApptDesc.grid(row=5,column=0,padx=25,pady=20,sticky="w")
+        
+
+        self.ApptDesc_txt=tk.Text(ApptLeftTopFrame,font=("time new roman",18),width=20,height=7)
+        self.ApptDesc_txt.grid(row=5,column=1)
+
+        imgAppt_Acceptbtn=Image.open("images/accept.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageAppt_Acceptbtn=ImageTk.PhotoImage(imgAppt_Acceptbtn)
+        self.Appt_Acceptbtn=tk.Button(ApptLeftTopFrame,image=self.photoimageAppt_Acceptbtn,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.Add_appointment)
+        self.Appt_Acceptbtn.place(x=24,y=525)
+
+        imgAppt_Updatebtn=Image.open("images/update.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageAppt_Updatebtn=ImageTk.PhotoImage(imgAppt_Updatebtn)
+        self.Appt_Updatebtn=tk.Button(ApptLeftTopFrame,image=self.photoimageAppt_Updatebtn,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptUpdate)
+        self.Appt_Updatebtn.place(x=128,y=525)
+
+        imgAppt_Deletebtn=Image.open("images/delete.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageAppt_Deletebtn=ImageTk.PhotoImage(imgAppt_Deletebtn)
+        self.Appt_Deletebtn=tk.Button(ApptLeftTopFrame,image=self.photoimageAppt_Deletebtn,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptDelete)
+        self.Appt_Deletebtn.place(x=232,y=525)
+
+        imgApptRefresh=Image.open("images/refresh.png").resize((80,80),Image.ANTIALIAS)
+        self.photoimageApptRefresh=ImageTk.PhotoImage(imgApptRefresh)
+        ApptRefreshbtn=tk.Button(ApptLeftTopFrame, image=self.photoimageApptRefresh,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptClear)
+        ApptRefreshbtn.place(x=336,y=525)
+
+        # ==========================================================Right Frame=============================================================
+        Appt_RightFrame=tk.Frame(self.ApptFrame,relief=RIDGE,bd=1,bg="#e2479c")
+        Appt_RightFrame.place(x=440,y=14,width=871,height=639)
+
+        # =============Top Right Frame=============
+        Appt_SearchFrame=tk.LabelFrame(Appt_RightFrame,text="Search Appointment",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="gold")
+        Appt_SearchFrame.place(x=100,width=680,height=71) #550
+
+        self.Apptcmb_search=ttk.Combobox(Appt_SearchFrame,textvariable=self.var_Apptsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.Apptcmb_search["values"]=("Select","first_name","last_name","phone")
+        self.Apptcmb_search.place(x=15,y=2,width=180)
+        self.Apptcmb_search.current(0)
+        self.Apptcmb_search.bind("<<ComboboxSelected>>", self.ApptSearchSelection)
+
+        # ====================================================
+        self.txt_ApptFsearch=myentry(Appt_SearchFrame,textvariable=self.var_ApptFsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_ApptFsearch.set_completion_list(self.ApptFname)
+ 
+        imgFSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageFSearch=ImageTk.PhotoImage(imgFSearch)
+        self.btn_Fsearch=tk.Button(Appt_SearchFrame,image=self.photoimageFSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptFsearch)
+
+
+        self.txt_ApptLsearch=myentry(Appt_SearchFrame,textvariable=self.var_ApptLsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_ApptLsearch.set_completion_list(self.ApptLname)
+
+        imgLSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageLSearch=ImageTk.PhotoImage(imgLSearch)
+        self.btn_Lsearch=tk.Button(Appt_SearchFrame,image=self.photoimageLSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptLsearch)
+        
+
+
+        self.txt_ApptPsearch=myentry(Appt_SearchFrame,textvariable=self.var_ApptPsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_ApptPsearch.set_completion_list(self.ApptPhone)
+
+        imgPSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimagePSearch=ImageTk.PhotoImage(imgPSearch)
+        self.btn_Psearch=tk.Button(Appt_SearchFrame,image=self.photoimagePSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptPsearch)
+        
+
+        # ==================================================== 
+        
+        btn_showHistory=tk.Button(Appt_SearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.ApptHistory)
+        btn_showHistory.place(x=510,width=150)
+        
+
+        # ====================================================
+        self.HApptcmb_search=ttk.Combobox(Appt_SearchFrame,textvariable=self.var_ApptHsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.HApptcmb_search["values"]=("Select","first_name","last_name","phone")
+        # self.HApptcmb_search.place(x=15,y=2,width=180)
+        self.HApptcmb_search.current(0)
+        self.HApptcmb_search.bind("<<ComboboxSelected>>", self.ApptHSearchSelection)
+
+        self.txt_ApptHFsearch=myentry(Appt_SearchFrame,textvariable=self.var_ApptHFsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_ApptHFsearch.set_completion_list(self.ApptHFname)
+ 
+        imgHFSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageHFSearch=ImageTk.PhotoImage(imgHFSearch)
+        self.btn_HFsearch=tk.Button(Appt_SearchFrame,image=self.photoimageFSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptHFsearch)
+
+        self.txt_ApptHLsearch=myentry(Appt_SearchFrame,textvariable=self.var_ApptHLsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_ApptHLsearch.set_completion_list(self.ApptHLname)
+
+        imgHLSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageHLSearch=ImageTk.PhotoImage(imgHLSearch)
+        self.btn_HLsearch=tk.Button(Appt_SearchFrame,image=self.photoimageHLSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptHLsearch)
+
+        self.txt_ApptHPsearch=myentry(Appt_SearchFrame,textvariable=self.var_ApptHPsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_ApptHPsearch.set_completion_list(self.ApptHPhone)
+
+        imgHPSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageHPSearch=ImageTk.PhotoImage(imgHPSearch)
+        self.btn_HPsearch=tk.Button(Appt_SearchFrame,image=self.photoimageHPSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptHPsearch)
+
+        # ====================================================
+
+        # =============Bottom Right Frame=============
+        ApptTableFrame=tk.LabelFrame(Appt_RightFrame,relief=RIDGE,bd=1,bg="white")
+        ApptTableFrame.place(x=20,y=82,width=831,height=538) #608
+
+        scrollx=tk.Scrollbar(ApptTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(ApptTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+
+        self.ApptTable=ttk.Treeview(ApptTableFrame,columns=("Appointment ID","Customer","Phone","Email","Date Appt","Time Appt","Description Appt"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.ApptTable.xview)
+        scrolly.config(command=self.ApptTable.yview)
+
+        self.ApptTable.heading("Appointment ID",text="Appt Id")
+        self.ApptTable.heading("Customer",text="Customer")
+        self.ApptTable.heading("Phone",text="Phone")
+        self.ApptTable.heading("Email",text="Email")
+        self.ApptTable.heading("Date Appt",text="Date Appt")
+        self.ApptTable.heading("Time Appt",text="Time Appt")
+        self.ApptTable.heading("Description Appt",text="Description")
+
+        self.ApptTable["show"]="headings"
+
+        self.ApptTable.column("Appointment ID",anchor=CENTER)
+        self.ApptTable.column("Customer",anchor=CENTER)
+        self.ApptTable.column("Phone",anchor=CENTER)
+        self.ApptTable.column("Email",anchor=CENTER)
+        self.ApptTable.column("Date Appt",anchor=CENTER)
+        self.ApptTable.column("Time Appt",anchor=CENTER)
+        self.ApptTable.column("Description Appt",anchor=CENTER)
+
+        self.ApptTable.pack(fill=BOTH,expand=1)
+        self.ApptTable.bind("<ButtonRelease-1>", self.ApptGetdata)
+
+        self.Appt_Show()
+
 
     def Cus(self):
         self.hide_usr_all_frames()
@@ -3738,6 +3963,521 @@ class EmployeeDashboard(tk.Frame):
         self.txt_CusHPsearch.place_forget()
         self.btn_HPsearch.place_forget()
     
+    def Add_appointment(self):
+        current = datetime.datetime.now().date()
+        future = datetime.datetime.now().date() + datetime.timedelta(days=3)
+        try:
+            if self.var_Appt_id.get() != "":
+                messagebox.showerror("Error","Updates are in processing!!!")
+            elif self.var_Appt_FN.get()=="":
+                messagebox.showerror("Error","Customer name is required!!!")
+            elif self.ApptD_txt.get_date()=="":
+                messagebox.showerror("Error","Appoitment date is required!!!")
+            elif self.var_Appt_T.get()=="Select":
+                messagebox.showerror("Error","Appoitment time is required!!!")
+            elif self.ApptD_txt.get_date() < current:
+                messagebox.showerror("Error","The appointment cannot be made before the current day!!!")
+            elif self.ApptD_txt.get_date() > future:
+                messagebox.showerror("Error","The appointment cannot be made over 3 days from the current day!!!")
+            else:
+                Name=HumanName(self.var_Appt_FN.get())
+                First=Name.first
+                Last=""
+                if len(Name.middle) == 0:
+                    Last = Name.last
+                else:
+                    Last = Name.middle +" "+ Name.last
+                
+                DateFormated=datetime.datetime.strptime(str(self.ApptD_txt.get_date()),'%Y-%m-%d').strftime('%A, %d. %B')
+                op=messagebox.askyesno("Confirmation",f"Do you want to make an appointment on {DateFormated} at {self.ApptT_txt.get()}?")
+                if op==True:
+                    if not CustomerDB().fetchCusId(First, Last):
+                        CustomerId = []
+                        RetrievedCustomerId = CustomerDB().addCustomerAndGetId(First, Last, self.var_Appt_P.get(), self.var_Appt_E.get())
+                        CustomerId.append(RetrievedCustomerId)
+
+                        cusId = CustomerId[0]
+
+                        AppointmentDB().addAppt(cusId, self.ApptD_txt.get_date(),self.var_Appt_T.get(),self.ApptDesc_txt.get("1.0",'end-1c'))
+                        messagebox.showinfo("Success","Appointment has beed added successfully!!!")
+                        self.ApptClear()
+                    
+
+                    else:
+                        CustomerId = []
+                        RetrievedCustomerId = CustomerDB().fetchCusId(First, Last)
+                        CustomerId.append(RetrievedCustomerId)
+
+                        cusId = CustomerId[0]
+
+                        AppointmentDB().addAppt(cusId, self.ApptD_txt.get_date(),self.var_Appt_T.get(),self.ApptDesc_txt.get("1.0",'end-1c'))
+                        messagebox.showinfo("Success","Appointment has beed added successfully!!!")
+                        self.ApptClear()
+                else:
+                    return
+
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def ApptClear(self):
+        self.Hide_var_Appt_idFLPE()
+        
+        self.Appt_Acceptbtn.place(x=24,y=525)
+        self.Appt_Updatebtn.place(x=128,y=525)
+        self.Appt_Deletebtn.place(x=232,y=525)
+        
+        self.ApptFN_txt.config(state=NORMAL)
+        self.ApptP_txt.config(state=NORMAL)
+        self.ApptE_txt.config(state=NORMAL)
+        self.ApptD_txt.config(state=NORMAL)
+        self.ApptT_txt.config(state=NORMAL)
+        self.ApptDesc_txt.config(state=NORMAL)
+
+        self.Hide_varApptFLPsearchtxt()
+        self.Hide_varAppt_H_FLPsearchtxt()
+        self.Hide_txtbtn_ApptSearchFLP()
+        self.Hide_txtbtn_H_ApptSearchFLP()
+
+        self.HApptcmb_search.place_forget()
+        self.Apptcmb_search.place(x=15,y=2,width=180)
+
+        self.Appt_Show()
+        self.virtualCustomerFN()
+        self.virtualCusFNP()
+    
+    def Appt_Show(self):
+        self.ApptTable.delete(*self.ApptTable.get_children())
+        try:
+            if not AppointmentDB().getAllAppt():
+                messagebox.showerror("Error", "No Appointment records available!!!.")
+            else:
+                rows = AppointmentDB().getAllAppt()
+                for index in range(len(rows)):
+
+                    self.ApptTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.ApptTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.ApptTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.ApptTable.insert("",END,values=rows[index],tags=("oddrow",))
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def ApptGetdata(self,event):
+        f=self.ApptTable.focus()
+        curItem=(self.ApptTable.item(f))
+        row=curItem['values']
+        try:
+            self.var_Appt_id.set(row[0])
+            self.var_Appt_FN.set(row[1])
+            self.ApptFN_txt.config(state=DISABLED)
+            self.var_Appt_P.set(row[2])
+            self.ApptP_txt.config(state=DISABLED)
+            self.var_Appt_E.set(row[3])
+            self.ApptE_txt.config(state=DISABLED)
+            self.ApptD_txt.set_date(datetime.datetime.strptime(str(row[4]), '%Y-%m-%d').strftime('%m/%d/%Y'))
+            self.ApptT_txt.set(row[5])
+            self.ApptDesc_txt.delete("1.0",END)
+            self.ApptDesc_txt.insert(END,row[6])
+        except:
+            pass
+    
+    def ApptUpdate(self):
+        current = datetime.datetime.now().date()
+        future = datetime.datetime.now().date() + datetime.timedelta(days=3)
+        try:
+            if self.var_Appt_id.get()=="":
+                messagebox.showerror("Error","No Appointment info selected")
+            elif self.ApptD_txt.get_date()=="":
+                messagebox.showerror("Error","Appoitment date is required!!!")
+            elif self.var_Appt_T.get()=="Select":
+                messagebox.showerror("Error","Appoitment time is required!!!")
+            elif self.ApptD_txt.get_date() < current:
+                messagebox.showerror("Error","The appointment cannot be made before the current day!!!")
+            elif self.ApptD_txt.get_date() > future:
+                messagebox.showerror("Error","The appointment cannot be made over 3 days from the current day!!!")
+            else:
+                DateFormated=datetime.datetime.strptime(str(self.ApptD_txt.get_date()),'%Y-%m-%d').strftime('%A, %d. %B')
+                op=messagebox.askyesno("Confirmation",f"Do you want to update the appointment on {DateFormated} at {self.ApptT_txt.get()}?")
+                if op==True:
+                    AppointmentDB().UpdateAppt(self.ApptD_txt.get_date(),self.var_Appt_T.get(),self.ApptDesc_txt.get("1.0",'end-1c'),self.var_Appt_id.get())
+                    messagebox.showinfo("Success","Appointment has beed updated successfully!!!")
+                    self.ApptClear()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def ApptDelete(self):
+        try:
+            if self.var_Appt_id.get()=="":
+                messagebox.showerror("Error","No Appointment info selected")
+            else:
+                DateFormated=datetime.datetime.strptime(str(self.ApptD_txt.get_date()),'%Y-%m-%d').strftime('%A, %d. %B')
+                op=messagebox.askokcancel("Confirmation",f"Do you want to cancel the appointment on {DateFormated} at {self.ApptT_txt.get()}?")
+                if op==True:
+                    AppointmentDB().DeleteAppt(self.var_Appt_id.get())
+                    messagebox.showinfo("Success","Appointment has beed cancelled successfully!!!")
+                    self.ApptClear()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def virtualCustomerFN(self):
+        self.ApptFNN.clear()
+
+        rows = CustomerDB().getAllCusByFN()
+        
+        if rows:
+            for i in range(0, len(rows)):
+                self.ApptFNN.append(rows[i][0]) 
+        else:
+            pass
+    
+    def virtualCusFNP(self):
+        self.ApptFname.clear()
+        self.ApptLname.clear()
+        self.ApptPhone.clear()
+
+        self.ApptHFname.clear()
+        self.ApptHLname.clear()
+        self.ApptHPhone.clear()
+        rows = CustomerDB().getAllApptFLP()
+        row1s = CustomerDB().FNPByApptHistory()
+        if rows:
+            for i in range(0, len(rows)):
+                self.ApptFname.append(rows[i][0])
+                self.ApptLname.append(rows[i][1])
+                self.ApptPhone.append(rows[i][2])
+
+            for i in range(0, len(row1s)):
+                self.ApptHFname.append(row1s[i][0])
+                self.ApptHLname.append(row1s[i][1])
+                self.ApptHPhone.append(row1s[i][2])
+        else:
+            pass
+    
+    def ApptHistory(self):
+        try:
+            rows = AppointmentDB().ApptHistory()
+            if len(rows)!=0:
+                self.ApptTable.delete(*self.ApptTable.get_children())
+                for index in range(len(rows)):
+
+                    self.ApptTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.ApptTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.ApptTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.ApptTable.insert("",END,values=rows[index],tags=("oddrow",))
+
+                self.Hide_var_Appt_idFLPE()
+
+                self.ApptFN_txt.config(state=DISABLED)
+                self.ApptP_txt.config(state=DISABLED)
+                self.ApptE_txt.config(state=DISABLED)
+                self.ApptD_txt.config(state=DISABLED)
+                self.ApptT_txt.config(state=DISABLED)
+                self.ApptDesc_txt.config(state=DISABLED)
+
+                self.Appt_Acceptbtn.place_forget()
+                self.Appt_Updatebtn.place_forget()
+                self.Appt_Deletebtn.place_forget()
+
+                self.Hide_varApptFLPsearchtxt()
+
+                self.Hide_varAppt_H_FLPsearchtxt()
+
+                self.Hide_txtbtn_ApptSearchFLP()
+
+                self.Hide_txtbtn_H_ApptSearchFLP()
+
+                self.Apptcmb_search.current(0)
+                self.Apptcmb_search.place_forget()
+                
+                self.HApptcmb_search.current(0)
+                self.HApptcmb_search.place(x=15,y=2,width=180)
+                
+
+            else:
+                messagebox.showerror("Error","No historial records available!!!.")
+                self.ApptClear()
+        except Exception as e:
+            messagebox.showerror("Error",f"Error due to: {str(e)}")
+            print(f"Something went wrong {e}.")
+        
+    def ApptSearchSelection(self,event):
+        if self.Apptcmb_search.get() == "Select":
+            self.Hide_var_Appt_idFLPE()
+
+            self.Hide_varApptFLPsearchtxt()
+
+            self.Hide_txtbtn_ApptSearchFLP()
+        elif self.Apptcmb_search.get() == "first_name":
+            self.Hide_var_Appt_idFLPE()
+
+            self.Hide_varApptFLPsearchtxt()
+
+            self.Hide_txtbtn_ApptSearchFLP()
+
+            self.txt_ApptFsearch.place(x=215,y=2)
+            self.btn_Fsearch.place(x=465)
+
+        elif self.Apptcmb_search.get() == "last_name":
+            self.Hide_var_Appt_idFLPE()
+
+            self.Hide_varApptFLPsearchtxt()
+
+            self.Hide_txtbtn_ApptSearchFLP()
+
+            self.txt_ApptLsearch.place(x=215,y=2)
+            self.btn_Lsearch.place(x=465)
+
+        elif self.Apptcmb_search.get() == "phone":
+            self.Hide_var_Appt_idFLPE()
+
+            self.Hide_varApptFLPsearchtxt()
+
+            self.Hide_txtbtn_ApptSearchFLP()
+
+            self.txt_ApptPsearch.place(x=215,y=2)
+            self.btn_Psearch.place(x=465)
+    
+    def ApptFsearch(self):
+        try:
+            if self.Apptcmb_search.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_ApptFsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = AppointmentDB().SearchAllAppt(self.Apptcmb_search.get(),self.var_ApptFsearchtxt.get())
+                if len(rows)!=0:
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    for index in range(len(rows)):
+
+                        self.ApptTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.ApptTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.ApptTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.ApptTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.Hide_var_Appt_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    self.Hide_var_Appt_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def ApptLsearch(self):
+        try:
+            if self.Apptcmb_search.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_ApptLsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = AppointmentDB().SearchAllAppt(self.Apptcmb_search.get(),self.var_ApptLsearchtxt.get())
+                if len(rows)!=0:
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    for index in range(len(rows)):
+                        self.ApptTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.ApptTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.ApptTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.ApptTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.Hide_var_Appt_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    self.Hide_var_Appt_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def ApptPsearch(self):
+        try:
+            if self.Apptcmb_search.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_ApptPsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = AppointmentDB().SearchAllAppt(self.Apptcmb_search.get(),self.var_ApptPsearchtxt.get())
+                if len(rows)!=0:
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    for index in range(len(rows)):
+                        self.ApptTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.ApptTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.ApptTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.ApptTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.Hide_var_Appt_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    self.Hide_var_Appt_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def ApptHSearchSelection(self,event):
+        if self.HApptcmb_search.get() == "Select":
+            self.Hide_var_Appt_idFLPE()
+
+            self.Hide_varAppt_H_FLPsearchtxt()
+
+            self.Hide_txtbtn_H_ApptSearchFLP()
+        elif self.HApptcmb_search.get() == "first_name":
+            self.Hide_var_Appt_idFLPE()
+
+            self.Hide_varAppt_H_FLPsearchtxt()
+
+            self.Hide_txtbtn_H_ApptSearchFLP()
+
+            self.txt_ApptHFsearch.place(x=215,y=2)
+            self.btn_HFsearch.place(x=465)
+
+        elif self.HApptcmb_search.get() == "last_name":
+            self.Hide_var_Appt_idFLPE()
+
+            self.Hide_varAppt_H_FLPsearchtxt()
+
+            self.Hide_txtbtn_H_ApptSearchFLP()
+
+            self.txt_ApptHLsearch.place(x=215,y=2)
+            self.btn_HLsearch.place(x=465)
+
+        elif self.HApptcmb_search.get() == "phone":
+            self.Hide_var_Appt_idFLPE()
+
+            self.Hide_varAppt_H_FLPsearchtxt()
+
+            self.Hide_txtbtn_H_ApptSearchFLP()
+
+            self.txt_ApptHPsearch.place(x=215,y=2)
+            self.btn_HPsearch.place(x=465)
+
+    def ApptHFsearch(self):
+        try:
+            if self.HApptcmb_search.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_ApptHFsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = AppointmentDB().SearchApptHistory(self.HApptcmb_search.get(),self.var_ApptHFsearchtxt.get())
+                if len(rows)!=0:
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    for index in range(len(rows)):
+
+                        self.ApptTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.ApptTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.ApptTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.ApptTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.Hide_var_Appt_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    self.Hide_var_Appt_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def ApptHLsearch(self):
+        try:
+            if self.HApptcmb_search.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.txt_ApptHLsearch.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = AppointmentDB().SearchApptHistory(self.HApptcmb_search.get(),self.txt_ApptHLsearch.get())
+                if len(rows)!=0:
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    for index in range(len(rows)):
+                        self.ApptTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.ApptTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.ApptTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.ApptTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.Hide_var_Appt_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    self.Hide_var_Appt_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def ApptHPsearch(self):
+        try:
+            if self.HApptcmb_search.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.txt_ApptHPsearch.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            else:
+                rows = AppointmentDB().SearchApptHistory(self.HApptcmb_search.get(),self.txt_ApptHPsearch.get())
+                if len(rows)!=0:
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    for index in range(len(rows)):
+                        self.ApptTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.ApptTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.ApptTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.ApptTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.Hide_var_Appt_idFLPE()
+                else:
+                    messagebox.showerror("Error","No record found.")
+                    self.ApptTable.delete(*self.ApptTable.get_children())
+                    self.Hide_var_Appt_idFLPE()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}")
+
+    def Hide_var_Appt_idFLPE(self):
+        self.var_Appt_id.set("")
+        self.var_Appt_FN.set("")
+        self.var_Appt_P.set("")
+        self.var_Appt_E.set("")
+        self.ApptT_txt.current(0)
+        self.ApptD_txt.set_date(datetime.datetime.now().date())
+        self.ApptDesc_txt.delete("1.0",END)
+
+    def Hide_varApptFLPsearchtxt(self):
+        self.var_ApptFsearchtxt.set("")
+        self.var_ApptLsearchtxt.set("")
+        self.var_ApptPsearchtxt.set("")
+
+    def Hide_varAppt_H_FLPsearchtxt(self):
+        self.var_ApptHFsearchtxt.set("")
+        self.var_ApptHLsearchtxt.set("")
+        self.var_ApptHPsearchtxt.set("")
+
+    def Hide_txtbtn_ApptSearchFLP(self):
+        self.txt_ApptFsearch.place_forget()
+        self.btn_Fsearch.place_forget()
+        self.txt_ApptLsearch.place_forget()
+        self.btn_Lsearch.place_forget()
+        self.txt_ApptPsearch.place_forget()
+        self.btn_Psearch.place_forget()
+
+    def Hide_txtbtn_H_ApptSearchFLP(self):
+        self.txt_ApptHFsearch.place_forget()
+        self.btn_HFsearch.place_forget()
+        self.txt_ApptHLsearch.place_forget()
+        self.btn_HLsearch.place_forget()
+        self.txt_ApptHPsearch.place_forget()
+        self.btn_HPsearch.place_forget()
+        
 if __name__ == "__main__":
     app = App()
     app.mainloop()

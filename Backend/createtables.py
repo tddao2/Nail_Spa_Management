@@ -145,7 +145,19 @@ class CreateTables:
             ")"
         )
 
-
+        TABLES['appointment'] = (
+            "CREATE TABLE `appointment` ("
+            "  `appointment_id` int NOT NULL AUTO_INCREMENT,"
+            "  `customer_id` int NOT NULL,"
+            "  `date_appt` date NOT NULL,"
+            "  `time_appt` varchar(10) NOT NULL,"
+            "  `appt_desc` varchar(255),"
+            "  `active` BIT NOT NULL DEFAULT 1,"
+            "  PRIMARY KEY (`appointment_id`),"
+            "  CONSTRAINT `FK_appointment_customer_id` FOREIGN KEY (`customer_id`) "
+            "     REFERENCES `customer` (`customer_id`) ON UPDATE CASCADE"
+            ")"
+        )
 
         TABLES['roles_data1'] = (
             "INSERT INTO `roles` (`role_name`) SELECT 'Admin' FROM DUAL WHERE NOT EXISTS (SELECT * FROM `roles` WHERE `role_name`='Admin' LIMIT 1);"
