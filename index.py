@@ -2929,8 +2929,8 @@ class EmployeeDashboard(tk.Frame):
         Clear_btn=tk.Button(btn_F,text="Clear",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=self.clear_bill)
         Clear_btn.grid(row=0,column=2,padx=7,pady=3)
 
-        Exit_btn=tk.Button(btn_F,text="Exit",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold")
-        Exit_btn.grid(row=0,column=3,padx=7,pady=3)
+        self.Exit_btn=tk.Button(btn_F,text="Logout",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=lambda: self.controller.show_frame("Login"))
+        self.Exit_btn.grid(row=0,column=3,padx=7,pady=3)
 
         self.ApptFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
         self.CusFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
