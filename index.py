@@ -64,7 +64,7 @@ class App(tk.Tk):
             frame.grid(row=0, column=0, sticky="nsew")
 
         # Display the current page
-        self.show_frame("EmployeeDashboard")
+        self.show_frame("AdminDashboard")
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
@@ -1150,8 +1150,14 @@ class AdminDashboard(tk.Frame):
             if not EmployeeDB().EmpFetch():
                 messagebox.showerror("Error", "No records found.")
             else:
-                for row in EmployeeDB().EmpFetch():
-                    self.EmployeeTable.insert("",END,values=row)
+                rows = EmployeeDB().EmpFetch()
+                for index in range(len(rows)):
+                    self.EmployeeTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.EmployeeTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.EmployeeTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.EmployeeTable.insert("",END,values=rows[index],tags=("oddrow",))
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
@@ -1235,8 +1241,13 @@ class AdminDashboard(tk.Frame):
                 rows = AccountDB().AcctSearch(data)
                 if len(rows)!=0:
                     self.AccountTable.delete(*self.AccountTable.get_children())
-                    for row in rows:
-                        self.AccountTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.AccountTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.AccountTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.AccountTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.AccountTable.insert("",END,values=rows[index],tags=("oddrow",))
                 else:
                     messagebox.showerror("Error","No record found.")
         except Exception as e:
@@ -1257,8 +1268,14 @@ class AdminDashboard(tk.Frame):
             if not AccountStatusDB().AcctFetch():
                 messagebox.showerror("Error", "No records found.")
             else:
-                for row in AccountStatusDB().AcctFetch():
-                    self.AccountTable.insert("",END,values=row)
+                rows = AccountStatusDB().AcctFetch()
+                for index in range(len(rows)):
+                    self.AccountTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.AccountTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.AccountTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.AccountTable.insert("",END,values=rows[index],tags=("oddrow",))
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
@@ -1269,8 +1286,14 @@ class AdminDashboard(tk.Frame):
             if not AccountDB().AcctFetchAll():
                 messagebox.showerror("Error", "No records found.")
             else:
-                for row in AccountDB().AcctFetchAll():
-                    self.AccountTable.insert("",END,values=row)
+                rows = AccountDB().AcctFetchAll()
+                for index in range(len(rows)):
+                    self.AccountTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.AccountTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.AccountTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.AccountTable.insert("",END,values=rows[index],tags=("oddrow",))
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
@@ -1294,11 +1317,15 @@ class AdminDashboard(tk.Frame):
             if not FeedbackDB().getAllFB():
                 self.Hide_Delete_Options()
                 messagebox.showerror("Error", "No Feedback records available!!!.")
-
-
             else:
-                for row in FeedbackDB().getAllFB():
-                    self.FeedbackTable.insert("",END,values=row)
+                rows = FeedbackDB().getAllFB()
+                for index in range(len(rows)):
+                    self.FeedbackTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.FeedbackTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.FeedbackTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.FeedbackTable.insert("",END,values=rows[index],tags=("oddrow",))
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
@@ -1461,8 +1488,13 @@ class AdminDashboard(tk.Frame):
                 rows = FeedbackDB().getFBbyOption(FBoption)
                 if len(rows)!=0:
                     self.FeedbackTable.delete(*self.FeedbackTable.get_children())
-                    for row in rows:
-                        self.FeedbackTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.FeedbackTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.FeedbackTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.FeedbackTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.FeedbackTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.SV_ClearSearch()
                     self.FeedbackDetails()
                     self.HideDeleteOptions()
@@ -1478,8 +1510,13 @@ class AdminDashboard(tk.Frame):
                 rows = FeedbackDB().getFBbyMonth(FBmonth)
                 if len(rows)!=0:
                     self.FeedbackTable.delete(*self.FeedbackTable.get_children())
-                    for row in rows:
-                        self.FeedbackTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.FeedbackTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.FeedbackTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.FeedbackTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.FeedbackTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.SV_ClearSearch()
                     self.FeedbackDetails()
                     self.HideDeleteOptions()
@@ -1493,8 +1530,13 @@ class AdminDashboard(tk.Frame):
                 rows = FeedbackDB().getFBbyOption(FBoption)
                 if len(rows)!=0:
                     self.FeedbackTable.delete(*self.FeedbackTable.get_children())
-                    for row in rows:
-                        self.FeedbackTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.FeedbackTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.FeedbackTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.FeedbackTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.FeedbackTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.SV_ClearSearch()
                 else:
                     messagebox.showerror("Error","No record found.")
@@ -1513,8 +1555,13 @@ class AdminDashboard(tk.Frame):
             rows = FeedbackDB().showAllFB()
             if len(rows)!=0:
                 self.FeedbackTable.delete(*self.FeedbackTable.get_children())
-                for row in rows:
-                    self.FeedbackTable.insert("",END,values=row)
+                for index in range(len(rows)):
+                    self.FeedbackTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.FeedbackTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.FeedbackTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.FeedbackTable.insert("",END,values=rows[index],tags=("oddrow",))
                 self.SV_ClearSearch()
                 self.Hide_Delete_Options()
             else:
@@ -3707,8 +3754,13 @@ class EmployeeDashboard(tk.Frame):
             rows = CustomerDB().getAllHisCustomer()
             if len(rows)!=0:
                 self.CusTable.delete(*self.CusTable.get_children())
-                for row in rows:
-                    self.CusTable.insert("",END,values=row)
+                for index in range(len(rows)):
+                    self.CusTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.CusTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.CusTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.CusTable.insert("",END,values=rows[index],tags=("oddrow",))
                 self.CusF_txt.config(state=DISABLED)
                 self.CusL_txt.config(state=DISABLED)
                 self.CusP_txt.config(state=DISABLED)
@@ -3803,8 +3855,13 @@ class EmployeeDashboard(tk.Frame):
                 rows = CustomerDB().FLPsearch(self.var_Cussearchby.get(),self.var_CusFsearchtxt.get())
                 if len(rows)!=0:
                     self.CusTable.delete(*self.CusTable.get_children())
-                    for row in rows:
-                        self.CusTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.CusTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.CusTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.CusTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.CusTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.Hide_var_Cus_idFLPE()
                 else:
                     messagebox.showerror("Error","No record found.")
@@ -3824,8 +3881,13 @@ class EmployeeDashboard(tk.Frame):
                 rows = CustomerDB().FLPsearch(self.var_Cussearchby.get(),self.var_CusLsearchtxt.get())
                 if len(rows)!=0:
                     self.CusTable.delete(*self.CusTable.get_children())
-                    for row in rows:
-                        self.CusTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.CusTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.CusTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.CusTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.CusTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.Hide_var_Cus_idFLPE()
                 else:
                     messagebox.showerror("Error","No record found.")
@@ -3845,8 +3907,13 @@ class EmployeeDashboard(tk.Frame):
                 rows = CustomerDB().FLPsearch(self.var_Cussearchby.get(),self.var_CusPsearchtxt.get())
                 if len(rows)!=0:
                     self.CusTable.delete(*self.CusTable.get_children())
-                    for row in rows:
-                        self.CusTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.CusTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.CusTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.CusTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.CusTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.Hide_var_Cus_idFLPE()
                 else:
                     messagebox.showerror("Error","No record found.")
@@ -3902,8 +3969,13 @@ class EmployeeDashboard(tk.Frame):
                 rows = CustomerDB().HFLPsearch(self.var_CusHsearchby.get(),self.var_CusHFsearchtxt.get())
                 if len(rows)!=0:
                     self.CusTable.delete(*self.CusTable.get_children())
-                    for row in rows:
-                        self.CusTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.CusTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.CusTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.CusTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.CusTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.Hide_var_Cus_idFLPE()
                 else:
                     messagebox.showerror("Error","No record found.")
@@ -3923,8 +3995,13 @@ class EmployeeDashboard(tk.Frame):
                 rows = CustomerDB().HFLPsearch(self.var_CusHsearchby.get(),self.var_CusHLsearchtxt.get())
                 if len(rows)!=0:
                     self.CusTable.delete(*self.CusTable.get_children())
-                    for row in rows:
-                        self.CusTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.CusTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.CusTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.CusTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.CusTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.Hide_var_Cus_idFLPE()
                 else:
                     messagebox.showerror("Error","No record found.")
@@ -3944,8 +4021,13 @@ class EmployeeDashboard(tk.Frame):
                 rows = CustomerDB().HFLPsearch(self.var_CusHsearchby.get(),self.var_CusHPsearchtxt.get())
                 if len(rows)!=0:
                     self.CusTable.delete(*self.CusTable.get_children())
-                    for row in rows:
-                        self.CusTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.CusTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.CusTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.CusTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.CusTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.Hide_var_Cus_idFLPE()
                 else:
                     messagebox.showerror("Error","No record found.")
