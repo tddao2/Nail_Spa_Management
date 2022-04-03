@@ -40,6 +40,17 @@ class CustomerDB:
         rows = self.cursor.fetchall()
         return rows
 
+    def fetchCusIdAndPhone(self, first, last):
+        self.cursor.execute("SELECT customer_id, phone FROM customer \
+                            WHERE first_name LIKE '%"+first+"%' and last_name LIKE '%"+last+"%' and active = 1;")
+        row = self.cursor.fetchone()
+        # print("fetchCusId ", row)
+        # print(type(row))
+        if row:
+            return row
+        else:
+            return None
+
     # >>>Used updateCustomer() <<<<
 
     def getAllHisCustomer(self):

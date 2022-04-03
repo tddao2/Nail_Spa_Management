@@ -11,6 +11,7 @@ import phonenumbers
 import re
 from itertools import repeat
 from nameparser import HumanName
+import os
 
 from Backend.createtables import CreateTables
 from Additional_features import myentry
@@ -2010,6 +2011,7 @@ class EmployeeDashboard(tk.Frame):
         self.cname=tk.StringVar()
         self.cphn=tk.StringVar()
         self.c_email=tk.StringVar()
+        self.c_bill=tk.StringVar()
 
         self.totalMoney=tk.DoubleVar()
         self.totalTip=tk.DoubleVar()
@@ -2141,7 +2143,7 @@ class EmployeeDashboard(tk.Frame):
         F1.place(relwidth=1)
 
         lblcname=tk.Label(F1,text="Customer Name",bg="#e2479c",fg="white",font=("time new roman",11,"bold"))
-        lblcname.grid(row=0,column=0,padx=5,pady=5)
+        lblcname.grid(row=0,column=0,padx=4,pady=5)
 
         self.txtcname=myentry(F1,textvariable=self.cname,width=15,font="arial 15",bd=3,relief=SUNKEN)
         self.txtcname.grid(row=0,column=1,pady=5)
@@ -2158,27 +2160,32 @@ class EmployeeDashboard(tk.Frame):
         self.txtcname.set_completion_list(cname)
 
         lblcphn=tk.Label(F1,text="Phone No.",bg="#e2479c",fg="white",font=("time new roman",11,"bold"))
-        lblcphn.grid(row=0,column=2,padx=5,pady=5)
+        lblcphn.grid(row=0,column=2,padx=4,pady=5)
 
         self.txtcphn=myentry(F1,textvariable=self.cphn,width=15,font="arial 15",bd=3,relief=SUNKEN)
-        self.txtcphn.grid(row=0,column=3,pady=5,padx=5)
+        self.txtcphn.grid(row=0,column=3,pady=5,padx=4)
         self.txtcphn.set_completion_list(cphn)
 
         lblc_email=tk.Label(F1,text="Email",bg="#e2479c",fg="white",font=("time new roman",11,"bold"))
-        lblc_email.grid(row=0,column=4,padx=5,pady=5)
+        lblc_email.grid(row=0,column=4,padx=4,pady=5)
 
         self.txtc_email=myentry(F1,textvariable=self.c_email,width=25,font="arial 15",bd=3,relief=SUNKEN)
-        self.txtc_email.grid(row=0,column=5,pady=5,padx=5)
+        self.txtc_email.grid(row=0,column=5,pady=5,padx=4)
         self.txtc_email.set_completion_list(c_email)
 
         lblbill=tk.Label(F1,text="Bill Number",bg="#e2479c",fg="white",font=("time new roman",11,"bold"))
-        lblbill.grid(row=0,column=6,padx=20,pady=10)
+        lblbill.grid(row=0,column=6,padx=4,pady=10)
 
-        self.txtbill=tk.Entry(F1,width=15,font="arial 15",bd=3,relief=SUNKEN)
+        self.txtbill=tk.Entry(F1,textvariable=self.c_bill,width=15,font="arial 15",bd=3,relief=SUNKEN)
         self.txtbill.grid(row=0,column=7,pady=10)
 
-        self.bill_btn=tk.Button(F1,text="Find",width=5,bd=3,font="arial 11 bold",bg="#a50060",fg="white")
-        self.bill_btn.grid(row=0,column=8,pady=10,padx=5)
+        self.bill_btn=tk.Button(F1,text="Find",width=5,bd=3,font="arial 11 bold",bg="#a50060",fg="white",command=self.find_bill)
+        self.bill_btn.grid(row=0,column=8,pady=10,padx=4)
+
+        imgRefreshBilling=Image.open("images/refresh.png").resize((40,40),Image.ANTIALIAS)
+        self.photoimageRefreshBilling=ImageTk.PhotoImage(imgRefreshBilling)
+        RefreshBilling=tk.Button(F1,image=self.photoimageRefreshBilling,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.after_Submit_order)
+        RefreshBilling.grid(row=0,column=9,padx=1,pady=10)
 
         #========================Enhancement Services Set Frame==============================
         self.F2=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text=self.ServiceType[0],font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
@@ -2919,7 +2926,7 @@ class EmployeeDashboard(tk.Frame):
         GBill_btn=tk.Button(btn_F,text="Generate Bill",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=self.generate_bill)
         GBill_btn.grid(row=0,column=1,padx=7,pady=3)
 
-        Clear_btn=tk.Button(btn_F,text="Refresh",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=self.Start)
+        Clear_btn=tk.Button(btn_F,text="Clear",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=self.clear_bill)
         Clear_btn.grid(row=0,column=2,padx=7,pady=3)
 
         Exit_btn=tk.Button(btn_F,text="Exit",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold")
@@ -3482,12 +3489,14 @@ class EmployeeDashboard(tk.Frame):
             self.totalMoney.set(0.0)
             self.totalTip.set(0.0)  
         elif (self.totalDiscount.get() == 0) and (sum(self.Selected_Services) != 0):
-            Tip = self.totalTip.get()
-            self.totalMoney.set(sum(self.Selected_Services) + Tip)
+            Tip = round(self.totalTip.get(),2)
+            Total = round((sum(self.Selected_Services) + Tip),2)
+            self.totalMoney.set(Total)
         elif (self.totalDiscount.get() != 0) and (sum(self.Selected_Services) != 0):
             Discount = self.totalDiscount.get()
-            Tip = self.totalTip.get()
-            self.totalMoney.set((sum(self.Selected_Services) + Tip) - ((sum(self.Selected_Services) + Tip) * (Discount/100)))
+            Tip = round(self.totalTip.get(),2)
+            Total = round(((sum(self.Selected_Services) + Tip) - ((sum(self.Selected_Services) + Tip) * (Discount/100))),2)
+            self.totalMoney.set(Total)
             
     def get_All_Users(self):
         self.retrieved_password.clear()
@@ -3512,69 +3521,84 @@ class EmployeeDashboard(tk.Frame):
                 if bcrypt.checkpw(self.Retrievedpw.get().encode('utf8'), self.retrieved_password[index].encode('utf8')):
                     self.Selected_password_Id.append(self.retrieved_password_Id[index])
                     
-                    Customer_name = HumanName(self.cname.get())
-                    last = ""
-                    if len(Customer_name.middle) == 0:
-                        last = Customer_name.last
-                    else:
-                        last = Customer_name.middle +" "+ Customer_name.last
+                    self.Customer_name = HumanName(self.cname.get())
+                    self.last = ""
+            
 
-                    first = Customer_name.first
+                    if len(self.Customer_name.middle) == 0:
+                        self.last = self.Customer_name.last
+                    else:
+                        self.last = self.Customer_name.middle +" "+ self.Customer_name.last
+                        
+                
+                    self.first = self.Customer_name.first
+                           
                     phone = self.cphn.get()
                     email = self.c_email.get()
 
                     empId = self.Selected_password_Id[0]
-                    tip = self.totalTip.get()
+                    tip = round(self.totalTip.get(),2)
                     discount = self.totalDiscount.get()
                     total = self.totalMoney.get()
 
                     SerId = self.Selected_Services_Id
 
-                    if not CustomerDB().fetchCusId(first, last):
+                    if not CustomerDB().fetchCusIdAndPhone(self.first, self.last):
                         CustomerId = []
                         InvoiceId = []
                         
-                        RetrievedCustomerId = CustomerDB().addCustomerAndGetId(first, last, phone, email)
+                        RetrievedCustomerId = CustomerDB().addCustomerAndGetId(self.first, self.last, phone, email)
                         CustomerId.append(RetrievedCustomerId)
 
                         cusId = CustomerId[0]
 
                         RetrievedInvoiceId = InvoiceDB().Add_Invoice(empId, cusId, tip, discount, total)
                         InvoiceId.append(RetrievedInvoiceId)
+                        
+                        
+                        self.InvId = InvoiceId[0]
 
-                        InvId = InvoiceId[0]
-
-                        InvoiceLineItemDB().Add_InvoiceItem(InvId, SerId)
+                        InvoiceLineItemDB().Add_InvoiceItem(self.InvId, SerId)
 
                         messagebox.showinfo("Success","Invoice is submitted successfully!!!")
 
                         value_found = True
-                        self.after_Submit_order()
+                        self.welcome_bill()
+
+                        self.close_reset()
+                        
                         break
                     else:
                         CustomerId = []
                         InvoiceId = []
 
-                        RetrievedCustomerId = CustomerDB().fetchCusId(first, last)
-                        CustomerId.append(RetrievedCustomerId)
+                        RetrievedCustomerId = CustomerDB().fetchCusIdAndPhone(self.first, self.last)
+                        CustomerId.append(RetrievedCustomerId[0])
 
                         cusId = CustomerId[0]
+
+                        self.cphn.set(RetrievedCustomerId[1])
 
                         RetrievedInvoiceId = InvoiceDB().Add_Invoice(empId, cusId, tip, discount, total)
                         InvoiceId.append(RetrievedInvoiceId)
 
-                        InvId = InvoiceId[0]
+                        
 
-                        InvoiceLineItemDB().Add_InvoiceItem(InvId, SerId)
+                        
+                        self.InvId = InvoiceId[0]
+
+                        InvoiceLineItemDB().Add_InvoiceItem(self.InvId, SerId)
 
                         messagebox.showinfo("Success","Invoice is submitted successfully!!!")
                         value_found = True
-                        self.after_Submit_order()
+                        self.welcome_bill()
+                        self.close_reset()
                         
                         break
 
             if not value_found:
                 messagebox.showerror("Error","Wrong password")
+                self.Retrievedpw.set("")
                 self.lblEnterPassword.place_forget()
                 self.txtEnterPassword.place_forget()
                 self.BtnEnterPassword.place_forget()
@@ -3587,6 +3611,7 @@ class EmployeeDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
+
 
     def generate_bill(self):
         if  self.ServiceName[0] == "N/A":
@@ -4477,7 +4502,124 @@ class EmployeeDashboard(tk.Frame):
         self.btn_HLsearch.place_forget()
         self.txt_ApptHPsearch.place_forget()
         self.btn_HPsearch.place_forget()
+    
+    def welcome_bill(self):
+        today = datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
+        self.txtarea.delete("1.0",END)
+        self.txtarea.insert(END,"\tWelcome to KT Nail & Spa")
+        self.txtarea.insert(END,"\n\t   (281) 403-2184)")
+        self.txtarea.insert(END,"\n    2419 Texas Parway (FM2234) #300")
+        self.txtarea.insert(END,"\n\tMissouri City, TX 77489")
         
+        self.txtarea.insert(END,"\n")
+        self.txtarea.insert(END,f"\n{today}")
+        
+        self.txtarea.insert(END,"\n")
+        self.txtarea.insert(END,f"\n Bill Number : {self.InvId}")
+        self.txtarea.insert(END,f"\n Customer Name : {self.first} {self.last}")
+        self.txtarea.insert(END,f"\n Phone : {self.cphn.get()}")
+        self.txtarea.insert(END,"\n")
+        self.txtarea.insert(END,"\n")
+        self.txtarea.insert(END,"\n====================================")
+        self.txtarea.insert(END,"\n Orded Services(s)")
+        self.txtarea.insert(END,"\n====================================")
+        for names, prices in zip(self.Selected_Services_name, self.Selected_Services):
+            self.txtarea.insert(END,f"\n{names} - ${prices}")
+        self.txtarea.insert(END,"\n------------------------------------")
+        self.txtarea.insert(END,"\n")
+        self.txtarea.insert(END,"\n")
+        self.txtarea.insert(END,f"\n \t\tTip : ${self.totalTip.get()}")
+        self.txtarea.insert(END,f"\n \t\tDiscount : %{self.totalDiscount.get()}")
+        self.txtarea.insert(END,f"\n \t\tTotal Bill : ${self.totalMoney.get()}")
+        self.txtarea.insert(END,"\n\t\t\t")
+        self.txtarea.insert(END,"\n\t\t\t")
+        self.txtarea.insert(END,"\n\t\t\t")
+        self.txtarea.insert(END,"\n   Thank you for your business")
+        self.txtarea.config(state=DISABLED)
+
+        self.save_bill()
+
+    def save_bill(self):
+        op=messagebox.askyesno("Save Bill","Do you want to save the Bill?")
+        if op==True:
+            self.bill_data = self.txtarea.get("1.0",'end-1c')
+            today = datetime.datetime.now().strftime("%A %d %B %Y__%I %M%p")
+            name = f"{self.InvId}_{self.first} {self.last}_{today}"
+            f1=open("Bills/"+str(name)+".txt","w")
+            f1.write(self.bill_data)
+            f1.close()
+        else:
+            return
+
+    def close_reset(self):
+        self.lblEnterPassword.place_forget()
+        self.txtEnterPassword.place_forget()
+        self.BtnEnterPassword.place_forget()
+        
+        self.F2.place(y=100,width=325,height=429)
+        self.F3.place(x=326,y=100,width=325,height=429)
+        self.F4.place(x=652,y=100,width=325,height=429)
+        self.F5.place(x=978,y=100,width=332,height=429)
+
+        self.Retrievedpw.set("")
+        self.cname.set("")
+        self.cphn.set("")
+        self.c_email.set("")
+        self.c_bill.set("")
+
+        self.totalMoney.set(0)
+        self.totalTip.set(0)
+        self.totalDiscount.set(0)
+
+        BackSPW_btn2()
+        Backsp_btn2()
+        BackCPFS_btn2()
+        BackRA_btn2()
+
+        BackM_btn2()
+        BackP_btn2()
+        BackMP_btn2()
+        BackR_btn2()
+        BackPC_btn2()
+        BackEFA_btn2()
+        BackD_btn2()
+        BackCD_btn2()
+        BackBC__btn2()
+        BackTN__btn2()
+
+        BackE_btn2()
+        BackUL_btn2()
+        BackC_btn2()
+        BackHL_btn2()
+        BackFL_btn2()
+        BackB_btn2()
+        BackU_btn2()
+        BackFace_btn2()
+        BackFacial_btn2()
+        BackEP_btn2()
+        BackDuralash_btn2()
+        BackMEE_btn2()
+
+    def clear_bill(self):
+        self.c_bill.set("")
+        self.txtarea.config(state=NORMAL)
+        self.txtarea.delete("1.0",END)
+
+    def find_bill(self):
+        show="no"
+        for i in os.listdir("Bills/"):
+            NumberSplited = i.split('.')[0].split('_')[0]
+            if NumberSplited == self.c_bill.get():
+                f1=open(f"Bills/{i}","r")
+                self.txtarea.delete("1.0",END)
+                for text in f1:
+                    self.txtarea.insert(END,text)
+                f1.close()
+                self.txtarea.config(state=DISABLED)
+                show="yes"
+        if show=="no":
+            messagebox.showerror("Error","Invalid Bill number")
+
 if __name__ == "__main__":
     app = App()
     app.mainloop()
