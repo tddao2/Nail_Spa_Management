@@ -4606,6 +4606,7 @@ class EmployeeDashboard(tk.Frame):
         self.txtarea.delete("1.0",END)
 
     def find_bill(self):
+        self.txtarea.config(state=NORMAL)
         show="no"
         for i in os.listdir("Bills/"):
             NumberSplited = i.split('.')[0].split('_')[0]
