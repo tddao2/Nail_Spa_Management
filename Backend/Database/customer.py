@@ -30,7 +30,6 @@ class CustomerDB:
 
         self.cursor.execute("SELECT LAST_INSERT_ID();")
         row = self.cursor.fetchone()
-        print("addCustomerAndGetId", row)
         return row[0]
 
     def getAllCusByFN(self):
