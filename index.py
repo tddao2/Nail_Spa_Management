@@ -4589,7 +4589,7 @@ class EmployeeDashboard(tk.Frame):
         today = datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
         self.txtarea.delete("1.0",END)
         self.txtarea.insert(END,"\tWelcome to KT Nail & Spa")
-        self.txtarea.insert(END,"\n\t   (281) 403-2184)")
+        self.txtarea.insert(END,"\n\t   (281) 403-2184")
         self.txtarea.insert(END,"\n    2419 Texas Parway (FM2234) #300")
         self.txtarea.insert(END,"\n\tMissouri City, TX 77489")
         
