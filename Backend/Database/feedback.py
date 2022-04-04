@@ -8,6 +8,7 @@ class FeedbackDB:
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     def AddFB(self,data):
+        # print(data[0],data[1],data[2],data[3])
         self.cursor.execute("INSERT INTO feedback(employee_id,performance_score,description) values(%s,%s,%s)",
                             (data[0],data[1],data[2]))
         self.conn.commit()
@@ -33,6 +34,7 @@ class FeedbackDB:
         self.conn.commit()
 
     def deletePeriod(self, period):
+        
         self.cursor.execute("SET SQL_SAFE_UPDATES = 0;")
         self.cursor.execute("UPDATE feedback \
                             SET active = 0 \

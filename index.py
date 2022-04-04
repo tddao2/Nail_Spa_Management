@@ -84,7 +84,7 @@ class Login(tk.Frame):
         self.password = tk.StringVar()
 
         lblFrame = tk.LabelFrame(self,bg="#e2479c")
-        lblFrame.place(x=525,y=160,width=340, height=450)
+        lblFrame.place(x=525,y=160,width=340, height=450) # x=490
 
         img1=Image.open("images/login.png").resize((100,100), Image.ANTIALIAS)
         self.photoimage1=ImageTk.PhotoImage(img1)
@@ -136,6 +136,9 @@ class Login(tk.Frame):
         btnFeedback = tk.Button(lblFrame,image=self.photoimage3FB,borderwidth=0, bg="#e2479c",activebackground="#e2479c", command=lambda: controller.show_frame("Feedback"))
         btnFeedback.place(x=15, y=400)
 
+        # btnFeedback = tk.Button(lblFrame, text="Feedback", font=("times new roman",10,"bold"), borderwidth=0, fg="black", bg="#FF80ED", activeforeground="black",activebackground="#FF80ED", command=lambda: controller.show_frame("Feedback"))
+        # btnFeedback.place(x=15, y=420, width=160)
+
     def login(self):
         userfetch = (self.username.get())
         try:
@@ -147,20 +150,21 @@ class Login(tk.Frame):
                 if AccountDB().fetch(userfetch) == None:
                     messagebox.showerror("Error","Invalid username or password. Please try again.")
                 else:
-                    if AccountDB().fetch(userfetch)[7] == 1:
+                    rows = AccountDB().fetch(userfetch)
+                    if rows[7] == 0:
                         messagebox.showerror("Error","Invalid username or password. Please try again.")
-                    elif AccountDB().fetch(userfetch)[6] == 2:
+                    elif rows[6] == 2:
                         messagebox.showerror("Error","Your account is pending.")
-                    elif AccountDB().fetch(userfetch)[6] == 3:
+                    elif rows[6] == 3:
                         messagebox.showerror("Error","Your account is locked.")
-                    elif AccountDB().fetch(userfetch)[6] == 1 and AccountDB().fetch(userfetch)[5] == 1:
-                        if bcrypt.checkpw(self.password.get().encode('utf8'), AccountDB().fetch(userfetch)[2].encode('utf8')):
+                    elif rows[6] == 1 and rows[5] == 1:
+                        if bcrypt.checkpw(self.password.get().encode('utf8'), rows[2].encode('utf8')):
                             self.controller.show_frame("AdminDashboard")
                             self.clear()
                         else:
                             messagebox.showerror("Error","Invalid username or password. Please try again.")
-                    elif AccountDB().fetch(userfetch)[6] == 1 and AccountDB().fetch(userfetch)[5] == 2:
-                        if bcrypt.checkpw(self.password.get().encode('utf8'), AccountDB().fetch(userfetch)[2].encode('utf8')):
+                    elif rows[6] == 1 and rows[5] == 2:
+                        if bcrypt.checkpw(self.password.get().encode('utf8'), rows[2].encode('utf8')):
                             self.controller.show_frame("EmployeeDashboard")
                             self.clear()
                         else:
@@ -173,7 +177,7 @@ class Login(tk.Frame):
     def clear(self):
         self.username.set("")
         self.password.set("")
-        
+ 
 class Register(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -311,11 +315,8 @@ class Register(tk.Frame):
         userfetch = (self.username.get())
         role_id = 2
         account_status_id = 2
-        activeAccount = 0
-
         employee_status_id = 1
-        activeEmployee = 0
-     
+
         try: 
             if self.firstname.get()=="" \
                 or self.lastname.get()=="" \
@@ -327,7 +328,7 @@ class Register(tk.Frame):
                 or self.CFpassword.get()=="" \
                 or self.SQ.get()=="Select" \
                 or self.SA.get()=="" :
-                messagebox.showerror("Error","All Asterisks are required.")
+                messagebox.showerror("Error","All input are required.")
             elif self.phone.get().isnumeric() == False:
                 messagebox.showerror("Error","Contact contains numbers only.")
             elif self.txtDOB.get_date() == datetime.datetime.now().date():
@@ -342,16 +343,16 @@ class Register(tk.Frame):
                     hashedpassword=bcrypt.hashpw(password, bcrypt.gensalt())
                     secret_answer=self.SA.get().encode('utf8')
                     SAhased=bcrypt.hashpw(secret_answer, bcrypt.gensalt())
-                    account=(self.username.get(),hashedpassword,self.SQ.get(),SAhased,role_id,account_status_id,activeAccount)
-                    AccountDB().insertAccount(account)
-
-                    account_id=AccountDB().fetch(userfetch)
+                    account=(self.username.get(),hashedpassword,self.SQ.get(),SAhased,role_id,account_status_id)
+                    account_id=AccountDB().insertAccount(account)
                     FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.phone.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
-                    employee=(self.firstname.get(),self.lastname.get(),self.txtDOB.get_date(),FormatedPhone,self.email.get(),self.txtAddress.get("1.0",END),employee_status_id,account_id[0],activeEmployee)
+                    employee=(self.firstname.get(),self.lastname.get(),self.txtDOB.get_date(),FormatedPhone,self.email.get(),self.txtAddress.get("1.0",END),employee_status_id,account_id)
                     EmployeeDB().insertEmployee(employee)
                     
                     op=messagebox.showinfo("Success","Register Successfully!")
                     self.clear()
+                    # if op == "ok":
+                    #     self.controller.show_frame("Login")
     
         except Exception as e:
             messagebox.showerror("Error",f"Error due to: {str(e)}")
@@ -440,7 +441,6 @@ class AdminDashboard(tk.Frame):
         self.UserFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
         self.FeedbackFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
 
-
     def employee(self):
         self.hide_all_frames()
         self.EmpFrame.place(x=100,y=30,width=1251,height=690)
@@ -468,20 +468,20 @@ class AdminDashboard(tk.Frame):
         lblEmpId=tk.Label(LeftFrame,text="Emp ID",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblEmpId.place(x=15,y=20)
 
-        txtEmpId=ttk.Entry(LeftFrame,textvariable=self.var_emp_id,font=("times new roman",18),state=DISABLED) # ,state=DISABLED
-        txtEmpId.place(x=140,y=20,width=200)
+        self.txtEmpId=ttk.Entry(LeftFrame,textvariable=self.var_emp_id,font=("times new roman",18),state=DISABLED) # ,state=DISABLED
+        self.txtEmpId.place(x=140,y=20,width=200)
 
         lblFname=tk.Label(LeftFrame,text="First Name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblFname.place(x=15,y=80)
 
-        txtFname=ttk.Entry(LeftFrame,textvariable=self.var_fname,font=("times new roman",18))
-        txtFname.place(x=140,y=80,width=200)
+        self.txtFname=ttk.Entry(LeftFrame,textvariable=self.var_fname,font=("times new roman",18))
+        self.txtFname.place(x=140,y=80,width=200)
 
         lblLname=tk.Label(LeftFrame,text="Last Name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblLname.place(x=15,y=140)
 
-        txtLname=ttk.Entry(LeftFrame,textvariable=self.var_lname,font=("times new roman",18))
-        txtLname.place(x=140,y=140,width=200)
+        self.txtLname=ttk.Entry(LeftFrame,textvariable=self.var_lname,font=("times new roman",18))
+        self.txtLname.place(x=140,y=140,width=200)
 
         lblDOB=tk.Label(LeftFrame,text="DOB",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblDOB.place(x=15,y=200)
@@ -493,20 +493,20 @@ class AdminDashboard(tk.Frame):
         lblEmail=tk.Label(LeftFrame,text="Email",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblEmail.place(x=15,y=260)
 
-        txtEmail=ttk.Entry(LeftFrame,textvariable=self.var_email,font=("times new roman",14))
-        txtEmail.place(x=140,y=260,width=200,height=33)
+        self.txtEmail=ttk.Entry(LeftFrame,textvariable=self.var_email,font=("times new roman",14))
+        self.txtEmail.place(x=140,y=260,width=200,height=33)
 
         lblPhone=tk.Label(LeftFrame,text="Phone",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblPhone.place(x=15,y=320)
 
-        txtPhone=ttk.Entry(LeftFrame,textvariable=self.var_contact,font=("times new roman",18))
-        txtPhone.place(x=140,y=320,width=200)
+        self.txtPhone=ttk.Entry(LeftFrame,textvariable=self.var_contact,font=("times new roman",18))
+        self.txtPhone.place(x=140,y=320,width=200)
 
         lblStatus=tk.Label(LeftFrame,text="Status",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblStatus.place(x=15,y=380)
 
         self.txtStatus=ttk.Combobox(LeftFrame,textvariable=self.var_status,font=("times new roman",18,"bold"),state="readonly",justify="center")
-        self.txtStatus["values"]=("Select","New","Current","Pass")
+        self.txtStatus["values"]=("Select","New","Current")
         self.txtStatus.place(x=140,y=380,width=200)
         self.txtStatus.current(0)
 
@@ -518,13 +518,13 @@ class AdminDashboard(tk.Frame):
 
         imgUpdate=Image.open("images/update.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageUpdate=ImageTk.PhotoImage(imgUpdate)
-        Updatebtn=tk.Button(LeftFrame, image=self.photoimageUpdate,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpUpdate)
-        Updatebtn.place(x=20,y=575,width=80)
+        self.Updatebtn=tk.Button(LeftFrame, image=self.photoimageUpdate,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpUpdate)
+        self.Updatebtn.place(x=20,y=575,width=80)
 
         imgDelete=Image.open("images/delete.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageDelete=ImageTk.PhotoImage(imgDelete)
-        Deletebtn=tk.Button(LeftFrame, image=self.photoimageDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpDelete)
-        Deletebtn.place(x=148,y=575,width=80)
+        self.Deletebtn=tk.Button(LeftFrame, image=self.photoimageDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpDelete)
+        self.Deletebtn.place(x=148,y=575,width=80)
 
         imgRefresh=Image.open("images/refresh.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageRefresh=ImageTk.PhotoImage(imgRefresh)
@@ -545,12 +545,12 @@ class AdminDashboard(tk.Frame):
         self.cmb_search.current(0)
 
         txt_search=tk.Entry(SearchFrame,textvariable=self.var_searchtxt,font=("times new roman",18),bg="white")
-        txt_search.place(x=215,y=2) #10
+        txt_search.place(x=215,y=2)
 
         imgSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageSearch=ImageTk.PhotoImage(imgSearch)
-        btn_search=tk.Button(SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpSearch)
-        btn_search.place(x=465)
+        self.btn_search=tk.Button(SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpSearch)
+        self.btn_search.place(x=465)
 
         btn_showHistory=tk.Button(SearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.EmpHistory)
         btn_showHistory.place(x=510,width=150)
@@ -593,13 +593,14 @@ class AdminDashboard(tk.Frame):
         self.EmployeeTable.column("address",anchor=CENTER)
         self.EmployeeTable.column("status",anchor=CENTER)
 
-        self.EmployeeTable.pack(fill=BOTH, expand=1)
+        self.EmployeeTable.pack(fill=BOTH,expand=1)
         self.EmployeeTable.bind("<ButtonRelease-1>",self.EmpGetdata)
-        self.EmpShow()
 
+        self.EmpShow()
       
     def client(self):
         self.hide_all_frames()
+        # self.ClientFrame.place(x=200,y=30,width=1250,height=690)
         self.ClientFrame.place(x=100, y=30, width=1251, height=690)
 
         style = ttk.Style()
@@ -735,11 +736,10 @@ class AdminDashboard(tk.Frame):
         self.tblCustomer.bind("<ButtonRelease-1>", self.CustomerSelect)
         self.CustomerShow()
 
-
     def sale(self):
         self.hide_all_frames()
         self.SaleFrame.place(x=250,y=30,width=1250,height=690)
-
+    
     def survey(self):
         self.hide_all_frames()
         self.FeedbackFrame.place(x=100,y=30,width=1251,height=691)
@@ -753,8 +753,9 @@ class AdminDashboard(tk.Frame):
         self.var_SVsearchtxt=tk.StringVar()
 
         self.var_SV_id=tk.StringVar()
-        self.var_month=tk.StringVar()
         self.var_SV_Emp=tk.StringVar()
+        self.var_month=tk.StringVar()
+
         # ==========================================================Left Frame=============================================================
         
         # =============Top Left Frame=============
@@ -764,7 +765,7 @@ class AdminDashboard(tk.Frame):
         lblSV_Emp=tk.Label(SVLeftTopFrame,text="Employee",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblSV_Emp.place(x=15,y=20)
 
-        txtSV_Emp=ttk.Entry(SVLeftTopFrame,textvariable=self.var_SV_Emp,font=("times new roman",18),state=DISABLED)
+        txtSV_Emp=ttk.Entry(SVLeftTopFrame,textvariable=self.var_SV_Emp,font=("times new roman",18),state=DISABLED) # ,state=DISABLED
         txtSV_Emp.place(x=140,y=20,width=200)
 
         lblSV=tk.Label(SVLeftTopFrame,text="Feedback",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
@@ -772,7 +773,7 @@ class AdminDashboard(tk.Frame):
 
         self.txtSV=tk.Text(SVLeftTopFrame,font=("times new roman",12))
         self.txtSV.place(x=140,y=80,width=200,height=170)
-
+        
         imgSVDelete=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageSVDelete=ImageTk.PhotoImage(imgSVDelete)
         self.SVDeletebtn=tk.Button(SVLeftTopFrame, image=self.photoimageSVDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SVDelete)
@@ -836,7 +837,7 @@ class AdminDashboard(tk.Frame):
         imgSVRemove1=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageSVRemove1=ImageTk.PhotoImage(imgSVRemove1)
         self.SVRemove1btn=tk.Button(SVLeftBottomFrame, image=self.photoimageSVRemove1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.deletePeriod)
-
+        
         # ==========================================================Right Frame=============================================================
         SV_RightFrame=tk.Frame(self.FeedbackFrame,relief=RIDGE,bd=1,bg="#e2479c")
         SV_RightFrame.place(x=370,y=12,width=880,height=678)
@@ -855,15 +856,15 @@ class AdminDashboard(tk.Frame):
 
         imgSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageSearch=ImageTk.PhotoImage(imgSearch)
-        btn_search=tk.Button(SV_SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SV_Search)
-        btn_search.place(x=465)
+        self.btn_search=tk.Button(SV_SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SV_Search)
+        self.btn_search.place(x=465)
 
         btn_showHistory=tk.Button(SV_SearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.SV_showAll)
         btn_showHistory.place(x=510,width=150)
 
         # =============Bottom Right Frame=============
         FeedbackTableFrame=tk.LabelFrame(SV_RightFrame,relief=RIDGE,bd=1,bg="white")
-        FeedbackTableFrame.place(x=20,y=82,width=839,height=574)
+        FeedbackTableFrame.place(x=20,y=82,width=839,height=574) #608
 
         scrollx=tk.Scrollbar(FeedbackTableFrame,orient=HORIZONTAL)
         scrollx.pack(side=BOTTOM,fill=X)
@@ -927,8 +928,8 @@ class AdminDashboard(tk.Frame):
         lblUsername=tk.Label(LeftFrame,text="User Name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblUsername.place(x=15,y=80)
 
-        txtUsername=ttk.Entry(LeftFrame,textvariable=self.var_username,font=("times new roman",18),state=DISABLED)
-        txtUsername.place(x=140,y=80,width=200)
+        self.txtUsername=ttk.Entry(LeftFrame,textvariable=self.var_username,font=("times new roman",18),state=DISABLED)
+        self.txtUsername.place(x=140,y=80,width=200)
 
         lblRoleName=tk.Label(LeftFrame,text="Role",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblRoleName.place(x=15,y=140)
@@ -946,15 +947,25 @@ class AdminDashboard(tk.Frame):
         self.txtAcctStatus.place(x=140,y=200,width=200)
         self.txtAcctStatus.current(0)
 
-        imgAcctUpdate=Image.open("images/update.png").resize((80,80),Image.ANTIALIAS)
-        self.photoimageAcctUpdate=ImageTk.PhotoImage(imgAcctUpdate)
-        AcctUpdatebtn=tk.Button(LeftFrame, image=self.photoimageAcctUpdate,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctUpdate)
-        AcctUpdatebtn.place(x=20,y=575,width=80)
+        imgAcctAccept=Image.open("images/accept.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageAcctAccept=ImageTk.PhotoImage(imgAcctAccept)
+        self.AcctAcceptbtn=tk.Button(LeftFrame, image=self.photoimageAcctAccept,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctAccept)
+        self.AcctAcceptbtn.place(x=26,y=575)
 
-        imgAcctRefresh=Image.open("images/refresh.png").resize((80,80),Image.ANTIALIAS)
+        imgAcctUpdate=Image.open("images/update.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageAcctUpdate=ImageTk.PhotoImage(imgAcctUpdate)
+        self.AcctUpdatebtn=tk.Button(LeftFrame, image=self.photoimageAcctUpdate,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctUpdate)
+        self.AcctUpdatebtn.place(x=112,y=575)
+
+        imgAcctDelete=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageAcctDelete=ImageTk.PhotoImage(imgAcctDelete)
+        self.AcctDeletebtn=tk.Button(LeftFrame, image=self.photoimageAcctDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctDelete)
+        self.AcctDeletebtn.place(x=198,y=575)
+
+        imgAcctRefresh=Image.open("images/refresh.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageAcctRefresh=ImageTk.PhotoImage(imgAcctRefresh)
         AcctRefreshbtn=tk.Button(LeftFrame, image=self.photoimageAcctRefresh,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctClear)
-        AcctRefreshbtn.place(x=275,y=575,width=80)
+        AcctRefreshbtn.place(x=284,y=575)
 
         # ==========================================================Right Frame=============================================================
         RightFrame=tk.Frame(self.UserFrame,relief=RIDGE,bd=1,bg="#e2479c")
@@ -974,11 +985,17 @@ class AdminDashboard(tk.Frame):
 
         imgSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageSearch=ImageTk.PhotoImage(imgSearch)
-        btn_search=tk.Button(SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctSearch)
-        btn_search.place(x=465)
+        self.btn_search=tk.Button(SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctSearch)
+        self.btn_search.place(x=465)
 
-        btn_showHistory=tk.Button(SearchFrame,text="Show All",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.AcctShowAll)
+        btn_showHistory=tk.Button(SearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.AcctShowAll)
         btn_showHistory.place(x=510,width=150)
+
+        #=====================Permenantly delete=============================
+        imgDeleteForever=Image.open("images/delete1.png").resize((50,50),Image.ANTIALIAS)
+        self.photoimageDeleteForever=ImageTk.PhotoImage(imgDeleteForever)
+        btn_DeleteForever=tk.Button(RightFrame,image=self.photoimageDeleteForever,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.AcctHardDelete)
+        btn_DeleteForever.place(x=790,y=15)
 
         # =============Bottom Right Frame=============
         AcctTableFrame=tk.LabelFrame(RightFrame,relief=RIDGE,bd=1,bg="white")
@@ -1038,8 +1055,6 @@ class AdminDashboard(tk.Frame):
                 messagebox.showerror("Error","Last Name missing")
             elif self.txtDOB.get_date()==datetime.datetime.now().date():
                 messagebox.showerror("Error","Invalid Date of Birth")
-            # elif self.var_email.get()=="":
-            #     messagebox.showerror("Error","Email missing")
             elif self.var_contact.get()=="":
                 messagebox.showerror("Error","Phone missing")
             elif self.var_status.get()=="Select":
@@ -1050,21 +1065,23 @@ class AdminDashboard(tk.Frame):
                 if self.var_status.get()=="New":
                     FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_contact.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
                     data=(self.var_fname.get(),self.var_lname.get(),self.txtDOB.get_date(),self.var_email.get(),FormatedPhone,self.txtAddress.get("1.0",END),emp_status_New,self.var_emp_id.get())
-                    EmployeeDB().EmpUpdate(data)
-                    messagebox.showinfo("Success","Update Successfully!")
-                    self.EmpClear()
+                    op=messagebox.askyesno("Confirmation","Do you want to update the employee?")
+                    if op==True:
+                        EmployeeDB().EmpUpdate(data)
+                        messagebox.showinfo("Success","Update Successfully!")
+                        self.EmpClear()
+                    else:
+                        return
                 elif self.var_status.get()=="Current":
                     FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_contact.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
                     data=(self.var_fname.get(),self.var_lname.get(),self.txtDOB.get_date(),self.var_email.get(),FormatedPhone,self.txtAddress.get("1.0",END),emp_status_Current,self.var_emp_id.get())
-                    EmployeeDB().EmpUpdate(data)
-                    messagebox.showinfo("Success","Update Successfully!")
-                    self.EmpClear()
-                elif self.var_status.get()=="Pass":
-                    FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.var_contact.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
-                    data=(self.var_fname.get(),self.var_lname.get(),self.txtDOB.get_date(),self.var_email.get(),FormatedPhone,self.txtAddress.get("1.0",END),emp_status_Pass,self.var_emp_id.get())
-                    EmployeeDB().EmpUpdate(data)
-                    messagebox.showinfo("Success","Update Successfully!")
-                    self.EmpClear()
+                    op=messagebox.askyesno("Confirmation","Do you want to update the employee?")
+                    if op==True:
+                        EmployeeDB().EmpUpdate(data)
+                        messagebox.showinfo("Success","Update Successfully!")
+                        self.EmpClear()
+                    else:
+                        return
                 else:
                     return
         except Exception as e:
@@ -1124,6 +1141,7 @@ class AdminDashboard(tk.Frame):
                     self.EmployeeTable.delete(*self.EmployeeTable.get_children())
                     for row in rows:
                         self.EmployeeTable.insert("",END,values=row)
+                    self.EmpHideAllbtn()
             else:
                 messagebox.showerror("Error","No record found.")
         except Exception as e:
@@ -1143,6 +1161,7 @@ class AdminDashboard(tk.Frame):
         self.var_searchtxt.set("")
 
         self.EmpShow()
+        self.EmpShowAllBtn()
 
     def EmpShow(self):
         self.EmployeeTable.delete(*self.EmployeeTable.get_children())
@@ -1173,12 +1192,59 @@ class AdminDashboard(tk.Frame):
             self.var_lname.set(row[2])
             self.txtDOB.set_date(datetime.datetime.strptime(str(row[3]), '%Y-%m-%d').strftime('%m/%d/%Y'))
             self.var_email.set(row[4])
+            # self.var_contact.set(row[5])
             self.var_contact.set(re.sub('[^A-Za-z0-9]+', '', str(row[5])))
             self.txtAddress.delete("1.0",END)
             self.txtAddress.insert(END,row[6])
             self.txtStatus.set(row[7])
         except:
             pass
+    
+    def EmpHideAllbtn(self):
+        self.txtFname.config(state=DISABLED)
+        self.txtLname.config(state=DISABLED)
+        self.txtDOB.config(state=DISABLED)
+        self.txtEmail.config(state=DISABLED)
+        self.txtPhone.config(state=DISABLED)
+        self.txtStatus.config(state=DISABLED)
+        self.txtAddress.config(state=DISABLED)
+
+        self.Updatebtn.place_forget()
+        self.Deletebtn.place_forget()
+        self.btn_search.place_forget()
+
+    def EmpShowAllBtn(self):
+        self.txtFname.config(state=NORMAL)
+        self.txtLname.config(state=NORMAL)
+        self.txtDOB.config(state=NORMAL)
+        self.txtEmail.config(state=NORMAL)
+        self.txtPhone.config(state=NORMAL)
+        self.txtStatus.config(state=NORMAL)
+        self.txtAddress.config(state=NORMAL)
+
+        self.Updatebtn.place(x=20,y=575,width=80)
+        self.Deletebtn.place(x=148,y=575,width=80)
+        self.btn_search.place(x=465)
+
+    def AcctAccept(self):
+        try:
+            if self.var_acct_id.get()=="":
+                messagebox.showerror("Error","No account info selected")
+            elif self.var_rolename.get()=="Select":
+                messagebox.showerror("Error","Role is missing")
+            elif self.var_Acctstatus.get()=="Select":
+                messagebox.showerror("Error","Status is missing")
+            else:
+                op=messagebox.askyesno("Confirmation","Do you want to approve this account?")
+                if op==True:
+                    AccountDB().AcctAccept(self.var_acct_id.get())
+                    messagebox.showinfo("Success","Successfully!")
+                    self.AcctClear()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
 
     def AcctUpdate(self):
         Role_Admin = 1
@@ -1230,6 +1296,38 @@ class AdminDashboard(tk.Frame):
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
 
+    def AcctDelete(self):
+        try:
+            if self.var_acct_id.get()=="":
+                messagebox.showerror("Error","No account info selected")
+            else:
+                op=messagebox.askyesno("Confirm","Do you really want to delete the account?")
+                if op==True:
+                    AccountDB().AcctDelete(self.var_acct_id.get())
+                    messagebox.showinfo("Success","The account has been deleted successfully!")
+                    self.AcctClear()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def AcctHardDelete(self):
+        try:
+            if self.var_acct_id.get()=="":
+                messagebox.showerror("Error","No account info selected")
+            else:
+                op=messagebox.askyesno("Confirm","Do you really want to permanently delete the account?")
+                if op==True:
+                    AccountDB().AcctHardDelete(self.var_acct_id.get())
+                    messagebox.showinfo("Success","The account has been deleted successfully!")
+                    self.AcctClear()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
     def AcctSearch(self):
         try:
             if self.var_Acctsearchby.get()=="Select":
@@ -1261,6 +1359,7 @@ class AdminDashboard(tk.Frame):
         self.txtAcctStatus.current(0)
 
         self.AcctShow()
+        self.AcctShowAllbtn()
 
     def AcctShow(self):
         self.AccountTable.delete(*self.AccountTable.get_children())
@@ -1294,6 +1393,7 @@ class AdminDashboard(tk.Frame):
                         self.AccountTable.insert("",END,values=rows[index],tags=("evenrow",))
                     else:
                         self.AccountTable.insert("",END,values=rows[index],tags=("oddrow",))
+                self.AcctHideAllbtn()
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
@@ -1310,6 +1410,26 @@ class AdminDashboard(tk.Frame):
             self.var_Acctstatus.set(row[4])
         except:
             pass
+
+    def AcctHideAllbtn(self):
+        self.txtUsername.config(state=DISABLED)
+        self.txtRoleName.config(state=DISABLED)
+        self.txtAcctStatus.config(state=DISABLED)
+
+        self.AcctAcceptbtn.place_forget()
+        self.AcctUpdatebtn.place_forget()
+        self.AcctDeletebtn.place_forget()
+        self.btn_search.place_forget()
+
+    def AcctShowAllbtn(self):
+        self.txtUsername.config(state=NORMAL)
+        self.txtRoleName.config(state=NORMAL)
+        self.txtAcctStatus.config(state=NORMAL)
+
+        self.AcctAcceptbtn.place(x=26,y=575)
+        self.AcctUpdatebtn.place(x=112,y=575)
+        self.AcctDeletebtn.place(x=198,y=575)
+        self.btn_search.place(x=465)
 
     def SV_show(self):
         self.FeedbackTable.delete(*self.FeedbackTable.get_children())
@@ -1356,6 +1476,7 @@ class AdminDashboard(tk.Frame):
         self.HideDeleteOptions()
         self.SV_ClearSearch()
         self.SV_show()
+        self.btn_search.place(x=465)
 
     def Hide_Delete_Options(self):
         self.SVDeletebtn.place_forget()
@@ -1564,6 +1685,7 @@ class AdminDashboard(tk.Frame):
                         self.FeedbackTable.insert("",END,values=rows[index],tags=("oddrow",))
                 self.SV_ClearSearch()
                 self.Hide_Delete_Options()
+                self.btn_search.place_forget()
             else:
                 messagebox.showerror("Error","No historial records available!!!.")
                 self.SV_ClearSearch()
@@ -1571,7 +1693,7 @@ class AdminDashboard(tk.Frame):
             messagebox.showerror("Error",f"Error due to: {str(e)}")
             print(f"Something went wrong {e}.")
 
-    # Customer Helper Function
+        # Customer Helper Function
     def CustomerAddOrUpdate(self):
         try:
             # Check Input Field.
@@ -1601,7 +1723,6 @@ class AdminDashboard(tk.Frame):
             messagebox.showerror("Error", "Something went wrong")
             print(f"Error due to: {str(e)}.")
 
-
     def CustomerDelete(self):
         try:
             if self.var_customer_id.get() == "":
@@ -1625,7 +1746,6 @@ class AdminDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error", "Something went wrong")
             print(f"Error due to: {str(e)}.")
-
 
     def CustomerSearch(self):
         try:
@@ -1665,7 +1785,6 @@ class AdminDashboard(tk.Frame):
             messagebox.showerror("Error", f"Error due to: {str(e)}")
             print(f"Something went wrong {e}.")
 
-
     def CustomerShow(self):
         # Clear existing records.
         self.tblCustomer.delete(*self.tblCustomer.get_children())
@@ -1678,7 +1797,6 @@ class AdminDashboard(tk.Frame):
         self.cmbCustomerSearch.current(0)
         self.txtCustomerSearch.delete(0, tk.END)
         
-
     def CustomerSelect(self, event):
         focus = self.tblCustomer.focus()
         curCustomer = (self.tblCustomer.item(focus))
@@ -1693,7 +1811,6 @@ class AdminDashboard(tk.Frame):
         self.txtCustomerPhone.insert(tk.END, row[3])
         self.txtCustomerEmail.delete(0, tk.END)
         self.txtCustomerEmail.insert(tk.END, row[4])
-
 
     def CustomerClear(self):
         # Clear Table Selection.
@@ -1740,7 +1857,6 @@ class Reset(tk.Frame):
         lblResetKey = tk.Label(frame,image=self.photoimageResetKey,borderwidth=0,bg="white")
         lblResetKey.place(x=0,y=0)
         
-
         lblReset=tk.Label(frame,text="RESET PASSWORD",font=("times new roman",24,"bold"),relief=GROOVE,borderwidth=1,fg="darkgreen",bg="white") ##fcfcfc
         lblReset.place(x=72,height=66)
 
@@ -1849,9 +1965,9 @@ class Reset(tk.Frame):
                 if not AccountDB().fetch(userfetch):
                     messagebox.showerror("Error","Invalid username.")
                 elif not AccountDB().fetchSQ(fetchSQ):
-                    messagebox.showerror("Error","Invalid security question.")
+                    messagebox.showerror("Error","Invalid security question or answer.")
                 elif not bcrypt.checkpw(self.RS_SA.get().encode('utf8'), AccountDB().fetch(userfetch)[4].encode('utf8')):
-                    messagebox.showerror("Error","Invalid security answer.")
+                    messagebox.showerror("Error","Invalid security question or answer.")
                 elif AccountDB().fetch(userfetch) and AccountDB().fetchSQ(fetchSQ) and bcrypt.checkpw(self.RS_SA.get().encode('utf8'), AccountDB().fetch(userfetch)[4].encode('utf8')):
                     SAhashed=bcrypt.hashpw(self.RS_password.get().encode('utf8'), bcrypt.gensalt())
                     pwUpdate=(SAhashed,self.RS_username.get())
@@ -1879,18 +1995,18 @@ class Feedback(tk.Frame):
 
         # Background color
         self.config(bg="#e2479c")
+        self.controller = controller
 
         # Create widgets
         self.create_widgets(controller)
 
-
     def create_widgets(self, controller):
 
         self.employeeName = tk.StringVar()
-
+        
         # Main Frame
-        frame = tk.Frame(self, bg="white")
-        frame.place(x=435, y=50, width=480, height=620)
+        self.frame = tk.Frame(self, bg="white")
+        self.frame.place(x=435, y=50, width=480, height=620)  # x=400
 
         # Thank you Frame
         imgThankyou=Image.open("images/thankyou.png").resize((1350,720),Image.ANTIALIAS)
@@ -1898,50 +2014,51 @@ class Feedback(tk.Frame):
         self.thankyou = tk.Label(self, image=self.photoimageThankyou)
 
         # Header
-        header = tk.Label(frame, text="Customer Feedback", font=("Segoe UI", 25, "bold"),bg="white")
+        header = tk.Label(self.frame, text="Customer Feedback", font=("Segoe UI", 25, "bold"),bg="white")
         header.place(x=20, y=20)
 
         # Employee Name
-        self.employeeNameLabel = tk.Label(frame, text="Employee Name:", font=("Segoe UI", 14, "bold"),bg="white")
+        self.employeeNameLabel = tk.Label(self.frame, text="Employee Name:", font=("Segoe UI", 14, "bold"),bg="white")
         self.employeeNameLabel.place(x=20, y=160)
 
+        
         self.employeeId = []
         def run_sql(event):
-            index = employeeNameEntry.current()
+            index = self.employeeNameEntry.current()
             row = EmployeeDB().EmpfetchAll()[index]
             
             self.employeeId.clear()
             self.employeeId.append(row[0])
-            
-        employeeNameEntry = ttk.Combobox(frame,textvariable=self.employeeName,font=("Segoe UI", 14),state="readonly",justify="center")
-        employeeNameEntry["values"] = [row[1] for row in EmployeeDB().EmpfetchAll()]
-        employeeNameEntry.place(x=190, y=160)
-        employeeNameEntry.bind("<<ComboboxSelected>>", run_sql)
+
+        self.employeeNameEntry = ttk.Combobox(self.frame,textvariable=self.employeeName,font=("Segoe UI", 14),state="readonly",justify="center")
+        self.employeeNameEntry["values"] = [row[1] for row in EmployeeDB().EmpfetchAll()]
+        self.employeeNameEntry.place(x=190, y=160)
+        self.employeeNameEntry.bind("<<ComboboxSelected>>", run_sql)
 
         # Performance Score
-        performanceScoreLabel = tk.Label(frame, text="Performance Score:", font=("Segoe UI", 14, "bold"),bg="white")
+        performanceScoreLabel = tk.Label(self.frame, text="Performance Score:", font=("Segoe UI", 14, "bold"),bg="white")
         performanceScoreLabel.place(x=20, y=220)
 
-        self.scale = tk.Scale(frame,orient=tk.HORIZONTAL,length=390,width=20,sliderlength=15,from_=0,to=10,tickinterval=1)
+        self.scale = tk.Scale(self.frame,orient=tk.HORIZONTAL,length=390,width=20,sliderlength=15,from_=0,to=10,tickinterval=1)
         self.scale.place(x=20, y=250)
 
         # Description
-        descriptionLabel = tk.Label(frame, text="Description:", font=("Segoe UI", 14, "bold"),bg="white")
+        descriptionLabel = tk.Label(self.frame, text="Description:", font=("Segoe UI", 14, "bold"),bg="white")
         descriptionLabel.place(x=20,y=330)
 
-        self.descriptionEntry = tk.Text(frame, font=("Segoe UI", 14, "bold"), bg="#EBECF0", borderwidth=2)
+        self.descriptionEntry = tk.Text(self.frame, font=("Segoe UI", 14, "bold"), bg="#EBECF0", borderwidth=2)
         self.descriptionEntry.place(x=20, y=360, width=400, height=150)
-        
+
         # Back Button (To Login Page)
         imgBack=Image.open("images/back.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageBack=ImageTk.PhotoImage(imgBack)
-        backButton = tk.Button(frame, image=self.photoimageBack,borderwidth=0,bg="white",activebackground="white",command=lambda: controller.show_frame("Login"))
+        backButton = tk.Button(self.frame, image=self.photoimageBack,borderwidth=0,bg="white",activebackground="white",command=lambda: controller.show_frame("Login"))
         backButton.place(x=40,y=530)
 
         # Submit Button
         imgSubmit=Image.open("images/save.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageSubmit=ImageTk.PhotoImage(imgSubmit)
-        submitButton = tk.Button(frame,image=self.photoimageSubmit,borderwidth=0,bg="white",activebackground="white",command=lambda: self.retrieve_input())
+        submitButton = tk.Button(self.frame,image=self.photoimageSubmit,borderwidth=0,bg="white",activebackground="white",command=lambda: self.retrieve_input())
         submitButton.place(x=140,y=530)
 
     def retrieve_input(self):
@@ -1949,7 +2066,7 @@ class Feedback(tk.Frame):
             if not self.employeeId:
                 messagebox.showerror("Error","Please select an employee")
             elif self.scale.get()==0:
-                op=messagebox.askyesno("Confirm","Are you sure to evaluate 0?")
+                op=messagebox.askyesno("Confirm",f"Are you sure to evaluate {self.scale.get()} to {self.employeeNameEntry.get()}?")
                 if op==True:
                     data=(self.employeeId[0],self.scale.get(),self.descriptionEntry.get("1.0",'end-1c'))
                     FeedbackDB().AddFB(data)
@@ -1960,10 +2077,14 @@ class Feedback(tk.Frame):
                     return
             else:
                 data=(self.employeeId[0],self.scale.get(),self.descriptionEntry.get("1.0",'end-1c'))
-                FeedbackDB().AddFB(data)
-                self.FB_clear()
-                self.thankyou.pack()
-                self.thankyou.after(3000,self.thankyou.pack_forget)
+                op=messagebox.askyesno("Confirm",f"Are you sure to evaluate {self.scale.get()} to {self.employeeNameEntry.get()}?")
+                if op==True:
+                    FeedbackDB().AddFB(data)
+                    self.FB_clear()
+                    self.thankyou.pack()
+                    self.thankyou.after(3000,self.thankyou.pack_forget)
+                else:  
+                    return      
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")

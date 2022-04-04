@@ -18,6 +18,7 @@ class CustomerDB:
         self.cursor.execute("SELECT customer_id FROM customer \
                             WHERE first_name LIKE '%"+first+"%' and last_name LIKE '%"+last+"%' and active = 1;")
         row = self.cursor.fetchone()
+        
         if row:
             return row[0]
         else:
@@ -30,6 +31,7 @@ class CustomerDB:
 
         self.cursor.execute("SELECT LAST_INSERT_ID();")
         row = self.cursor.fetchone()
+        print("addCustomerAndGetId", row)
         return row[0]
 
     def getAllCusByFN(self):
@@ -43,8 +45,7 @@ class CustomerDB:
         self.cursor.execute("SELECT customer_id, phone FROM customer \
                             WHERE first_name LIKE '%"+first+"%' and last_name LIKE '%"+last+"%' and active = 1;")
         row = self.cursor.fetchone()
-        # print("fetchCusId ", row)
-        # print(type(row))
+    
         if row:
             return row
         else:
@@ -88,6 +89,7 @@ class CustomerDB:
                             ORDER BY time_appt ASC;")
         rows = self.cursor.fetchall()
         return rows
+
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

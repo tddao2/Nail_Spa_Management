@@ -13,9 +13,15 @@ class AccountDB:
         return row
 
     def insertAccount(self, account):
-        self.cursor.execute("INSERT INTO account (username,password,secret_question,secret_answer,role_id,account_status_id,active) VALUES (%s,%s,%s,%s,%s,%s,%s)", 
-                            (account[0],account[1],account[2],account[3],account[4],account[5],account[6]))
+        self.cursor.execute("INSERT INTO account (username,password,secret_question,secret_answer,role_id,account_status_id) VALUES (%s,%s,%s,%s,%s,%s)", 
+                            (account[0],account[1],account[2],account[3],account[4],account[5]))
         self.conn.commit()
+        self.cursor.execute("SELECT LAST_INSERT_ID();")
+        row = self.cursor.fetchone()
+        if row:
+            return row[0]
+        else:
+            return None
 
     def fetchSQ(self, fetchSQ):
         self.cursor.execute("SELECT * FROM account WHERE username = %s and secret_question = %s", (fetchSQ[0],fetchSQ[1]))
@@ -37,15 +43,43 @@ class AccountDB:
                             INNER JOIN account_status asi \
                                 ON a.account_status_id = asi.account_status_id \
                             INNER JOIN roles r \
-                                ON a.role_id = r.role_id;")
+                                ON a.role_id = r.role_id \
+                            WHERE a.active = 0;")
         rows = self.cursor.fetchall()
         return rows
+
+    def AcctAccept(self, account_id):
+        self.cursor.execute("UPDATE account \
+                            SET account_status_id = 1 \
+                            WHERE account_id = %s",
+                            (account_id,))
+        self.cursor.execute("UPDATE employee \
+                            SET employee_status_id = 2 \
+                            WHERE account_id = (SELECT account_id from account WHERE account_id = %s)",
+                            (account_id,))
+        self.conn.commit()
 
     def AcctUpdate(self, data):
         self.cursor.execute("UPDATE account \
                             SET role_id = %s, account_status_id = %s \
                             WHERE account_id = %s",
                             (data[0],data[1],data[2]))
+        self.conn.commit()
+
+    def AcctDelete(self, account_id):
+        self.cursor.execute("UPDATE account \
+                            SET account_status_id = 3, active = 0 \
+                            WHERE account_id = %s",
+                            (account_id,))
+        self.cursor.execute("UPDATE employee \
+                            SET active = 0 \
+                            WHERE account_id = (SELECT account_id from account WHERE account_id = %s)",
+                            (account_id,))
+        self.conn.commit()
+
+    def AcctHardDelete(self,account_id):
+        self.cursor.execute("DELETE FROM account WHERE account_id = %s",
+                            (account_id,))
         self.conn.commit()
 
     def AcctSearch(self, data):
@@ -71,6 +105,8 @@ class AccountDB:
                             WHERE acct_status = 'active';") 
         rows = self.cursor.fetchall()
         return rows
+
+    
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

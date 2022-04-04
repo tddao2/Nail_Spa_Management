@@ -16,9 +16,11 @@ class AccountStatusDB:
                                 ON a.account_status_id = asi.account_status_id \
                             INNER JOIN roles r \
                                 ON a.role_id = r.role_id \
-                            WHERE acct_status = 'active';")
+                            WHERE a.account_status_id IN (1,2) and a.active = 1;")
         rows = self.cursor.fetchall()
         return rows
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     def getAccountStatusID(self, account_status):
