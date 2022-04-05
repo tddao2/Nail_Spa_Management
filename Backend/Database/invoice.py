@@ -18,7 +18,29 @@ class InvoiceDB:
             return row[0]
         else:
             return None
-        # return row[0]
+
+    def getAllInvoice(self):
+        self.cursor.execute("SELECT i.invoice_id, concat(e.first_name,' ',e.last_name) as Employee,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
+                            FROM employee e \
+                            JOIN invoice i \
+                                ON e.employee_id = i.employee_id \
+                            JOIN customer c \
+                                ON i.customer_id = c.customer_id \
+                            WHERE i.active = 1;")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def SearchInvoice(self, invoiceId):
+        self.cursor.execute("SELECT invoice_id, concat(e.first_name,' ',e.last_name) as Employee,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
+                            FROM employee e \
+                            JOIN invoice i \
+                                ON e.employee_id = i.employee_id \
+                            JOIN customer c \
+                                ON i.customer_id = c.customer_id \
+                            WHERE invoice_id = %s and i.active = 1;",
+                            (invoiceId,))
+        rows = self.cursor.fetchall()
+        return rows
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

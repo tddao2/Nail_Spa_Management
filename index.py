@@ -437,7 +437,7 @@ class AdminDashboard(tk.Frame):
 
         self.EmpFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
         self.ClientFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="red")
-        self.SaleFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="yellow")
+        self.SaleFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
         self.UserFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
         self.FeedbackFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
 
@@ -738,7 +738,166 @@ class AdminDashboard(tk.Frame):
 
     def sale(self):
         self.hide_all_frames()
-        self.SaleFrame.place(x=250,y=30,width=1250,height=690)
+        self.SaleFrame.place(x=100,y=30,width=1250,height=690)
+
+        style = ttk.Style()
+        # style.theme_use('clam')
+        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.map('Treeview',background=[('selected','#e2479c')])
+
+        # ============= Set variables ================
+        self.var_Invsearchby=tk.StringVar()
+        self.var_Invsearchtxt=tk.StringVar()
+
+        self.var_serviceId=tk.StringVar()
+        self.var_serviceName=tk.StringVar()
+        self.var_servicePrice=tk.DoubleVar()
+
+        # ============= TOP FRAME ================
+        ServiceFrame=tk.LabelFrame(self.SaleFrame,text="Services",font=("times new roman",25,"bold"),relief=RIDGE, bd=1, bg="#e2479c",fg="gold")
+        ServiceFrame.place(x=0, y=0, width=1250, height=250)
+
+        # >>>>>>>Top Left Frame<<<<<<
+        ServiceDetailFrame=tk.LabelFrame(ServiceFrame,relief=RIDGE, bd=1, bg="#e2479c",fg="white")
+        ServiceDetailFrame.place(x=0, width=500, height=211)
+
+        lblServiceName=tk.Label(ServiceDetailFrame,text="Service name",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblServiceName.grid(row=0,column=0,padx=20,pady=10)
+
+        txtServiceName=ttk.Entry(ServiceDetailFrame,textvariable=self.var_serviceName,width=22,font=("times new roman",18,"bold"))
+        txtServiceName.grid(row=0,column=1,padx=20,pady=10)
+
+        lblPrice=tk.Label(ServiceDetailFrame,text="Price",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
+        lblPrice.grid(row=1,column=0,padx=20,pady=10)
+
+        self.txtPrice=ttk.Entry(ServiceDetailFrame,textvariable=self.var_servicePrice,width=22,font=("times new roman",18,"bold"),justify="center")
+        self.txtPrice.grid(row=1,column=1,padx=20,pady=10)
+
+        imgServiceUpdate=Image.open("images/update.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageServiceUpdate=ImageTk.PhotoImage(imgServiceUpdate)
+        self.ServiceUpdatebtn=tk.Button(ServiceDetailFrame, image=self.photoimageServiceUpdate,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ServiceUpdate)
+        self.ServiceUpdatebtn.place(x=127,y=133)
+
+        imgServiceRefresh=Image.open("images/refresh.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageServiceRefresh=ImageTk.PhotoImage(imgServiceRefresh)
+        ServiceRefreshbtn=tk.Button(ServiceDetailFrame, image=self.photoimageServiceRefresh,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ClearService)
+        ServiceRefreshbtn.place(x=313,y=133)
+
+        # >>>>>>>Top right Frame<<<<<<
+        ServiceViewFrame=tk.LabelFrame(ServiceFrame,relief=RIDGE, bd=1, bg="#e2479c",fg="white")
+        ServiceViewFrame.place(x=500, width=750, height=211)
+
+        ServiceTableFrame=tk.LabelFrame(ServiceViewFrame,relief=RIDGE,bd=1,bg="white")
+        ServiceTableFrame.place(x=10,y=10,width=720,height=191) #608
+
+        scrollx=tk.Scrollbar(ServiceTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(ServiceTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+        
+        self.ServiceTable=ttk.Treeview(ServiceTableFrame,columns=("ID","ServiceType","Servicename","Price",),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.ServiceTable.xview)
+        scrolly.config(command=self.ServiceTable.yview)
+
+        self.ServiceTable.heading("ID",text="ID")
+        self.ServiceTable.heading("ServiceType",text="Service type")
+        self.ServiceTable.heading("Servicename",text="Service name")
+        self.ServiceTable.heading("Price",text="Price")
+        
+        self.ServiceTable["show"]="headings"
+
+        self.ServiceTable.column("ID",anchor=CENTER,width=40)
+        self.ServiceTable.column("ServiceType",anchor=CENTER)
+        self.ServiceTable.column("Servicename",anchor=CENTER)
+        self.ServiceTable.column("Price",anchor=CENTER)
+        
+        self.ServiceTable.pack(fill=BOTH,expand=1)
+        self.ServiceTable.bind("<ButtonRelease-1>",self.ServiceGetdata)
+
+        self.getAllServiceName()
+
+        # ============= BOTTOM FRAME ================
+
+        InvoiceFrame = tk.LabelFrame(self.SaleFrame,text="Invoices",font=("times new roman",25,"bold"),relief=RIDGE, bd=1, bg="#e2479c",fg="gold")
+        InvoiceFrame.place(x=0, y=250, width=1250, height=440)
+
+        # >>>>>>>>>>>>>>Invoice Search<<<<<<<<<<<<<<
+        InvSearchFrame=tk.LabelFrame(InvoiceFrame,text="Search Invoice",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="white")
+        InvSearchFrame.place(x=300,width=700,height=71)
+
+        # >>>>>>>>>>>>>>Invoice btn<<<<<<<<<<<<<<
+        imgInvDelete=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageInvDelete=ImageTk.PhotoImage(imgInvDelete)
+        self.InvDeletebtn=tk.Button(InvoiceFrame, image=self.photoimageInvDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        self.InvDeletebtn.place(x=10,y=125)
+
+        imgInvRefresh=Image.open("images/refresh.png").resize((60,60),Image.ANTIALIAS)
+        self.photoimageInvRefresh=ImageTk.PhotoImage(imgInvRefresh)
+        InvRefreshbtn=tk.Button(InvoiceFrame, image=self.photoimageInvRefresh,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        InvRefreshbtn.place(x=10,y=255)
+
+        self.Invoicecmb_search=ttk.Combobox(InvSearchFrame,textvariable=self.var_Invsearchby,width=13,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.Invoicecmb_search["values"]=("Select","Invoice number","Cust first name","Cust last name","Emp first name","Emp last name")
+        self.Invoicecmb_search.grid(row=0,column=0,padx=10)
+        self.Invoicecmb_search.current(0)
+
+        txt_Invoice_search=tk.Entry(InvSearchFrame,textvariable=self.var_Invsearchtxt,font=("times new roman",18),bg="white")
+        txt_Invoice_search.grid(row=0,column=1,padx=10)
+
+        imgInvSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageInvSearch=ImageTk.PhotoImage(imgInvSearch)
+        self.Invbtn_search=tk.Button(InvSearchFrame,image=self.photoimageInvSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SearchInvoice)
+        self.Invbtn_search.grid(row=0,column=3,padx=10)
+
+        Invbtn_showHistory=tk.Button(InvSearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white")
+        Invbtn_showHistory.grid(row=0,column=4,padx=10)
+
+        # >>>>>>>>>>>>>>Invoice view<<<<<<<<<<<<<<
+
+        InvoiceViewFrame=tk.LabelFrame(InvoiceFrame,relief=RIDGE, bd=1, bg="#e2479c",fg="white")
+        InvoiceViewFrame.place(x=100,y=75, width=1130, height=310)
+
+        scrollx=tk.Scrollbar(InvoiceViewFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(InvoiceViewFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+        
+        self.InvoiceTable=ttk.Treeview(InvoiceViewFrame,columns=("ID","Employee","Customer","Tip","Discount","Total","DateTime"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.InvoiceTable.xview)
+        scrolly.config(command=self.InvoiceTable.yview)
+
+        self.InvoiceTable.heading("ID",text="ID")
+        self.InvoiceTable.heading("Employee",text="Employee")
+        # self.InvoiceTable.heading("Services",text="Service name")
+        self.InvoiceTable.heading("Customer",text="Customer")
+        self.InvoiceTable.heading("Tip",text="Tip")
+        self.InvoiceTable.heading("Discount",text="Discount")
+        self.InvoiceTable.heading("Total",text="Total")
+        self.InvoiceTable.heading("DateTime",text="DateTime")
+        
+        self.InvoiceTable["show"]="headings"
+
+        self.InvoiceTable.column("ID",anchor=CENTER,width=40)
+        self.InvoiceTable.column("Employee",anchor=CENTER)
+        # self.InvoiceTable.column("Services",anchor=CENTER)
+        self.InvoiceTable.column("Customer",anchor=CENTER)
+        self.InvoiceTable.column("Tip",anchor=CENTER,width=60)
+        self.InvoiceTable.column("Discount",anchor=CENTER,width=60)
+        self.InvoiceTable.column("Total",anchor=CENTER,width=60)
+        self.InvoiceTable.column("DateTime",anchor=CENTER)
+        
+        self.InvoiceTable.pack(fill=BOTH,expand=1)
+        # self.InvoiceTable.bind("<ButtonRelease-1>",self.ServiceGetdata)
+
+        self.getAllInvoices()
     
     def survey(self):
         self.hide_all_frames()
@@ -1117,8 +1276,13 @@ class AdminDashboard(tk.Frame):
                 rows = EmployeeDB().EmpSearch(data)
                 if len(rows)!=0:
                     self.EmployeeTable.delete(*self.EmployeeTable.get_children())
-                    for row in rows:
-                        self.EmployeeTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.EmployeeTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.EmployeeTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.EmployeeTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.EmployeeTable.insert("",END,values=rows[index],tags=("oddrow",))
                 else:
                     messagebox.showerror("Error","No record found.")
             else:
@@ -1126,8 +1290,13 @@ class AdminDashboard(tk.Frame):
                 rows = EmployeeDB().EmpSearch(data)
                 if len(rows)!=0:
                     self.EmployeeTable.delete(*self.EmployeeTable.get_children())
-                    for row in rows:
-                        self.EmployeeTable.insert("",END,values=row)
+                    for index in range(len(rows)):
+                        self.EmployeeTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.EmployeeTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.EmployeeTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.EmployeeTable.insert("",END,values=rows[index],tags=("oddrow",))
                 else:
                     messagebox.showerror("Error","No record found.")
         except Exception as e:
@@ -1138,10 +1307,15 @@ class AdminDashboard(tk.Frame):
         try:
             rows = EmployeeDB().EmpFetchHistory()
             if len(rows)!=0:
-                    self.EmployeeTable.delete(*self.EmployeeTable.get_children())
-                    for row in rows:
-                        self.EmployeeTable.insert("",END,values=row)
-                    self.EmpHideAllbtn()
+                self.EmployeeTable.delete(*self.EmployeeTable.get_children())
+                for index in range(len(rows)):
+                    self.EmployeeTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.EmployeeTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.EmployeeTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.EmployeeTable.insert("",END,values=rows[index],tags=("oddrow",))
+                self.EmpHideAllbtn()
             else:
                 messagebox.showerror("Error","No record found.")
         except Exception as e:
@@ -1692,6 +1866,118 @@ class AdminDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error",f"Error due to: {str(e)}")
             print(f"Something went wrong {e}.")
+
+    def ClearService(self):
+        self.var_serviceId.set("")
+        self.var_serviceName.set("")
+        self.var_servicePrice.set(0.0)
+
+        self.getAllServiceName()
+
+    def getAllServiceName(self):
+        self.ServiceTable.delete(*self.ServiceTable.get_children())
+        try:
+            if not ServiceDB().getAllServiceName():
+                self.Hide_Delete_Options()
+                messagebox.showerror("Error", "No Services available!!!.")
+            else:
+                rows = ServiceDB().getAllServiceName()
+                for index in range(len(rows)):
+                    self.ServiceTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.ServiceTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.ServiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.ServiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def ServiceGetdata(self,event):
+        f=self.ServiceTable.focus()
+        curItem=(self.ServiceTable.item(f))
+        row=curItem['values']
+        try:
+            self.var_serviceId.set(row[0])
+            self.var_serviceName.set(row[2])
+            self.var_servicePrice.set(row[3])
+        except:
+            pass
+
+    def ServiceUpdate(self):
+        try:
+            if self.var_serviceId.get()=="":
+                messagebox.showerror("Error","No service info selected")
+            elif self.var_serviceName.get()=="":
+                messagebox.showerror("Error","Service Name missing")
+            elif len(self.var_serviceName.get()) > 23:
+                messagebox.showerror("Error","Service name is too long. Please give a brief description of service name.")
+            elif self.var_servicePrice.get()==0:
+                op=messagebox.askyesno("Confirmation",f"Is the {self.var_serviceName.get()} is set as {self.var_servicePrice.get()}?")
+                if op==True:
+                    ServiceDB().ServiceUpdate(self.var_serviceId.get(),self.var_serviceName.get(),self.var_servicePrice.get())
+                    messagebox.showinfo("Success", "The service has been updated successfully!!!")
+                    self.ClearService()
+                else:
+                    return
+            else:
+                op=messagebox.askyesno("Confirmation","Do you want to update the service?")
+                if op==True:
+                    ServiceDB().ServiceUpdate(self.var_serviceId.get(),self.var_serviceName.get(),self.var_servicePrice.get())
+                    messagebox.showinfo("Success", "The service has been updated successfully!!!")
+                    self.ClearService()
+                else:
+                    return
+        except TclError:
+            messagebox.showerror("Error","Invalid Service price")
+            return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+        
+    def getAllInvoices(self):
+        self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+        try:
+            if not InvoiceDB().getAllInvoice():
+                self.Hide_Delete_Options()
+                messagebox.showerror("Error", "No Invoices available!!!.")
+            else:
+                rows = InvoiceDB().getAllInvoice()
+                for index in range(len(rows)):
+                    self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.InvoiceTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def SearchInvoice(self):
+        try:
+            if self.var_Invsearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_Invsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            elif self.var_Invsearchby.get()=="Invoice number" and self.var_Invsearchtxt.get().isnumeric()==False:
+                messagebox.showerror("Error","Invalid invoice number")
+            elif self.var_Invsearchby.get()=="Invoice number" and self.var_Invsearchtxt.get().isnumeric()==True:
+                rows = InvoiceDB().SearchInvoice(self.var_Invsearchtxt.get(),)
+                if len(rows)!=0:
+                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
 
         # Customer Helper Function
     def CustomerAddOrUpdate(self):

@@ -17,6 +17,20 @@ class ServiceDB:
         rows = self.cursor.fetchall()
         return rows
 
+    def getAllServiceName(self):
+        self.cursor.execute("SELECT service_id, a.service_type_desc, service_name, price FROM service_type a \
+                            JOIN service b \
+                                ON a.service_type_code = b.service_type_code \
+                            ORDER BY a.service_type_desc ASC;")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def ServiceUpdate(self, serviceId, serviceName, servicePrice):
+        self.cursor.execute("UPDATE service \
+                            SET service_name = %s,price = %s \
+                            WHERE service_id = %s",
+                            (serviceName, servicePrice, serviceId))
+        self.conn.commit()
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
