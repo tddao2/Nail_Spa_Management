@@ -4814,8 +4814,6 @@ class EmployeeDashboard(tk.Frame):
                 
                 if bcrypt.checkpw(self.Retrievedpw.get().encode('utf8'), self.retrieved_password[index].encode('utf8')):
                     self.Selected_password_Id.append(self.retrieved_password_Id[index])
-                    print(self.Selected_password_Id[0])
-                    print("Correct")
                     
                     self.Customer_name = HumanName(self.cname.get())
                     self.last = ""
@@ -4867,7 +4865,6 @@ class EmployeeDashboard(tk.Frame):
                         InvoiceId = []
 
                         RetrievedCustomerId = CustomerDB().fetchCusIdAndPhone(self.first, self.last)
-                        print(RetrievedCustomerId)
                         CustomerId.append(RetrievedCustomerId[0])
 
                         cusId = CustomerId[0]
