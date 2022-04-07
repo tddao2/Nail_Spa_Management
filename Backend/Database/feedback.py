@@ -33,6 +33,7 @@ class FeedbackDB:
         self.conn.commit()
 
     def deletePeriod(self, period):
+        
         self.cursor.execute("SET SQL_SAFE_UPDATES = 0;")
         self.cursor.execute("UPDATE feedback \
                             SET active = 0 \
@@ -71,6 +72,14 @@ class FeedbackDB:
                             order by Name ASC;")
         rows = self.cursor.fetchall()
         return rows
+
+    def CountFeedback(self):
+        self.cursor.execute("SELECT COUNT(*) FROM feedback WHERE date(dateFB) = curdate() and active = 1;")
+        row = self.cursor.fetchone()
+        if row:
+            return row[0]
+        else:
+            return None
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

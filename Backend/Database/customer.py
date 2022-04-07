@@ -33,6 +33,22 @@ class CustomerDB:
         print("addCustomerAndGetId", row)
         return row[0]
 
+    def getAllCusByFN(self):
+        self.cursor.execute("SELECT concat(first_name,' ',last_name) as Name \
+                            FROM customer \
+                            ORDER BY Name ASC")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def fetchCusIdAndPhone(self, first, last):
+        self.cursor.execute("SELECT customer_id, phone FROM customer \
+                            WHERE first_name LIKE '%"+first+"%' and last_name LIKE '%"+last+"%' and active = 1;")
+        row = self.cursor.fetchone()
+        if row:
+            return row
+        else:
+            return None
+
     # >>>Used updateCustomer() <<<<
 
     def getAllHisCustomer(self):
@@ -49,6 +65,26 @@ class CustomerDB:
     def HFLPsearch(self, selection, HFLP):
         self.cursor.execute("SELECT * FROM customer \
                             WHERE "+selection+" LIKE '%"+HFLP+"%' and active = 0")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def getAllApptFLP(self):
+        self.cursor.execute("SELECT c.first_name, c.last_name, c.phone\
+                            FROM appointment a \
+                            JOIN customer c \
+                                ON a.customer_id = c.customer_id \
+                            WHERE date_appt >= curdate() and (date_appt <= DATE_ADD(CURDATE(), INTERVAL 3 DAY)) and a.active = 1 \
+                            ORDER BY time_appt ASC;")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def FNPByApptHistory(self):
+        self.cursor.execute("SELECT c.first_name, c.last_name, c.phone \
+                            FROM appointment a \
+                            JOIN customer c \
+	                            ON a.customer_id = c.customer_id \
+                            WHERE a.active = 0 AND (date_appt >= DATE_ADD(CURDATE(), INTERVAL -3 DAY)) \
+                            ORDER BY time_appt ASC;")
         rows = self.cursor.fetchall()
         return rows
 
@@ -91,7 +127,6 @@ class CustomerDB:
         self.cursor.execute("INSERT INTO customer (first_name, last_name, phone, email) VALUES (%s, %s, %s, %s)",
                             (first_name, last_name, phone, email))
         self.conn.commit()
-
 
     def removeCustomer(self, customer_id):
         self.cursor.execute("UPDATE customer SET active = 0 WHERE customer_id = %s", (customer_id,))

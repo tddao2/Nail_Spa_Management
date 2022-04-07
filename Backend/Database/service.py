@@ -12,15 +12,47 @@ class ServiceDB:
         rows = self.cursor.fetchall()
         return rows
 
-    def getAllServicesType(self):        
+    def getAllServicesType(self):
         self.cursor.execute("SELECT service_type_desc from service_type order by service_type_desc ASC;")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def getAllServiceName(self):
+        self.cursor.execute("SELECT service_id, a.service_type_desc, service_name, price FROM service_type a \
+                            JOIN service b \
+                                ON a.service_type_code = b.service_type_code \
+                            ORDER BY a.service_type_desc ASC;")
+        rows = self.cursor.fetchall()
+        return rows
+
+    def ServiceUpdate(self, serviceId, serviceName, servicePrice):
+        self.cursor.execute("UPDATE service \
+                            SET service_name = %s,price = %s \
+                            WHERE service_id = %s",
+                            (serviceName, servicePrice, serviceId))
+        self.conn.commit()
+
+    def TopServices(self):
+        self.cursor.execute("SELECT service_name, Count(*) As TopService \
+                            FROM employee e \
+                            JOIN invoice i \
+                                ON e.employee_id = i.employee_id \
+                            JOIN customer c \
+                                ON i.customer_id = c.customer_id \
+                            JOIN invoice_line_item il \
+                                ON i.invoice_id = il.invoice_id \
+                            JOIN service s \
+                                ON il.service_id = s.service_id \
+                            WHERE (i.invoice_datetime >= DATE_ADD(CURDATE(), INTERVAL -14 DAY)) and i.active = 1 \
+                            GROUP BY service_name \
+                            ORDER BY TopService DESC\
+                            LIMIT 3;")
         rows = self.cursor.fetchall()
         return rows
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
 
     def getAllService(self):
         self.cursor.execute("SELECT * FROM service")

@@ -8,8 +8,8 @@ class EmployeeDB:
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     def insertEmployee(self, employee):
-        self.cursor.execute("INSERT INTO employee (first_name,last_name,birthday,phone,email,address,employee_status_id,account_id,active) VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s)",
-                            (employee[0],employee[1],employee[2],employee[3],employee[4],employee[5],employee[6],employee[7],employee[8])) 
+        self.cursor.execute("INSERT INTO employee (first_name,last_name,birthday,phone,email,address,employee_status_id,account_id) VALUES (%s,%s,%s,%s,%s,%s,%s,%s)",
+                            (employee[0],employee[1],employee[2],employee[3],employee[4],employee[5],employee[6],employee[7])) 
         self.conn.commit()
     
     def EmpFetch(self):
@@ -17,13 +17,14 @@ class EmployeeDB:
                             FROM employee \
                             INNER JOIN employee_status \
                                 ON employee.employee_status_id = employee_status.employee_status_id \
-                            WHERE active = 0;")
+                            WHERE active = 1;")
         rows = self.cursor.fetchall()
         return rows
 
     def EmpfetchAll(self):
         self.cursor.execute("SELECT employee_id, concat(first_name,' ',last_name) as Name \
                             FROM employee \
+                            WHERE active = 1 \
                             ORDER BY Name ASC")
         rows = self.cursor.fetchall()
         return rows
@@ -37,7 +38,7 @@ class EmployeeDB:
 
     def EmpDelete(self, data):
         self.cursor.execute("UPDATE employee \
-                            SET active = 1 \
+                            SET active = 0 \
                             WHERE employee_id = %s",
                             (data,))
         self.conn.commit()
@@ -47,7 +48,7 @@ class EmployeeDB:
                             FROM employee \
                             INNER JOIN employee_status \
                                 ON employee.employee_status_id = employee_status.employee_status_id \
-                            WHERE "+data[0]+" LIKE '%"+data[1]+"%' and active = 0")
+                            WHERE "+data[0]+" LIKE '%"+data[1]+"%' and active = 1")
         rows = self.cursor.fetchall()
         return rows
 
@@ -56,13 +57,13 @@ class EmployeeDB:
                             FROM employee \
                             INNER JOIN employee_status \
                                 ON employee.employee_status_id = employee_status.employee_status_id \
-                            WHERE active = 1;")
+                            WHERE active = 0;")
         rows = self.cursor.fetchall()
         return rows
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-
+    
     def getAllEmployee(self):
         self.cursor.execute("SELECT * FROM employee WHERE active = 1")
         rows = self.cursor.fetchall()

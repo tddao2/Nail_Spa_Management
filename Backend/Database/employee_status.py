@@ -6,6 +6,9 @@ class EmployeeStatusDB:
         self.conn = mysql.connector.connect(**Connect)
         self.cursor = self.conn.cursor()
 
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     def getEmployeeStatusID(self, employee_status):
         self.cursor.execute("SELECT * FROM employee_status WHERE employee_status = (?)", employee_status)
