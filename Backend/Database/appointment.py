@@ -17,7 +17,7 @@ class AppointmentDB:
                             FROM appointment a \
                             JOIN customer c \
                                 ON a.customer_id = c.customer_id \
-                            WHERE a.active = 1 \
+                            WHERE date_appt >= curdate() and (date_appt <= DATE_ADD(CURDATE(), INTERVAL 3 DAY)) and a.active = 1 \
                             ORDER BY time_appt ASC;")
         rows = self.cursor.fetchall()
         return rows
@@ -38,7 +38,7 @@ class AppointmentDB:
                             FROM appointment a \
                             JOIN customer c \
 	                            ON a.customer_id = c.customer_id \
-                            WHERE a.active = 0 or (date_appt >= DATE_ADD(CURDATE(), INTERVAL -3 DAY) and date_appt <= CURDATE()) \
+                            WHERE a.active = 0 and (date_appt >= DATE_ADD(CURDATE(), INTERVAL -3 DAY)) \
                             ORDER BY time_appt ASC;")
         rows = self.cursor.fetchall()
         return rows
@@ -48,7 +48,7 @@ class AppointmentDB:
                             FROM appointment a \
                             JOIN customer c \
                                 ON a.customer_id = c.customer_id \
-                            WHERE "+selection+" LIKE '%"+FLP+"%' and a.active = 1 \
+                            WHERE "+selection+" LIKE '%"+FLP+"%' and date_appt >= curdate() and (date_appt <= DATE_ADD(CURDATE(), INTERVAL 3 DAY)) and a.active = 1 \
                             ORDER BY time_appt ASC;")
         rows = self.cursor.fetchall()
         return rows
@@ -58,21 +58,43 @@ class AppointmentDB:
                             FROM appointment a \
                             JOIN customer c \
 	                            ON a.customer_id = c.customer_id \
-                            WHERE (a.active = 0 and "+selection+" LIKE '%"+FLP+"%') or (date_appt >= DATE_ADD(CURDATE(), INTERVAL -3 DAY) and date_appt <= CURDATE() and "+selection+" LIKE '%"+FLP+"%') \
+                            WHERE a.active = 0 and (date_appt >= DATE_ADD(CURDATE(), INTERVAL -3 DAY) and "+selection+" LIKE '%"+FLP+"%') \
                             ORDER BY time_appt ASC;")
         rows = self.cursor.fetchall()
         return rows
-    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
-    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
+    def CountAppt(self):
+        self.cursor.execute("SELECT COUNT(*) FROM appointment WHERE date_appt = curdate() and active = 1;")
+        row = self.cursor.fetchone()
+        if row:
+            return row[0]
+        else:
+            return None
+
+    def AppSummary(self, Date):
+        self.cursor.execute("SELECT 'Total Appointments', COUNT(*) \
+                            FROM appointment \
+                            WHERE date_appt BETWEEN %s AND %s \
+                            UNION \
+                            SELECT 'Booked Appointments', COUNT(*) \
+                            FROM appointment \
+                            WHERE date_appt BETWEEN %s AND %s AND active = 1 \
+                            UNION \
+                            SELECT 'Cancelled Appointments', COUNT(*) \
+                            FROM appointment \
+                            WHERE date_appt BETWEEN %s AND %s AND active = 0;",
+                            (Date[0],Date[1],Date[2],Date[3],Date[4],Date[5]))
+        rows = self.cursor.fetchall()
+        return rows
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+    # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 
     def getAllAppointment(self):
         self.cursor.execute("SELECT * FROM appointment WHERE active = 1")
-        rows = self.cursor.fetchall()
-        return rows
-
-
+        row = self.cursor.fetchall()
+        return row
+        
     def getAppointmentByAppointmentID(self, appointment_id):
         self.cursor.execute("SELECT * FROM appointment WHERE appointment_id = ? WHERE active = 1", (appointment_id,))
         rows = self.cursor.fetchall()

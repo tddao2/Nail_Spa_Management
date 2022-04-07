@@ -18,7 +18,6 @@ class CustomerDB:
         self.cursor.execute("SELECT customer_id FROM customer \
                             WHERE first_name LIKE '%"+first+"%' and last_name LIKE '%"+last+"%' and active = 1;")
         row = self.cursor.fetchone()
-        
         if row:
             return row[0]
         else:
@@ -45,7 +44,6 @@ class CustomerDB:
         self.cursor.execute("SELECT customer_id, phone FROM customer \
                             WHERE first_name LIKE '%"+first+"%' and last_name LIKE '%"+last+"%' and active = 1;")
         row = self.cursor.fetchone()
-    
         if row:
             return row
         else:
@@ -75,7 +73,7 @@ class CustomerDB:
                             FROM appointment a \
                             JOIN customer c \
                                 ON a.customer_id = c.customer_id \
-                            WHERE a.active = 1 \
+                            WHERE date_appt >= curdate() and (date_appt <= DATE_ADD(CURDATE(), INTERVAL 3 DAY)) and a.active = 1 \
                             ORDER BY time_appt ASC;")
         rows = self.cursor.fetchall()
         return rows
@@ -85,7 +83,7 @@ class CustomerDB:
                             FROM appointment a \
                             JOIN customer c \
 	                            ON a.customer_id = c.customer_id \
-                            WHERE a.active = 0 or (date_appt >= DATE_ADD(CURDATE(), INTERVAL -3 DAY) and date_appt <= CURDATE()) \
+                            WHERE a.active = 0 AND (date_appt >= DATE_ADD(CURDATE(), INTERVAL -3 DAY)) \
                             ORDER BY time_appt ASC;")
         rows = self.cursor.fetchall()
         return rows
@@ -129,7 +127,6 @@ class CustomerDB:
         self.cursor.execute("INSERT INTO customer (first_name, last_name, phone, email) VALUES (%s, %s, %s, %s)",
                             (first_name, last_name, phone, email))
         self.conn.commit()
-
 
     def removeCustomer(self, customer_id):
         self.cursor.execute("UPDATE customer SET active = 0 WHERE customer_id = %s", (customer_id,))

@@ -8,7 +8,6 @@ class FeedbackDB:
 
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> Haven't finished <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     def AddFB(self,data):
-        # print(data[0],data[1],data[2],data[3])
         self.cursor.execute("INSERT INTO feedback(employee_id,performance_score,description) values(%s,%s,%s)",
                             (data[0],data[1],data[2]))
         self.conn.commit()
@@ -73,6 +72,14 @@ class FeedbackDB:
                             order by Name ASC;")
         rows = self.cursor.fetchall()
         return rows
+
+    def CountFeedback(self):
+        self.cursor.execute("SELECT COUNT(*) FROM feedback WHERE date(dateFB) = curdate() and active = 1;")
+        row = self.cursor.fetchone()
+        if row:
+            return row[0]
+        else:
+            return None
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

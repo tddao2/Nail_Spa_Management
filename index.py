@@ -1,6 +1,8 @@
+from errno import errorcode
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk, messagebox
+from numpy import double
 from tkcalendar import DateEntry
 from tkinter import font as tkfont
 import datetime
@@ -43,24 +45,24 @@ class App(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        width = 1350  # 1280
-        height = 720
-
         # Return screen width and height in pixels.
+        width = 1350
+        height = 720
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
-
         x = (screen_width / 2) - (width / 2)
         y = (screen_height / 2) - (height / 2)
         self.geometry(f'{width}x{height}+{int(x)}+{int(y)}')
-        self.resizable(False, False)
+        self.resizable(False,False)
 
         # Initializing an empty frame array.
         self.frames = {}
-        for F in (Login, Register, Reset, Feedback, AdminDashboard, EmployeeDashboard):
+        for F in (Login, Register, Reset, AdminDashboard, EmployeeDashboard, Feedback):
             page_name = F.__name__
             frame = F(parent=container, controller=self)
             self.frames[page_name] = frame
+
+
             frame.grid(row=0, column=0, sticky="nsew")
 
         # Display the current page
@@ -84,7 +86,7 @@ class Login(tk.Frame):
         self.password = tk.StringVar()
 
         lblFrame = tk.LabelFrame(self,bg="#e2479c")
-        lblFrame.place(x=525,y=160,width=340, height=450) # x=490
+        lblFrame.place(x=525,y=160,width=340, height=450)
 
         img1=Image.open("images/login.png").resize((100,100), Image.ANTIALIAS)
         self.photoimage1=ImageTk.PhotoImage(img1)
@@ -136,9 +138,6 @@ class Login(tk.Frame):
         btnFeedback = tk.Button(lblFrame,image=self.photoimage3FB,borderwidth=0, bg="#e2479c",activebackground="#e2479c", command=lambda: controller.show_frame("Feedback"))
         btnFeedback.place(x=15, y=400)
 
-        # btnFeedback = tk.Button(lblFrame, text="Feedback", font=("times new roman",10,"bold"), borderwidth=0, fg="black", bg="#FF80ED", activeforeground="black",activebackground="#FF80ED", command=lambda: controller.show_frame("Feedback"))
-        # btnFeedback.place(x=15, y=420, width=160)
-
     def login(self):
         userfetch = (self.username.get())
         try:
@@ -177,7 +176,7 @@ class Login(tk.Frame):
     def clear(self):
         self.username.set("")
         self.password.set("")
- 
+
 class Register(tk.Frame):
 
     def __init__(self, parent, controller):
@@ -248,7 +247,7 @@ class Register(tk.Frame):
         lblAddress=tk.Label(frame,text="Address",font=("times new roman",15,"bold"),bg="white",fg="black")
         lblAddress.place(x=370,y=240)
 
-        self.txtAddress=tk.Text(frame,font=("times new roman",15),bg="lightyellow")
+        self.txtAddress=tk.Text(frame,font=("times new roman",15),bg="lightyellow",wrap=WORD)
         self.txtAddress.place(x=370,y=270,width=250,height=97)
 
         lblUsername=tk.Label(frame,text="Username",font=("times new roman",15,"bold"),bg="white",fg="black")
@@ -316,7 +315,6 @@ class Register(tk.Frame):
         role_id = 2
         account_status_id = 2
         employee_status_id = 1
-
         try: 
             if self.firstname.get()=="" \
                 or self.lastname.get()=="" \
@@ -344,6 +342,7 @@ class Register(tk.Frame):
                     secret_answer=self.SA.get().encode('utf8')
                     SAhased=bcrypt.hashpw(secret_answer, bcrypt.gensalt())
                     account=(self.username.get(),hashedpassword,self.SQ.get(),SAhased,role_id,account_status_id)
+                    
                     account_id=AccountDB().insertAccount(account)
                     FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.phone.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
                     employee=(self.firstname.get(),self.lastname.get(),self.txtDOB.get_date(),FormatedPhone,self.email.get(),self.txtAddress.get("1.0",END),employee_status_id,account_id)
@@ -351,9 +350,6 @@ class Register(tk.Frame):
                     
                     op=messagebox.showinfo("Success","Register Successfully!")
                     self.clear()
-                    # if op == "ok":
-                    #     self.controller.show_frame("Login")
-    
         except Exception as e:
             messagebox.showerror("Error",f"Error due to: {str(e)}")
             print(f"Something went wrong {e}.")
@@ -376,7 +372,6 @@ class AdminDashboard(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
-        # self.config(bg="#e2479c")
 
         AMframe=tk.Frame(self,bg="#e2479c")
         AMframe.place(x=0,y=0,width=1350,height=720)
@@ -386,7 +381,7 @@ class AdminDashboard(tk.Frame):
 
         imageHome = Image.open("images/home.png").resize((100,100))
         self.imageHome=ImageTk.PhotoImage(imageHome)
-        HomeBtn=tk.Button(LeftFrame, image=self.imageHome,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
+        HomeBtn=tk.Button(LeftFrame, image=self.imageHome,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.Home)
         HomeBtn.grid(row=0,column=1)
 
         imageEmployee = Image.open("images/employee.png").resize((100,100))
@@ -406,7 +401,7 @@ class AdminDashboard(tk.Frame):
 
         imageReport = Image.open("images/Report.png").resize((100,100))
         self.imageReport=ImageTk.PhotoImage(imageReport)
-        ReportBtn=tk.Button(LeftFrame, image=self.imageReport,borderwidth=0,activebackground="#e2479c",bg="#e2479c")
+        ReportBtn=tk.Button(LeftFrame, image=self.imageReport,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.Report)
         ReportBtn.grid(row=4,column=1)
 
         imageFeedback = Image.open("images/feedback.png").resize((100,100))
@@ -432,14 +427,50 @@ class AdminDashboard(tk.Frame):
             lbl_clock.config(text="Welcome to Nail & Spa Management System\t\t Date: "+abbDay+", "+day+" "+month+" "+year+"\t\t Time: "+hour+":"+minute+":"+second+" "+locale)
             lbl_clock.after(1000,clock)
         lbl_clock=tk.Label(AMframe, text="",font=("times new roman",15),bg="#e2479c",fg="white")
-        lbl_clock.place(x=100,y=0,relwidth=1,height=30)
+        lbl_clock.place(x=100,y=0,width=1210,height=30)
         clock()
 
+        imgSignOut=Image.open("images/logout.png").resize((30,30),Image.ANTIALIAS)
+        self.photoimageSignOut=ImageTk.PhotoImage(imgSignOut)
+        self.SignOutbtn=tk.Button(AMframe,image=self.photoimageSignOut,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=lambda: self.controller.show_frame("Login"))
+        self.SignOutbtn.place(x=1310,height=30)
+
+        self.HomeFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
         self.EmpFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
         self.ClientFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="red")
         self.SaleFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
+        self.ReportFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
         self.UserFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
         self.FeedbackFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
+
+        self.Home()
+        
+
+    def Home(self):
+        self.hide_all_frames()
+        self.HomeFrame.place(x=100,y=30,width=1251,height=690)
+
+        self.var_ApptCount=tk.StringVar()
+        self.var_FeedbackCount=tk.StringVar()
+        self.var_TotalSale=tk.StringVar()
+        self.var_TopServices=tk.StringVar()
+
+        self.ApptCount()
+        self.FeedbackCount()
+        self.TotalSales()
+        self.TopServices()
+        
+        self.lbl_TopService=tk.Label(self.HomeFrame,textvariable=self.var_TopServices,width=33,height=7,bd=3,relief=SUNKEN,bg="#f06292",fg="white",font=("goudy old style",18,"bold"))
+        self.lbl_TopService.grid(row=0,column=0,padx=38,pady=67)
+
+        self.lbl_TotalFeedback=tk.Label(self.HomeFrame,textvariable=self.var_FeedbackCount,width=30,height=5,bd=3,relief=SUNKEN,bg="#ec407a",fg="white",font=("goudy old style",23,"bold"))
+        self.lbl_TotalFeedback.grid(row=0,column=1,padx=38,pady=67)
+
+        self.lbl_TotalSale=tk.Label(self.HomeFrame,textvariable=self.var_TotalSale,width=30,height=5,bd=3,relief=SUNKEN,bg="#e91e63",fg="white",font=("goudy old style",23,"bold"))
+        self.lbl_TotalSale.grid(row=1,column=0,padx=38,pady=67)
+
+        self.lbl_TotalAppointment=tk.Label(self.HomeFrame,textvariable=self.var_ApptCount,width=30,height=5,bd=3,relief=SUNKEN,bg="#d81b60",fg="white",font=("goudy old style",23,"bold"))
+        self.lbl_TotalAppointment.grid(row=1,column=1,padx=38,pady=67)
 
     def employee(self):
         self.hide_all_frames()
@@ -447,7 +478,8 @@ class AdminDashboard(tk.Frame):
 
         style = ttk.Style()
         # style.theme_use('clam')
-        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.configure('Treeview.Heading',font=("times new roman",20,"bold"),foreground="black")
+        style.configure('Treeview',font=("times new roman",15),rowheight=40)
         style.map('Treeview',background=[('selected','#e2479c')])
 
         self.var_searchby=tk.StringVar()
@@ -462,7 +494,7 @@ class AdminDashboard(tk.Frame):
         
 
         # =============Left Frame=============
-        LeftFrame=tk.LabelFrame(self.EmpFrame,text="Employee Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
+        LeftFrame=tk.LabelFrame(self.EmpFrame,text="Employee Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="gold")
         LeftFrame.place(x=0,y=0,width=370,height=690)
 
         lblEmpId=tk.Label(LeftFrame,text="Emp ID",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
@@ -487,7 +519,6 @@ class AdminDashboard(tk.Frame):
         lblDOB.place(x=15,y=200)
 
         self.txtDOB=DateEntry(LeftFrame,selectmode='day',font=("times new roman",18),date_pattern='mm/dd/y')
-        # self.txtDOB.pack()
         self.txtDOB.place(x=140,y=200,width=200)
 
         lblEmail=tk.Label(LeftFrame,text="Email",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
@@ -513,7 +544,7 @@ class AdminDashboard(tk.Frame):
         lblAddress=tk.Label(LeftFrame,text="Address",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblAddress.place(x=15,y=440)
 
-        self.txtAddress=tk.Text(LeftFrame,font=("times new roman",14),bg="white")
+        self.txtAddress=tk.Text(LeftFrame,font=("times new roman",14),bg="white",wrap=WORD)
         self.txtAddress.place(x=140,y=440,width=200,height=100)
 
         imgUpdate=Image.open("images/update.png").resize((80,80),Image.ANTIALIAS)
@@ -536,7 +567,7 @@ class AdminDashboard(tk.Frame):
         RightFrame.place(x=370,y=12,width=880,height=678)
 
         # =============Top Right Frame=============
-        SearchFrame=tk.LabelFrame(RightFrame,text="Search Employee",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="white")
+        SearchFrame=tk.LabelFrame(RightFrame,text="Search Employee",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="gold")
         SearchFrame.place(x=100,width=680,height=71) #550
 
         self.cmb_search=ttk.Combobox(SearchFrame,textvariable=self.var_searchby,state="readonly",justify=CENTER,font=("times new roman",18))
@@ -584,7 +615,7 @@ class AdminDashboard(tk.Frame):
 
         self.EmployeeTable["show"]="headings"
 
-        self.EmployeeTable.column("ID",anchor=CENTER)
+        self.EmployeeTable.column("ID",anchor=CENTER,width=60)
         self.EmployeeTable.column("fname",anchor=CENTER)
         self.EmployeeTable.column("lname",anchor=CENTER)
         self.EmployeeTable.column("dob",anchor=CENTER)
@@ -600,11 +631,11 @@ class AdminDashboard(tk.Frame):
       
     def client(self):
         self.hide_all_frames()
-        # self.ClientFrame.place(x=200,y=30,width=1250,height=690)
         self.ClientFrame.place(x=100, y=30, width=1251, height=690)
 
         style = ttk.Style()
-        style.configure('Treeview.Heading', font=("Segoe UI", 15, "bold"), foreground="black")
+        style.configure('Treeview.Heading',font=("Segoe UI",20,"bold"),foreground="black")
+        style.configure('Treeview',font=("Segoe UI",15),rowheight=40)
         style.map('Treeview', background=[('selected','#e2479c')])
 
         self.var_customer_searchby = tk.StringVar()
@@ -726,7 +757,7 @@ class AdminDashboard(tk.Frame):
         self.tblCustomer.heading("customer_phone", text="Phone Number")
         self.tblCustomer.heading("customer_email", text="Email")
 
-        self.tblCustomer.column("customer_id", anchor=CENTER)
+        self.tblCustomer.column("customer_id", anchor=CENTER,width=60)
         self.tblCustomer.column("customer_first_name", anchor=CENTER)
         self.tblCustomer.column("customer_last_name", anchor=CENTER)
         self.tblCustomer.column("customer_phone", anchor=CENTER)
@@ -742,7 +773,8 @@ class AdminDashboard(tk.Frame):
 
         style = ttk.Style()
         # style.theme_use('clam')
-        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.configure('Treeview.Heading',font=("times new roman",20,"bold"),foreground="black")
+        style.configure('Treeview',font=("times new roman",15),rowheight=40)
         style.map('Treeview',background=[('selected','#e2479c')])
 
         # ============= Set variables ================
@@ -752,6 +784,14 @@ class AdminDashboard(tk.Frame):
         self.var_serviceId=tk.StringVar()
         self.var_serviceName=tk.StringVar()
         self.var_servicePrice=tk.DoubleVar()
+
+        self.var_InvoiceId=tk.StringVar()
+
+        self.var_HInvsearchby=tk.StringVar()
+        self.var_HInvsearchtxt=tk.StringVar()
+
+        self.var_InvDetailssearchby=tk.StringVar()
+        self.var_InvDetailssearchtxt=tk.StringVar()
 
         # ============= TOP FRAME ================
         ServiceFrame=tk.LabelFrame(self.SaleFrame,text="Services",font=("times new roman",25,"bold"),relief=RIDGE, bd=1, bg="#e2479c",fg="gold")
@@ -827,17 +867,17 @@ class AdminDashboard(tk.Frame):
 
         # >>>>>>>>>>>>>>Invoice Search<<<<<<<<<<<<<<
         InvSearchFrame=tk.LabelFrame(InvoiceFrame,text="Search Invoice",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="white")
-        InvSearchFrame.place(x=300,width=700,height=71)
+        InvSearchFrame.place(x=235,width=860,height=71)
 
         # >>>>>>>>>>>>>>Invoice btn<<<<<<<<<<<<<<
         imgInvDelete=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageInvDelete=ImageTk.PhotoImage(imgInvDelete)
-        self.InvDeletebtn=tk.Button(InvoiceFrame, image=self.photoimageInvDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        self.InvDeletebtn=tk.Button(InvoiceFrame, image=self.photoimageInvDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.InvoiceDelete)
         self.InvDeletebtn.place(x=10,y=125)
 
         imgInvRefresh=Image.open("images/refresh.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageInvRefresh=ImageTk.PhotoImage(imgInvRefresh)
-        InvRefreshbtn=tk.Button(InvoiceFrame, image=self.photoimageInvRefresh,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+        InvRefreshbtn=tk.Button(InvoiceFrame, image=self.photoimageInvRefresh,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.InvoiceClear)
         InvRefreshbtn.place(x=10,y=255)
 
         self.Invoicecmb_search=ttk.Combobox(InvSearchFrame,textvariable=self.var_Invsearchby,width=13,state="readonly",justify=CENTER,font=("times new roman",18))
@@ -845,29 +885,43 @@ class AdminDashboard(tk.Frame):
         self.Invoicecmb_search.grid(row=0,column=0,padx=10)
         self.Invoicecmb_search.current(0)
 
-        txt_Invoice_search=tk.Entry(InvSearchFrame,textvariable=self.var_Invsearchtxt,font=("times new roman",18),bg="white")
-        txt_Invoice_search.grid(row=0,column=1,padx=10)
+        self.txt_Invoice_search=tk.Entry(InvSearchFrame,textvariable=self.var_Invsearchtxt,font=("times new roman",18),bg="white")
+        self.txt_Invoice_search.grid(row=0,column=1,padx=10)
 
         imgInvSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageInvSearch=ImageTk.PhotoImage(imgInvSearch)
         self.Invbtn_search=tk.Button(InvSearchFrame,image=self.photoimageInvSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SearchInvoice)
         self.Invbtn_search.grid(row=0,column=3,padx=10)
 
-        Invbtn_showHistory=tk.Button(InvSearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white")
+        Invbtn_showHistory=tk.Button(InvSearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.InvoiceHistory)
         Invbtn_showHistory.grid(row=0,column=4,padx=10)
+
+        Invbtn_showDetail=tk.Button(InvSearchFrame,text="Invoice Details",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.getAllInvoiceDetails)
+        Invbtn_showDetail.grid(row=0,column=5,padx=10)
+
+        # >>>>>>>>>>>>>>Invoice History view<<<<<<<<<<<<<<
+        self.HInvoicecmb_search=ttk.Combobox(InvSearchFrame,textvariable=self.var_HInvsearchby,width=13,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.HInvoicecmb_search["values"]=("Select","Invoice number","Cust first name","Cust last name","Emp first name","Emp last name")
+        self.HInvoicecmb_search.current(0)
+
+        self.txt_HInvoice_search=tk.Entry(InvSearchFrame,textvariable=self.var_HInvsearchtxt,font=("times new roman",18),bg="white")
+
+        imgHInvSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageHInvSearch=ImageTk.PhotoImage(imgHInvSearch)
+        self.HInvbtn_search=tk.Button(InvSearchFrame,image=self.photoimageHInvSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SearchInvoiceHistory)
 
         # >>>>>>>>>>>>>>Invoice view<<<<<<<<<<<<<<
 
-        InvoiceViewFrame=tk.LabelFrame(InvoiceFrame,relief=RIDGE, bd=1, bg="#e2479c",fg="white")
-        InvoiceViewFrame.place(x=100,y=75, width=1130, height=310)
+        self.InvoiceViewFrame=tk.LabelFrame(InvoiceFrame,relief=RIDGE, bd=1, bg="#e2479c",fg="white")
+        self.InvoiceViewFrame.place(x=100,y=75, width=1130, height=310)
 
-        scrollx=tk.Scrollbar(InvoiceViewFrame,orient=HORIZONTAL)
+        scrollx=tk.Scrollbar(self.InvoiceViewFrame,orient=HORIZONTAL)
         scrollx.pack(side=BOTTOM,fill=X)
 
-        scrolly=tk.Scrollbar(InvoiceViewFrame,orient=VERTICAL)
+        scrolly=tk.Scrollbar(self.InvoiceViewFrame,orient=VERTICAL)
         scrolly.pack(side=RIGHT,fill=Y)
         
-        self.InvoiceTable=ttk.Treeview(InvoiceViewFrame,columns=("ID","Employee","Customer","Tip","Discount","Total","DateTime"),
+        self.InvoiceTable=ttk.Treeview(self.InvoiceViewFrame,columns=("ID","Employee","Customer","Tip","Discount","Total","DateTime"),
                                         yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
                                         show='headings')
 
@@ -876,7 +930,6 @@ class AdminDashboard(tk.Frame):
 
         self.InvoiceTable.heading("ID",text="ID")
         self.InvoiceTable.heading("Employee",text="Employee")
-        # self.InvoiceTable.heading("Services",text="Service name")
         self.InvoiceTable.heading("Customer",text="Customer")
         self.InvoiceTable.heading("Tip",text="Tip")
         self.InvoiceTable.heading("Discount",text="Discount")
@@ -887,25 +940,383 @@ class AdminDashboard(tk.Frame):
 
         self.InvoiceTable.column("ID",anchor=CENTER,width=40)
         self.InvoiceTable.column("Employee",anchor=CENTER)
-        # self.InvoiceTable.column("Services",anchor=CENTER)
         self.InvoiceTable.column("Customer",anchor=CENTER)
         self.InvoiceTable.column("Tip",anchor=CENTER,width=60)
-        self.InvoiceTable.column("Discount",anchor=CENTER,width=60)
+        self.InvoiceTable.column("Discount",anchor=CENTER,width=80)
         self.InvoiceTable.column("Total",anchor=CENTER,width=60)
         self.InvoiceTable.column("DateTime",anchor=CENTER)
         
         self.InvoiceTable.pack(fill=BOTH,expand=1)
-        # self.InvoiceTable.bind("<ButtonRelease-1>",self.ServiceGetdata)
+        self.InvoiceTable.bind("<ButtonRelease-1>",self.InvoiceGetdata)
 
         self.getAllInvoices()
+
+        # >>>>>>>>>>>>>>Invoice Details view<<<<<<<<<<<<<<
+        self.InvoiceDetailsViewFrame=tk.LabelFrame(InvoiceFrame,relief=RIDGE, bd=1, bg="#e2479c",fg="white")
+
+        scrollx=tk.Scrollbar(self.InvoiceDetailsViewFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(self.InvoiceDetailsViewFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+        
+        self.InvoiceDetailTable=ttk.Treeview(self.InvoiceDetailsViewFrame,columns=("ID","Employee","Services","Customer","Tip","Discount","Total","DateTime"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.InvoiceDetailTable.xview)
+        scrolly.config(command=self.InvoiceDetailTable.yview)
+
+        self.InvoiceDetailTable.heading("ID",text="ID")
+        self.InvoiceDetailTable.heading("Employee",text="Employee")
+        self.InvoiceDetailTable.heading("Services",text="Service name")
+        self.InvoiceDetailTable.heading("Customer",text="Customer")
+        self.InvoiceDetailTable.heading("Tip",text="Tip")
+        self.InvoiceDetailTable.heading("Discount",text="Discount")
+        self.InvoiceDetailTable.heading("Total",text="Total")
+        self.InvoiceDetailTable.heading("DateTime",text="DateTime")
+        
+        self.InvoiceDetailTable["show"]="headings"
+
+        self.InvoiceDetailTable.column("ID",anchor=CENTER,width=40)
+        self.InvoiceDetailTable.column("Employee",anchor=CENTER)
+        self.InvoiceDetailTable.column("Services",anchor=CENTER)
+        self.InvoiceDetailTable.column("Customer",anchor=CENTER)
+        self.InvoiceDetailTable.column("Tip",anchor=CENTER,width=60)
+        self.InvoiceDetailTable.column("Discount",anchor=CENTER,width=60)
+        self.InvoiceDetailTable.column("Total",anchor=CENTER,width=60)
+        self.InvoiceDetailTable.column("DateTime",anchor=CENTER)
+        
+        self.InvoiceDetailTable.pack(fill=BOTH,expand=1)
+
+        # >>>>>>>>>>>>>>Invoice Details Search<<<<<<<<<<<<<<
+        self.DetailsInvoicecmb_search=ttk.Combobox(InvSearchFrame,textvariable=self.var_InvDetailssearchby,width=13,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.DetailsInvoicecmb_search["values"]=("Select","Invoice number","Cust first name","Cust last name","Emp first name","Emp last name")
+        self.DetailsInvoicecmb_search.current(0)
+
+        self.txt_DetailsInvoice_search=tk.Entry(InvSearchFrame,textvariable=self.var_InvDetailssearchtxt,font=("times new roman",18),bg="white")
+
+        imgDetailsInvSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageDetailsInvSearch=ImageTk.PhotoImage(imgDetailsInvSearch)
+        self.DetailsInvbtn_search=tk.Button(InvSearchFrame,image=self.photoimageDetailsInvSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SearchInvoiceDetails)
     
+    def Report(self):
+        self.hide_all_frames()
+        self.ReportFrame.place(x=100,y=30,width=1251,height=691)
+
+        style = ttk.Style()
+        style.configure('Treeview.Heading',font=("times new roman",20,"bold"),foreground="black")
+        style.configure('Treeview',font=("times new roman",15),rowheight=40)
+        style.map('Treeview',background=[('selected','#e2479c')])
+
+        # >>>>>>>>>>>>>>Set Variables<<<<<<<<<<<<<<
+        self.var_ReportSearchBy=tk.StringVar()
+
+        # >>>>>>>>>>>>>>Report Search<<<<<<<<<<<<<<
+        InvSearchFrame=tk.LabelFrame(self.ReportFrame,text="Search Report",relief=RIDGE,font=("times new roman",20,"bold"),bd=4,bg="#e2479c",fg="gold")
+        InvSearchFrame.place(x=150,y=10,width=951,height=91)
+
+        self.Reportcmb_search=ttk.Combobox(InvSearchFrame,textvariable=self.var_ReportSearchBy,width=23,state="readonly",justify=CENTER,font=("times new roman",18))
+        self.Reportcmb_search["values"]=("Select","Wages","Customers serviced","Discounted invoices","Profit","Appointment Summary")
+        self.Reportcmb_search.grid(row=0,column=0,padx=25)
+        self.Reportcmb_search.current(0)
+
+        From=tk.Label(InvSearchFrame,text="From",font=("times new roman",18),bg="#e2479c",fg="white")
+        From.grid(row=0,column=1,padx=5)
+
+        self.txt_Report_searchFrom=DateEntry(InvSearchFrame,width=15,selectmode='day',font=("times new roman",18),date_pattern='mm/dd/y',justify='center')
+        self.txt_Report_searchFrom.grid(row=0,column=2,padx=5)
+
+        To=tk.Label(InvSearchFrame,text="To",font=("times new roman",18),bg="#e2479c",fg="white")
+        To.grid(row=0,column=3,padx=5)
+
+        self.txt_Report_searchTo=DateEntry(InvSearchFrame,width=15,selectmode='day',font=("times new roman",18),date_pattern='mm/dd/y',justify='center')
+        self.txt_Report_searchTo.grid(row=0,column=4,padx=5)
+
+        imgReportSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
+        self.photoimageReportSearch=ImageTk.PhotoImage(imgReportSearch)
+        self.Reportbtn_search=tk.Button(InvSearchFrame,image=self.photoimageReportSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SearchReport)
+        self.Reportbtn_search.grid(row=0,column=5,padx=5)
+
+
+        # >>>>>>>>>>>>>>Salary Report view <<<<<<<<<<<<<<
+        self.SalaryTableFrame=tk.LabelFrame(self.ReportFrame,relief=RIDGE,bd=1,bg="white")
+
+        scrollx=tk.Scrollbar(self.SalaryTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(self.SalaryTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+
+        self.SalaryTable=ttk.Treeview(self.SalaryTableFrame,columns=("Employee","Tip","Total Invoice","Wage (60%)"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.SalaryTable.xview)
+        scrolly.config(command=self.SalaryTable.yview)
+
+        self.SalaryTable.heading("Employee",text="Employee")
+        self.SalaryTable.heading("Tip",text="Tip")
+        self.SalaryTable.heading("Total Invoice",text="Total Invoice")
+        self.SalaryTable.heading("Wage (60%)",text="Wage (60%)")
+
+        self.SalaryTable["show"]="headings"
+
+        self.SalaryTable.column("Employee",anchor=CENTER,width=40)
+        self.SalaryTable.column("Tip",anchor=CENTER,width=140)
+        self.SalaryTable.column("Total Invoice",anchor=CENTER,width=100)
+        self.SalaryTable.column("Wage (60%)",anchor=CENTER)
+
+        self.SalaryTable.pack(fill=BOTH,expand=1)
+
+        # >>>>>>>>>>>>>>Count Invoice by an employee view <<<<<<<<<<<<<<
+
+        self.CountInvTableFrame=tk.LabelFrame(self.ReportFrame,relief=RIDGE,bd=1,bg="white")
+
+        scrollx=tk.Scrollbar(self.CountInvTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(self.CountInvTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+
+        self.CountInvTable=ttk.Treeview(self.CountInvTableFrame,columns=("Employee","Count By Invoices"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.CountInvTable.xview)
+        scrolly.config(command=self.CountInvTable.yview)
+
+        self.CountInvTable.heading("Employee",text="Employee")
+        self.CountInvTable.heading("Count By Invoices",text="Serving customers")
+
+        self.CountInvTable["show"]="headings"
+
+        self.CountInvTable.column("Employee",anchor=CENTER,width=40)
+        self.CountInvTable.column("Count By Invoices",anchor=CENTER,width=140)
+
+        self.CountInvTable.pack(fill=BOTH,expand=1)
+
+        # >>>>>>>>>>>>>>Invoices have discount <<<<<<<<<<<<<<
+
+        self.DiscountTableFrame=tk.LabelFrame(self.ReportFrame,relief=RIDGE,bd=1,bg="white")
+
+        scrollx=tk.Scrollbar(self.DiscountTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(self.DiscountTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+
+        self.DiscountTable=ttk.Treeview(self.DiscountTableFrame,columns=("Inv Id","Employee","Customer","Tip","Discount","Total","Date"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.DiscountTable.xview)
+        scrolly.config(command=self.DiscountTable.yview)
+
+        self.DiscountTable.heading("Inv Id",text="Inv Id")
+        self.DiscountTable.heading("Employee",text="Employee")
+        self.DiscountTable.heading("Customer",text="Customer")
+        self.DiscountTable.heading("Tip",text="Tip")
+        self.DiscountTable.heading("Discount",text="Discount")
+        self.DiscountTable.heading("Total",text="Total")
+        self.DiscountTable.heading("Date",text="Date")
+
+        self.DiscountTable["show"]="headings"
+
+        self.DiscountTable.column("Inv Id",anchor=CENTER,width=40)
+        self.DiscountTable.column("Employee",anchor=CENTER,width=140)
+        self.DiscountTable.column("Customer",anchor=CENTER,width=100)
+        self.DiscountTable.column("Tip",anchor=CENTER,width=60)
+        self.DiscountTable.column("Discount",anchor=CENTER,width=60)
+        self.DiscountTable.column("Total",anchor=CENTER,width=60)
+        self.DiscountTable.column("Date",anchor=CENTER)
+
+        self.DiscountTable.pack(fill=BOTH,expand=1)
+
+        # >>>>>>>>>>>>>>Revenue <<<<<<<<<<<<<<
+
+        self.RevenueTableFrame=tk.LabelFrame(self.ReportFrame,relief=RIDGE,bd=1,bg="white")
+
+        scrollx=tk.Scrollbar(self.RevenueTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(self.RevenueTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+
+        self.RevenueTable=ttk.Treeview(self.RevenueTableFrame,columns=("Profit"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.RevenueTable.xview)
+        scrolly.config(command=self.RevenueTable.yview)
+        ProfitFrom = datetime.datetime.strptime(str(self.txt_Report_searchFrom.get_date()), "%Y-%m-%d").strftime("%Y/%m/%d")
+        ProfitTo = datetime.datetime.strptime(str(self.txt_Report_searchTo.get_date()), "%Y-%m-%d").strftime("%Y/%m/%d")
+        self.RevenueTable.heading("Profit",text=f"{ProfitFrom} - {ProfitTo}")
+        
+        self.RevenueTable["show"]="headings"
+
+        self.RevenueTable.column("Profit",anchor=CENTER)
+
+        self.RevenueTable.pack(fill=BOTH,expand=1)
+
+        # >>>>>>>>>>>>>>Appoitnment Summary <<<<<<<<<<<<<<
+
+        self.AppSummaryTableFrame=tk.LabelFrame(self.ReportFrame,relief=RIDGE,bd=1,bg="white")
+
+        scrollx=tk.Scrollbar(self.AppSummaryTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(self.AppSummaryTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+
+        self.AppSummaryTable=ttk.Treeview(self.AppSummaryTableFrame,columns=("Profit","Count"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.AppSummaryTable.xview)
+        scrolly.config(command=self.AppSummaryTable.yview)
+        ApptFrom = datetime.datetime.strptime(str(self.txt_Report_searchFrom.get_date()), "%Y-%m-%d").strftime("%Y/%m/%d")
+        ApptTo = datetime.datetime.strptime(str(self.txt_Report_searchTo.get_date()), "%Y-%m-%d").strftime("%Y/%m/%d")
+        self.AppSummaryTable.heading("Profit",text=f"{ApptFrom} - {ApptTo}")
+        self.AppSummaryTable.heading("Count",text="Total")
+        
+        self.AppSummaryTable["show"]="headings"
+
+        self.AppSummaryTable.column("Profit",anchor=CENTER)
+        self.AppSummaryTable.column("Count",anchor=CENTER)
+
+        self.AppSummaryTable.pack(fill=BOTH,expand=1)
+    
+    def SearchReport(self):
+        current = datetime.datetime.now().date()
+        try:
+            if self.var_ReportSearchBy.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.txt_Report_searchFrom.get_date() > current:
+                messagebox.showerror("Error","Date FROM should be less than or equal to the current day !!!")
+            elif self.txt_Report_searchTo.get_date() > current:
+                messagebox.showerror("Error","Date TO should be less than or equal to the current day !!!!")
+            elif self.txt_Report_searchFrom.get_date() > self.txt_Report_searchTo.get_date():
+                messagebox.showerror("Error","Date FROM should be less than or equal to Date TO!!!")
+            elif self.var_ReportSearchBy.get()=="Wages":
+                rows = InvoiceDB().SalaryReport(self.txt_Report_searchFrom.get_date(),self.txt_Report_searchTo.get_date())
+                if len(rows)!=0:
+                    self.SalaryTable.delete(*self.SalaryTable.get_children())
+                    for index in range(len(rows)):
+                        self.SalaryTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.SalaryTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.SalaryTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.SalaryTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.CountInvTableFrame.place_forget()
+                    self.DiscountTableFrame.place_forget()
+                    self.RevenueTableFrame.place_forget()
+                    self.AppSummaryTableFrame.place_forget()
+                    self.SalaryTableFrame.place(x=50,y=110, width=1151, height=550)
+                else:
+                    messagebox.showerror("Error","No records found.")
+                    self.Hide_Report_Treeview()
+            elif self.var_ReportSearchBy.get()=="Customers serviced":
+                rows = InvoiceDB().CountInvReport(self.txt_Report_searchFrom.get_date(),self.txt_Report_searchTo.get_date())
+                if len(rows)!=0:
+                    self.CountInvTable.delete(*self.CountInvTable.get_children())
+                    for index in range(len(rows)):
+                        self.CountInvTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.CountInvTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.CountInvTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.CountInvTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.SalaryTableFrame.place_forget()
+                    self.DiscountTableFrame.place_forget()
+                    self.RevenueTableFrame.place_forget()
+                    self.AppSummaryTableFrame.place_forget()
+                    self.CountInvTableFrame.place(x=50,y=110, width=1151, height=550)
+                else:
+                    messagebox.showerror("Error","No records found.")
+                    self.Hide_Report_Treeview()
+            elif self.var_ReportSearchBy.get()=="Discounted invoices":
+                rows = InvoiceDB().DiscountReport(self.txt_Report_searchFrom.get_date(),self.txt_Report_searchTo.get_date())
+                if len(rows)!=0:
+                    self.DiscountTable.delete(*self.DiscountTable.get_children())
+                    for index in range(len(rows)):
+                        self.DiscountTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.DiscountTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.DiscountTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.DiscountTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.SalaryTableFrame.place_forget()
+                    self.CountInvTableFrame.place_forget()
+                    self.RevenueTableFrame.place_forget()
+                    self.AppSummaryTableFrame.place_forget()
+                    self.DiscountTableFrame.place(x=50,y=110, width=1151, height=550)
+                else:
+                    messagebox.showerror("Error","No records found.")
+                    self.Hide_Report_Treeview()
+            elif self.var_ReportSearchBy.get()=="Profit":
+                rows = InvoiceDB().RevenueReport(self.txt_Report_searchFrom.get_date(),self.txt_Report_searchTo.get_date())
+                if len(rows)!=0:
+                    self.RevenueTable.delete(*self.RevenueTable.get_children())
+                    for index in range(len(rows)):
+                        self.RevenueTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.RevenueTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.RevenueTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.RevenueTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.SalaryTableFrame.place_forget()
+                    self.CountInvTableFrame.place_forget()
+                    self.DiscountTableFrame.place_forget()
+                    self.AppSummaryTableFrame.place_forget()
+                    self.RevenueTableFrame.place(x=50,y=110, width=1151, height=550)
+                else:
+                    messagebox.showerror("Error","No records found.")
+                    self.Hide_Report_Treeview()
+            elif self.var_ReportSearchBy.get()=="Appointment Summary":
+                From = self.txt_Report_searchFrom.get_date()
+                To = self.txt_Report_searchTo.get_date()
+                Date = (From, To, From, To, From, To)
+                rows = AppointmentDB().AppSummary(Date)
+                print(str(self.txt_Report_searchFrom.get_date()))
+                if len(rows)!=0:
+                    self.AppSummaryTable.delete(*self.AppSummaryTable.get_children())
+                    for index in range(len(rows)):
+                        self.AppSummaryTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.AppSummaryTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.AppSummaryTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.AppSummaryTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.SalaryTableFrame.place_forget()
+                    self.CountInvTableFrame.place_forget()
+                    self.DiscountTableFrame.place_forget()
+                    self.RevenueTableFrame.place_forget()
+                    self.AppSummaryTableFrame.place(x=50,y=110, width=1151, height=550)
+                else:
+                    messagebox.showerror("Error","No records found.")
+                    self.Hide_Report_Treeview()
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def Hide_Report_Treeview(self):
+        self.Reportcmb_search.current(0)
+        self.SalaryTableFrame.place_forget()
+        self.CountInvTableFrame.place_forget()
+        self.DiscountTableFrame.place_forget()
+        self.RevenueTableFrame.place_forget()
+        self.AppSummaryTableFrame.place_forget()
+
     def survey(self):
         self.hide_all_frames()
         self.FeedbackFrame.place(x=100,y=30,width=1251,height=691)
 
         style = ttk.Style()
         # style.theme_use('clam')
-        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.configure('Treeview.Heading',font=("times new roman",20,"bold"),foreground="black")
+        style.configure('Treeview',font=("times new roman",15),rowheight=40)
         style.map('Treeview',background=[('selected','#e2479c')])
 
         self.var_SVsearchby=tk.StringVar()
@@ -914,11 +1325,10 @@ class AdminDashboard(tk.Frame):
         self.var_SV_id=tk.StringVar()
         self.var_SV_Emp=tk.StringVar()
         self.var_month=tk.StringVar()
-
         # ==========================================================Left Frame=============================================================
         
         # =============Top Left Frame=============
-        SVLeftTopFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
+        SVLeftTopFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Details",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="gold")
         SVLeftTopFrame.place(x=0,y=0,width=370,height=389) # height = 689
 
         lblSV_Emp=tk.Label(SVLeftTopFrame,text="Employee",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
@@ -930,9 +1340,10 @@ class AdminDashboard(tk.Frame):
         lblSV=tk.Label(SVLeftTopFrame,text="Feedback",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
         lblSV.place(x=15,y=80)
 
-        self.txtSV=tk.Text(SVLeftTopFrame,font=("times new roman",12))
+        self.txtSV=tk.Text(SVLeftTopFrame,font=("times new roman",12),wrap=WORD)
         self.txtSV.place(x=140,y=80,width=200,height=170)
         
+
         imgSVDelete=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageSVDelete=ImageTk.PhotoImage(imgSVDelete)
         self.SVDeletebtn=tk.Button(SVLeftTopFrame, image=self.photoimageSVDelete,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.SVDelete)
@@ -944,8 +1355,10 @@ class AdminDashboard(tk.Frame):
         SVRefreshbtn.place(x=200,y=290)
 
         # =============Bottom Left Frame=============
-        SVLeftBottomFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Remove",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="white")
+        SVLeftBottomFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Remove",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="gold")
         SVLeftBottomFrame.place(y=389,width=370,height=300) 
+
+        
 
         self.lblSV_Search=tk.Label(SVLeftBottomFrame,text="Delete by",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
         self.lblSV_Search.place(x=15,y=20)
@@ -996,13 +1409,13 @@ class AdminDashboard(tk.Frame):
         imgSVRemove1=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageSVRemove1=ImageTk.PhotoImage(imgSVRemove1)
         self.SVRemove1btn=tk.Button(SVLeftBottomFrame, image=self.photoimageSVRemove1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.deletePeriod)
-        
+
         # ==========================================================Right Frame=============================================================
         SV_RightFrame=tk.Frame(self.FeedbackFrame,relief=RIDGE,bd=1,bg="#e2479c")
         SV_RightFrame.place(x=370,y=12,width=880,height=678)
 
         # =============Top Right Frame=============
-        SV_SearchFrame=tk.LabelFrame(SV_RightFrame,text="Search Feedback",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="white")
+        SV_SearchFrame=tk.LabelFrame(SV_RightFrame,text="Search Feedback",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="gold")
         SV_SearchFrame.place(x=100,width=680,height=71) #550
 
         self.SVcmb_search=ttk.Combobox(SV_SearchFrame,textvariable=self.var_SVsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
@@ -1023,7 +1436,7 @@ class AdminDashboard(tk.Frame):
 
         # =============Bottom Right Frame=============
         FeedbackTableFrame=tk.LabelFrame(SV_RightFrame,relief=RIDGE,bd=1,bg="white")
-        FeedbackTableFrame.place(x=20,y=82,width=839,height=574) #608
+        FeedbackTableFrame.place(x=20,y=82,width=839,height=574)
 
         scrollx=tk.Scrollbar(FeedbackTableFrame,orient=HORIZONTAL)
         scrollx.pack(side=BOTTOM,fill=X)
@@ -1046,9 +1459,9 @@ class AdminDashboard(tk.Frame):
 
         self.FeedbackTable["show"]="headings"
 
-        self.FeedbackTable.column("Feedback ID",anchor=CENTER)
-        self.FeedbackTable.column("Full name",anchor=CENTER)
-        self.FeedbackTable.column("Score",anchor=CENTER)
+        self.FeedbackTable.column("Feedback ID",anchor=CENTER,width=20)
+        self.FeedbackTable.column("Full name",anchor=CENTER,width=120)
+        self.FeedbackTable.column("Score",anchor=CENTER,width=60)
         self.FeedbackTable.column("Feedback",anchor=CENTER)
         self.FeedbackTable.column("Date",anchor=CENTER)
 
@@ -1063,7 +1476,8 @@ class AdminDashboard(tk.Frame):
 
         style = ttk.Style()
         # style.theme_use('clam')
-        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.configure('Treeview.Heading',font=("times new roman",20,"bold"),foreground="black")
+        style.configure('Treeview',font=("times new roman",15),rowheight=40)
         style.map('Treeview',background=[('selected','#e2479c')])
 
         self.var_Acctsearchby=tk.StringVar()
@@ -1182,7 +1596,7 @@ class AdminDashboard(tk.Frame):
 
         self.AccountTable["show"]="headings"
 
-        self.AccountTable.column("ID",anchor=CENTER)
+        self.AccountTable.column("ID",anchor=CENTER,width=60)
         self.AccountTable.column("Full name",anchor=CENTER)
         self.AccountTable.column("username",anchor=CENTER)
         self.AccountTable.column("role",anchor=CENTER)
@@ -1195,16 +1609,17 @@ class AdminDashboard(tk.Frame):
         self.AcctShow()
 
     def hide_all_frames(self):
+        self.HomeFrame.place_forget()
         self.EmpFrame.place_forget()
         self.ClientFrame.place_forget()
         self.SaleFrame.place_forget()
+        self.ReportFrame.place_forget()
         self.UserFrame.place_forget()
         self.FeedbackFrame.place_forget()
 
     def EmpUpdate(self):
         emp_status_New = 1
         emp_status_Current = 2
-        emp_status_Pass = 3
         try:
             if self.var_emp_id.get()=="":
                 messagebox.showerror("Error","No employee info selected")
@@ -1307,15 +1722,10 @@ class AdminDashboard(tk.Frame):
         try:
             rows = EmployeeDB().EmpFetchHistory()
             if len(rows)!=0:
-                self.EmployeeTable.delete(*self.EmployeeTable.get_children())
-                for index in range(len(rows)):
-                    self.EmployeeTable.tag_configure("evenrow",background="#f5d1e5")
-                    self.EmployeeTable.tag_configure("oddrow",background="white")
-                    if index % 2 == 0:    
-                        self.EmployeeTable.insert("",END,values=rows[index],tags=("evenrow",))
-                    else:
-                        self.EmployeeTable.insert("",END,values=rows[index],tags=("oddrow",))
-                self.EmpHideAllbtn()
+                    self.EmployeeTable.delete(*self.EmployeeTable.get_children())
+                    for row in rows:
+                        self.EmployeeTable.insert("",END,values=row)
+                    self.EmpHideAllbtn()
             else:
                 messagebox.showerror("Error","No record found.")
         except Exception as e:
@@ -1647,6 +2057,7 @@ class AdminDashboard(tk.Frame):
         self.txtSV.delete("1.0",END)
         self.txtSV.config(state=DISABLED) 
 
+
         self.HideDeleteOptions()
         self.SV_ClearSearch()
         self.SV_show()
@@ -1726,6 +2137,8 @@ class AdminDashboard(tk.Frame):
 
         self.SVRemovebtn.place_forget()
         self.SVRemove1btn.place_forget()
+
+        self.btn_search.place_forget()
 
     def deleteMonthly(self):
         try:
@@ -1878,7 +2291,6 @@ class AdminDashboard(tk.Frame):
         self.ServiceTable.delete(*self.ServiceTable.get_children())
         try:
             if not ServiceDB().getAllServiceName():
-                self.Hide_Delete_Options()
                 messagebox.showerror("Error", "No Services available!!!.")
             else:
                 rows = ServiceDB().getAllServiceName()
@@ -1934,12 +2346,30 @@ class AdminDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
+
+    def InvoiceClear(self):
+        self.InvoiceHide1()
+
+        self.InvoiceHide4()
+
+        self.InvoiceHide3()
+
+        self.InvoiceDetailsViewFrame.place_forget()
+
+        self.Invoicecmb_search.grid(row=0,column=0,padx=10)
+        self.txt_Invoice_search.grid(row=0,column=1,padx=10)
+        self.Invbtn_search.grid(row=0,column=3,padx=10)
+
+        self.InvoiceViewFrame.place(x=100,y=75, width=1130, height=310)
+
+        self.InvDeletebtn.place(x=10,y=125)
+
+        self.getAllInvoices()
         
     def getAllInvoices(self):
         self.InvoiceTable.delete(*self.InvoiceTable.get_children())
         try:
             if not InvoiceDB().getAllInvoice():
-                self.Hide_Delete_Options()
                 messagebox.showerror("Error", "No Invoices available!!!.")
             else:
                 rows = InvoiceDB().getAllInvoice()
@@ -1950,6 +2380,11 @@ class AdminDashboard(tk.Frame):
                         self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
                     else:
                         self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+
+                self.Invoicecmb_search.current(0)
+                self.var_Invsearchtxt.set("")
+                self.var_InvoiceId.set("")
+
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
@@ -1963,7 +2398,59 @@ class AdminDashboard(tk.Frame):
             elif self.var_Invsearchby.get()=="Invoice number" and self.var_Invsearchtxt.get().isnumeric()==False:
                 messagebox.showerror("Error","Invalid invoice number")
             elif self.var_Invsearchby.get()=="Invoice number" and self.var_Invsearchtxt.get().isnumeric()==True:
-                rows = InvoiceDB().SearchInvoice(self.var_Invsearchtxt.get(),)
+                rows = InvoiceDB().SearchInvoice(self.var_Invsearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_Invsearchby.get()=="Cust first name":
+                rows = InvoiceDB().SearchInvoicebyCusF(self.var_Invsearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_Invsearchby.get()=="Cust last name":
+                rows = InvoiceDB().SearchInvoicebyCusL(self.var_Invsearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_Invsearchby.get()=="Emp first name":
+                rows = InvoiceDB().SearchInvoicebyEmpF(self.var_Invsearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_Invsearchby.get()=="Emp last name":
+                rows = InvoiceDB().SearchInvoicebyEmpL(self.var_Invsearchtxt.get())
                 if len(rows)!=0:
                     self.InvoiceTable.delete(*self.InvoiceTable.get_children())
                     for index in range(len(rows)):
@@ -1977,6 +2464,328 @@ class AdminDashboard(tk.Frame):
                     messagebox.showerror("Error","No records found.")
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def InvoiceDelete(self):
+        try:
+            if self.var_InvoiceId.get()=="":
+                messagebox.showerror("Error","No invoice info selected")
+            else:
+                op=messagebox.askyesno("Confirm","Do you really want to delete the invoice?")
+                if op==True:
+                    InvoiceDB().DeleteInvoice(self.var_InvoiceId.get())
+                    messagebox.showinfo("Success","The invoice has been deleted successfully!")
+                    self.getAllInvoices()
+                else:
+                    return
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def InvoiceGetdata(self,event):
+        f=self.InvoiceTable.focus()
+        curItem=(self.InvoiceTable.item(f))
+        row=curItem['values']
+        try:
+            self.var_InvoiceId.set(row[0]) 
+        except:
+            pass
+    
+    def InvoiceHistory(self):
+        try:
+            rows = InvoiceDB().InvoiceHistory()
+            if len(rows)!=0:
+                self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                for index in range(len(rows)):
+                    self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.InvoiceTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                self.InvoiceHide1()
+
+                self.InvoiceHide2()
+
+                self.InvDeletebtn.place_forget()
+
+                self.InvoiceHide3()
+
+                self.InvoiceDetailsViewFrame.place_forget()
+
+                self.HInvoicecmb_search.grid(row=0,column=0,padx=10)
+                self.txt_HInvoice_search.grid(row=0,column=1,padx=10)
+                self.HInvbtn_search.grid(row=0,column=3,padx=10)
+
+                self.InvoiceViewFrame.place(x=100,y=75, width=1130, height=310)
+            else:
+                messagebox.showerror("Error","No historical records found.")
+        except Exception as e:
+            messagebox.showerror("Error",f"Error due to: {str(e)}")
+            print(f"Something went wrong {e}.")
+
+    def SearchInvoiceHistory(self):
+        try:
+            if self.var_HInvsearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_HInvsearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            elif self.var_HInvsearchby.get()=="Invoice number" and self.var_HInvsearchtxt.get().isnumeric()==False:
+                messagebox.showerror("Error","Invalid invoice number")
+            elif self.var_HInvsearchby.get()=="Invoice number" and self.var_HInvsearchtxt.get().isnumeric()==True:
+                rows = InvoiceDB().SearchHInvoice(self.var_HInvsearchtxt.get(),)
+                if len(rows)!=0:
+                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_HInvsearchby.get()=="Cust first name":
+                rows = InvoiceDB().SearchHInvoicebyCusF(self.var_HInvsearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_HInvsearchby.get()=="Cust last name":
+                rows = InvoiceDB().SearchHInvoicebyCusL(self.var_HInvsearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_HInvsearchby.get()=="Emp first name":
+                rows = InvoiceDB().SearchHInvoicebyEmpF(self.var_HInvsearchtxt.get(),)
+                if len(rows)!=0:
+                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_HInvsearchby.get()=="Emp last name":
+                rows = InvoiceDB().SearchHInvoicebyEmpL(self.var_HInvsearchtxt.get(),)
+                if len(rows)!=0:
+                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def getAllInvoiceDetails(self):
+        self.InvoiceDetailTable.delete(*self.InvoiceDetailTable.get_children())
+        try:
+            if not InvoiceDB().getAllInvoiceInline():
+                messagebox.showerror("Error", "No Invoices available!!!.")
+            else:
+                rows = InvoiceDB().getAllInvoiceInline()
+                for index in range(len(rows)):
+                    self.InvoiceDetailTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.InvoiceDetailTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("oddrow",))
+
+                self.InvoiceHide1()
+
+                self.InvoiceHide2()
+
+                self.InvoiceHide4()
+
+                self.InvoiceViewFrame.place_forget()
+
+                self.InvDeletebtn.place_forget()
+
+                self.InvoiceDetailsViewFrame.place(x=100,y=75, width=1130, height=310)
+
+                self.DetailsInvoicecmb_search.grid(row=0,column=0,padx=10)
+                self.txt_DetailsInvoice_search.grid(row=0,column=1,padx=10)
+                self.DetailsInvbtn_search.grid(row=0,column=3,padx=10)
+
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def SearchInvoiceDetails(self):
+        try:
+            if self.var_InvDetailssearchby.get()=="Select":
+                messagebox.showerror("Error","Select search by option")
+            elif self.var_InvDetailssearchtxt.get()=="":
+                messagebox.showerror("Error","Search input is required")
+            elif self.var_InvDetailssearchby.get()=="Invoice number" and self.var_InvDetailssearchtxt.get().isnumeric()==False:
+                messagebox.showerror("Error","Invalid invoice number")
+            elif self.var_InvDetailssearchby.get()=="Invoice number" and self.var_InvDetailssearchtxt.get().isnumeric()==True:
+                rows = InvoiceDB().SearchDetailsInvoice(self.var_InvDetailssearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceDetailTable.delete(*self.InvoiceDetailTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceDetailTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceDetailTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_InvDetailssearchby.get()=="Cust first name":
+                rows = InvoiceDB().SearchDetailsInvoicebyCusF(self.var_InvDetailssearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceDetailTable.delete(*self.InvoiceDetailTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceDetailTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceDetailTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_InvDetailssearchby.get()=="Cust last name":
+                rows = InvoiceDB().SearchDetailsInvoicebyCusL(self.var_InvDetailssearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceDetailTable.delete(*self.InvoiceDetailTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceDetailTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceDetailTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_InvDetailssearchby.get()=="Emp first name":
+                rows = InvoiceDB().SearchDetailsInvoicebyEmpF(self.var_InvDetailssearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceDetailTable.delete(*self.InvoiceDetailTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceDetailTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceDetailTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+            elif self.var_InvDetailssearchby.get()=="Emp last name":
+                rows = InvoiceDB().SearchDetailsInvoicebyEmpL(self.var_InvDetailssearchtxt.get())
+                if len(rows)!=0:
+                    self.InvoiceDetailTable.delete(*self.InvoiceDetailTable.get_children())
+                    for index in range(len(rows)):
+                        self.InvoiceDetailTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.InvoiceDetailTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No records found.")
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def InvoiceHide1(self):
+        self.Invoicecmb_search.current(0)
+        self.var_Invsearchtxt.set("")
+        self.var_InvoiceId.set("")
+
+        self.HInvoicecmb_search.current(0)
+        self.var_HInvsearchtxt.set("")
+
+        self.DetailsInvoicecmb_search.current(0)
+        self.var_InvDetailssearchtxt.set("")
+
+    def InvoiceHide2(self):
+        self.Invoicecmb_search.grid_forget()
+        self.txt_Invoice_search.grid_forget()
+        self.Invbtn_search.grid_forget()
+
+    def InvoiceHide3(self):
+        self.DetailsInvoicecmb_search.grid_forget()
+        self.txt_DetailsInvoice_search.grid_forget()
+        self.DetailsInvbtn_search.grid_forget()
+
+    def InvoiceHide4(self):
+        self.HInvoicecmb_search.grid_forget()
+        self.txt_HInvoice_search.grid_forget()
+        self.HInvbtn_search.grid_forget()
+
+    def ApptCount(self):
+        now = datetime.datetime.strptime(str(datetime.datetime.now().date()), "%Y-%m-%d").strftime("%Y/%m/%d")
+        try:
+            row = AppointmentDB().CountAppt()
+            if row:
+                self.var_ApptCount.set(f"Total Appointments {now}\n\n{row}")
+            else:
+                self.var_ApptCount.set(f"Total Appointments {now}\n\n0")
+        except Exception as e:
+            messagebox.showerror("Error", "Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def FeedbackCount(self):
+        now = datetime.datetime.strptime(str(datetime.datetime.now().date()), "%Y-%m-%d").strftime("%Y/%m/%d")
+        try:
+            row = FeedbackDB().CountFeedback()
+            if row:
+                self.var_FeedbackCount.set(f"Total Feedback {now}\n\n{row}")
+            else:
+                self.var_FeedbackCount.set(f"Total Feedback {now}\n\n0")
+        except Exception as e:
+            messagebox.showerror("Error", "Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def TotalSales(self):
+        now = datetime.datetime.strptime(str(datetime.datetime.now().date()), "%Y-%m-%d").strftime("%Y/%m/%d")
+        try:
+            row = InvoiceDB().TotalSale()
+            if row:
+                self.var_TotalSale.set(f"Total Sales {now}\n\n${row}")
+            else:
+                self.var_TotalSale.set(f"Total Sales {now}\n\n$0")
+        except Exception as e:
+            messagebox.showerror("Error", "Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
+    def TopServices(self):
+        now = datetime.datetime.strptime(str(datetime.datetime.now().date()), "%Y-%m-%d").strftime("%Y/%m/%d")
+        Past = datetime.datetime.strptime(str(datetime.datetime.now().date() + datetime.timedelta(days=-14)), "%Y-%m-%d").strftime("%Y/%m/%d")
+        try:
+            rows = ServiceDB().TopServices()
+            if rows:
+                self.var_TopServices.set(f"Top Services\n{Past} - {now}\n\n{','.join(str(i[0]) for i in rows)}")
+            else:
+                self.var_TopServices.set(f"Top Services\n{Past} - {now}\n\nunavailable.")
+        except Exception as e:
+            messagebox.showerror("Error", "Something went wrong")
             print(f"Error due to: {str(e)}.")
 
         # Customer Helper Function
@@ -2051,8 +2860,16 @@ class AdminDashboard(tk.Frame):
                 self.tblCustomer.delete(*self.tblCustomer.get_children())
 
                 # Load Records.
-                for row in rows:
-                    self.tblCustomer.insert('', tk.END, values=row)
+                if len(rows) != 0:
+                    for index in range(len(rows)):
+                        self.tblCustomer.tag_configure("evenrow",background="#f5d1e5")
+                        self.tblCustomer.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.tblCustomer.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No customer records found.")
 
             elif self.var_customer_searchby.get()=="Last Name" and self.var_customer_searchtxt.get():
                 
@@ -2064,8 +2881,16 @@ class AdminDashboard(tk.Frame):
                 self.tblCustomer.delete(*self.tblCustomer.get_children())
 
                 # Load record.
-                for row in rows:
-                    self.tblCustomer.insert('', tk.END, values=row)
+                if len(rows) != 0:
+                    for index in range(len(rows)):
+                        self.tblCustomer.tag_configure("evenrow",background="#f5d1e5")
+                        self.tblCustomer.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.tblCustomer.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No customer records found.")
 
         except Exception as e:
             messagebox.showerror("Error", f"Error due to: {str(e)}")
@@ -2076,9 +2901,18 @@ class AdminDashboard(tk.Frame):
         self.tblCustomer.delete(*self.tblCustomer.get_children())
 
         # Iterate through the data returned by the fetch method in Database Class
-        for row in CustomerDB().getAllCustomer():
-            self.tblCustomer.insert('', tk.END, values=row)
-
+        rows = CustomerDB().getAllCustomer()
+        if len(rows) != 0:
+            for index in range(len(rows)):
+                self.tblCustomer.tag_configure("evenrow",background="#f5d1e5")
+                self.tblCustomer.tag_configure("oddrow",background="white")
+                if index % 2 == 0:    
+                    self.tblCustomer.insert("",END,values=rows[index],tags=("evenrow",))
+                else:
+                    self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
+        else:
+            messagebox.showerror("Error","No customer records found.")
+                
         # Reset Search Bar.
         self.cmbCustomerSearch.current(0)
         self.txtCustomerSearch.delete(0, tk.END)
@@ -2143,6 +2977,7 @@ class Reset(tk.Frame):
         lblResetKey = tk.Label(frame,image=self.photoimageResetKey,borderwidth=0,bg="white")
         lblResetKey.place(x=0,y=0)
         
+
         lblReset=tk.Label(frame,text="RESET PASSWORD",font=("times new roman",24,"bold"),relief=GROOVE,borderwidth=1,fg="darkgreen",bg="white") ##fcfcfc
         lblReset.place(x=72,height=66)
 
@@ -2286,6 +3121,7 @@ class Feedback(tk.Frame):
         # Create widgets
         self.create_widgets(controller)
 
+
     def create_widgets(self, controller):
 
         self.employeeName = tk.StringVar()
@@ -2332,7 +3168,7 @@ class Feedback(tk.Frame):
         descriptionLabel = tk.Label(self.frame, text="Description:", font=("Segoe UI", 14, "bold"),bg="white")
         descriptionLabel.place(x=20,y=330)
 
-        self.descriptionEntry = tk.Text(self.frame, font=("Segoe UI", 14, "bold"), bg="#EBECF0", borderwidth=2)
+        self.descriptionEntry = tk.Text(self.frame, font=("Segoe UI", 14, "bold"), bg="#EBECF0", borderwidth=2,wrap=WORD)
         self.descriptionEntry.place(x=20, y=360, width=400, height=150)
 
         # Back Button (To Login Page)
@@ -2387,8 +3223,17 @@ class EmployeeDashboard(tk.Frame):
         tk.Frame.__init__(self, parent)
         self.controller = controller
         self.ApptFNN = []
-        self.Start()
 
+        self.ApptFname = []
+        self.ApptLname = []
+        self.ApptPhone = []
+
+        self.ApptHFname = []
+        self.ApptHLname = []
+        self.ApptHPhone = []
+        
+        self.Start()
+               
         self.CusFname = []
         self.CusLname = []
         self.CusPhone = []
@@ -2396,10 +3241,8 @@ class EmployeeDashboard(tk.Frame):
         self.CusHFname = []
         self.CusHLname = []
         self.CusHPhone = []
-
+       
         self.virtualCustomerFN()
-
-        self.virtualCusInfo()
         
     def Start(self):
         self.virtualCustomerFN()
@@ -2505,7 +3348,7 @@ class EmployeeDashboard(tk.Frame):
 
         
         self.ServiceId = []
-        
+
         self.ServicePrice = []
         self.ServiceName = []
         self.ServiceType = []
@@ -2528,8 +3371,7 @@ class EmployeeDashboard(tk.Frame):
         self.Service_id_price_name()
         self.Service_Type()
         self.get_All_Users()
-        
-        
+
         global SPW_btn1
         global SPW_btn2
         global sp_btn1
@@ -2581,8 +3423,7 @@ class EmployeeDashboard(tk.Frame):
         global Duralash_btn1
         global Duralash_btn2
         global MEE_btn1
-        global MEE_btn2
-               
+        global MEE_btn2               
         
         #========================Title==============================
 
@@ -2652,14 +3493,14 @@ class EmployeeDashboard(tk.Frame):
             SPW_btn1.grid_forget()
             SPW_btn2.grid(row=0,column=2,pady=4)
             SPW.set(self.ServicePrice[0])
-
+            
         global BackSPW_btn2    
 
         def BackSPW_btn2():
             SPW_btn2.grid_forget()
             SPW_btn1.grid(row=0,column=1,pady=4)
             SPW.set(0)
-      
+                    
         imgSPW_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageSPW_btn1=ImageTk.PhotoImage(imgSPW_btn1)
         SPW_btn1=tk.Button(self.F2,image=self.photoimageSPW_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -2678,14 +3519,14 @@ class EmployeeDashboard(tk.Frame):
             sp_btn1.grid_forget()
             sp_btn2.grid(row=1,column=2,pady=4)
             SP.set(self.ServicePrice[1])
-            
+
         global Backsp_btn2    
 
         def Backsp_btn2():
             sp_btn2.grid_forget()
             sp_btn1.grid(row=1,column=1,pady=4)
             SP.set(0)
-            
+
         imgsp_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimagesp_btn1=ImageTk.PhotoImage(imgsp_btn1)
         sp_btn1=tk.Button(self.F2,image=self.photoimagesp_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -2730,7 +3571,7 @@ class EmployeeDashboard(tk.Frame):
             RA_btn1.grid_forget()
             RA_btn2.grid(row=3,column=2,pady=4)
             RA.set(self.ServicePrice[3])
-
+            
         global BackRA_btn2  
 
         def BackRA_btn2():
@@ -2760,7 +3601,7 @@ class EmployeeDashboard(tk.Frame):
             M_btn1.grid_forget()
             M_btn2.grid(row=0,column=2,pady=3)
             M.set(self.ServicePrice[4])
-            
+
         global BackM_btn2 
 
         def BackM_btn2():
@@ -2786,7 +3627,7 @@ class EmployeeDashboard(tk.Frame):
             P_btn1.grid_forget()
             P_btn2.grid(row=1,column=2,pady=4)
             P.set(self.ServicePrice[5])
-
+        
         global BackP_btn2
 
         def BackP_btn2():
@@ -2804,7 +3645,7 @@ class EmployeeDashboard(tk.Frame):
         self.photoimageP_btn2=ImageTk.PhotoImage(imgP_btn2)
         P_btn2=tk.Button(self.F3,image=self.photoimageP_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         P_btn2.bind("<ButtonRelease-1>",lambda event:BackP_btn2())
-
+        
         MP_lbl=tk.Label(self.F3,text=f"{self.ServiceName[6]} (${self.ServicePrice[6]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
         MP_lbl.grid(row=2,column=0,padx=5,pady=4,sticky="w")
 
@@ -2812,14 +3653,14 @@ class EmployeeDashboard(tk.Frame):
             MP_btn1.grid_forget()
             MP_btn2.grid(row=2,column=2,pady=4) 
             MP.set(self.ServicePrice[6])
-
+            
         global BackMP_btn2
 
         def BackMP_btn2():
             MP_btn2.grid_forget()
             MP_btn1.grid(row=2,column=1,pady=4)
             MP.set(0)
-
+            
         imgMP_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageMP_btn1=ImageTk.PhotoImage(imgMP_btn1)
         MP_btn1=tk.Button(self.F3,image=self.photoimageMP_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -2830,7 +3671,7 @@ class EmployeeDashboard(tk.Frame):
         self.photoimageMP_btn2=ImageTk.PhotoImage(imgMP_btn2)
         MP_btn2=tk.Button(self.F3,image=self.photoimageMP_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         MP_btn2.bind("<ButtonRelease-1>",lambda event:BackMP_btn2()) 
- 
+
         R_lbl=tk.Label(self.F3,text=f"{self.ServiceName[7]} (${self.ServicePrice[7]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
         R_lbl.grid(row=3,column=0,padx=5,pady=4,sticky="w")
 
@@ -2882,7 +3723,7 @@ class EmployeeDashboard(tk.Frame):
         self.photoimagePC_btn2=ImageTk.PhotoImage(imgPC_btn2)
         PC_btn2=tk.Button(self.F3,image=self.photoimagePC_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c") 
         PC_btn2.bind("<ButtonRelease-1>",lambda event:BackPC_btn2())
-       
+          
         EFA_lbl=tk.Label(self.F3,text=f"{self.ServiceName[9]} (${self.ServicePrice[9]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
         EFA_lbl.grid(row=5,column=0,padx=5,pady=4,sticky="w")
 
@@ -2916,7 +3757,7 @@ class EmployeeDashboard(tk.Frame):
             D_btn1.grid_forget()
             D_btn2.grid(row=6,column=2,pady=4)
             D.set(self.ServicePrice[10])
-
+            
         global BackD_btn2
 
         def BackD_btn2():
@@ -2942,14 +3783,14 @@ class EmployeeDashboard(tk.Frame):
             CD_btn1.grid_forget()
             CD_btn2.grid(row=7,column=2,pady=4)
             CD.set(self.ServicePrice[11])
-
+            
         global BackCD_btn2
 
         def BackCD_btn2():
             CD_btn2.grid_forget()
             CD_btn1.grid(row=7,column=1,pady=4)
             CD.set(0)
-
+            
         imgCD_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageCD_btn1=ImageTk.PhotoImage(imgCD_btn1)
         CD_btn1=tk.Button(self.F3,image=self.photoimageCD_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -3030,14 +3871,14 @@ class EmployeeDashboard(tk.Frame):
             E_btn1.grid_forget()
             E_btn2.grid(row=0,column=2,pady=4)
             E.set(self.ServicePrice[14])
-
+            
         global BackE_btn2
 
         def BackE_btn2():
             E_btn2.grid_forget()
             E_btn1.grid(row=0,column=1,pady=4)
             E.set(0)
-
+            
         imgE_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageE_btn1=ImageTk.PhotoImage(imgE_btn1)
         E_btn1=tk.Button(self.F4,image=self.photoimageE_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -3056,7 +3897,7 @@ class EmployeeDashboard(tk.Frame):
             UL_btn1.grid_forget()
             UL_btn2.grid(row=1,column=2,pady=4)
             UL.set(self.ServicePrice[15])
-            
+
         global BackUL_btn2
 
         def BackUL_btn2():
@@ -3074,7 +3915,7 @@ class EmployeeDashboard(tk.Frame):
         self.photoimageUL_btn2=ImageTk.PhotoImage(imgUL_btn2)
         UL_btn2=tk.Button(self.F4,image=self.photoimageUL_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         UL_btn2.bind("<ButtonRelease-1>",lambda event:BackUL_btn2()) 
- 
+
         C_lbl=tk.Label(self.F4,text=f"{self.ServiceName[16]} (${self.ServicePrice[16]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
         C_lbl.grid(row=2,column=0,padx=5,pady=4,sticky="w")
 
@@ -3082,7 +3923,7 @@ class EmployeeDashboard(tk.Frame):
             C_btn1.grid_forget()
             C_btn2.grid(row=2,column=2,pady=4)
             C.set(self.ServicePrice[16])
-
+            
         global BackC_btn2
 
         def BackC_btn2():
@@ -3100,7 +3941,7 @@ class EmployeeDashboard(tk.Frame):
         self.photoimageC_btn2=ImageTk.PhotoImage(imgC_btn2)
         C_btn2=tk.Button(self.F4,image=self.photoimageC_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         C_btn2.bind("<ButtonRelease-1>",lambda event:BackC_btn2()) 
-  
+ 
         HL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[17]} (${self.ServicePrice[17]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
         HL_lbl.grid(row=3,column=0,padx=5,pady=4,sticky="w")
 
@@ -3133,7 +3974,7 @@ class EmployeeDashboard(tk.Frame):
         def AddFL_btn1():
             FL_btn1.grid_forget()
             FL_btn2.grid(row=4,column=2,pady=4)
-            FL.set(self.ServicePrice[18])
+            FL.set(self.ServicePrice[18])  
 
         global BackFL_btn2
 
@@ -3167,7 +4008,7 @@ class EmployeeDashboard(tk.Frame):
             B_btn2.grid_forget()
             B_btn1.grid(row=5,column=1,pady=4)
             B.set(0)
-
+            
         imgB_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageB_btn1=ImageTk.PhotoImage(imgB_btn1)
         B_btn1=tk.Button(self.F4,image=self.photoimageB_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -3419,7 +4260,7 @@ class EmployeeDashboard(tk.Frame):
         Apptcanvas.bind("<ButtonPress-1>", lambda ev: ev.widget.configure(relief="sunken"))
         Apptcanvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
         Apptcanvas.bind("<ButtonPress-1>", lambda ev: self.Appt(), add=True)
-               
+    
         Cuscanvas = tk.Canvas(btnFrame, height=Cusheight, width=width, bg="#ffcae5",borderwidth=1, relief="raised")
         Cuscanvas.create_text((18, 75), angle="90", anchor="center", text=CusLabel, fill="#e2479c", font=font)
 
@@ -3436,20 +4277,16 @@ class EmployeeDashboard(tk.Frame):
     def bill(self):
         self.hide_usr_all_frames()
         self.BillFrame.place(x=40,y=67,width=1310,height=652)
+        self.after_Submit_order
 
     def Appt(self):
         self.hide_usr_all_frames()
         self.ApptFrame.place(x=39,y=67,width=1312,height=653)
-        self.ApptFname = []
-        self.ApptLname = []
-        self.ApptPhone = []
-
-        self.ApptHFname = []
-        self.ApptHLname = []
-        self.ApptHPhone = []
+        
         self.virtualCusFNP()
         style = ttk.Style()
-        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.configure('Treeview.Heading',font=("times new roman",20,"bold"),foreground="black")
+        style.configure('Treeview',font=("times new roman",15),rowheight=40)
         style.map('Treeview',background=[('selected','#e2479c')])
 
         # =============Creating variables=============
@@ -3519,7 +4356,7 @@ class EmployeeDashboard(tk.Frame):
         lblApptDesc.grid(row=5,column=0,padx=25,pady=20,sticky="w")
         
 
-        self.ApptDesc_txt=tk.Text(ApptLeftTopFrame,font=("time new roman",18),width=20,height=7)
+        self.ApptDesc_txt=tk.Text(ApptLeftTopFrame,font=("time new roman",18),width=20,height=7,wrap=WORD)
         self.ApptDesc_txt.grid(row=5,column=1)
 
         imgAppt_Acceptbtn=Image.open("images/accept.png").resize((80,80),Image.ANTIALIAS)
@@ -3548,7 +4385,7 @@ class EmployeeDashboard(tk.Frame):
 
         # =============Top Right Frame=============
         Appt_SearchFrame=tk.LabelFrame(Appt_RightFrame,text="Search Appointment",relief=RIDGE,font=("times new roman",15),bd=4,bg="#e2479c",fg="gold")
-        Appt_SearchFrame.place(x=100,width=680,height=71) #550
+        Appt_SearchFrame.place(x=45,width=735,height=71) #550
 
         self.Apptcmb_search=ttk.Combobox(Appt_SearchFrame,textvariable=self.var_Apptsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
         self.Apptcmb_search["values"]=("Select","first_name","last_name","phone")
@@ -3572,8 +4409,6 @@ class EmployeeDashboard(tk.Frame):
         self.photoimageLSearch=ImageTk.PhotoImage(imgLSearch)
         self.btn_Lsearch=tk.Button(Appt_SearchFrame,image=self.photoimageLSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptLsearch)
         
-
-
         self.txt_ApptPsearch=myentry(Appt_SearchFrame,textvariable=self.var_ApptPsearchtxt,font=("times new roman",18),bg="white")
         self.txt_ApptPsearch.set_completion_list(self.ApptPhone)
 
@@ -3581,17 +4416,14 @@ class EmployeeDashboard(tk.Frame):
         self.photoimagePSearch=ImageTk.PhotoImage(imgPSearch)
         self.btn_Psearch=tk.Button(Appt_SearchFrame,image=self.photoimagePSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptPsearch)
         
-
         # ==================================================== 
         
-        btn_showHistory=tk.Button(Appt_SearchFrame,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.ApptHistory)
-        btn_showHistory.place(x=510,width=150)
+        btn_showHistory=tk.Button(Appt_SearchFrame,text="Cancelled Appointments",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.ApptHistory)
+        btn_showHistory.place(x=510,width=210)
         
-
         # ====================================================
         self.HApptcmb_search=ttk.Combobox(Appt_SearchFrame,textvariable=self.var_ApptHsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
         self.HApptcmb_search["values"]=("Select","first_name","last_name","phone")
-        # self.HApptcmb_search.place(x=15,y=2,width=180)
         self.HApptcmb_search.current(0)
         self.HApptcmb_search.bind("<<ComboboxSelected>>", self.ApptHSearchSelection)
 
@@ -3635,7 +4467,7 @@ class EmployeeDashboard(tk.Frame):
         scrollx.config(command=self.ApptTable.xview)
         scrolly.config(command=self.ApptTable.yview)
 
-        self.ApptTable.heading("Appointment ID",text="Appt Id")
+        self.ApptTable.heading("Appointment ID",text="Id")
         self.ApptTable.heading("Customer",text="Customer")
         self.ApptTable.heading("Phone",text="Phone")
         self.ApptTable.heading("Email",text="Email")
@@ -3645,12 +4477,12 @@ class EmployeeDashboard(tk.Frame):
 
         self.ApptTable["show"]="headings"
 
-        self.ApptTable.column("Appointment ID",anchor=CENTER)
-        self.ApptTable.column("Customer",anchor=CENTER)
-        self.ApptTable.column("Phone",anchor=CENTER)
+        self.ApptTable.column("Appointment ID",anchor=CENTER,width=40)
+        self.ApptTable.column("Customer",anchor=CENTER,width=140)
+        self.ApptTable.column("Phone",anchor=CENTER,width=100)
         self.ApptTable.column("Email",anchor=CENTER)
-        self.ApptTable.column("Date Appt",anchor=CENTER)
-        self.ApptTable.column("Time Appt",anchor=CENTER)
+        self.ApptTable.column("Date Appt",anchor=CENTER,width=145)
+        self.ApptTable.column("Time Appt",anchor=CENTER,width=125)
         self.ApptTable.column("Description Appt",anchor=CENTER)
 
         self.ApptTable.pack(fill=BOTH,expand=1)
@@ -3658,13 +4490,13 @@ class EmployeeDashboard(tk.Frame):
 
         self.Appt_Show()
 
-
     def Cus(self):
         self.hide_usr_all_frames()
         self.CusFrame.place(x=39,y=67,width=1312,height=653)
-
+        
         style = ttk.Style()
-        style.configure('Treeview.Heading',font=("times new roman",15,"bold"),foreground="black")
+        style.configure('Treeview.Heading',font=("times new roman",20,"bold"),foreground="black")
+        style.configure('Treeview',font=("times new roman",15),rowheight=40)
         style.map('Treeview',background=[('selected','#e2479c')])
 
         # =============Creating variables=============
@@ -3813,7 +4645,7 @@ class EmployeeDashboard(tk.Frame):
         scrollx.config(command=self.CusTable.xview)
         scrolly.config(command=self.CusTable.yview)
 
-        self.CusTable.heading("Customer ID",text="Cus Id")
+        self.CusTable.heading("Customer ID",text="Id")
         self.CusTable.heading("First name",text="First name")
         self.CusTable.heading("Last name",text="Last name")
         self.CusTable.heading("Phone",text="Phone")
@@ -3821,10 +4653,10 @@ class EmployeeDashboard(tk.Frame):
 
         self.CusTable["show"]="headings"
 
-        self.CusTable.column("Customer ID",anchor=CENTER)
-        self.CusTable.column("First name",anchor=CENTER)
-        self.CusTable.column("Last name",anchor=CENTER)
-        self.CusTable.column("Phone",anchor=CENTER)
+        self.CusTable.column("Customer ID",anchor=CENTER,width=20)
+        self.CusTable.column("First name",anchor=CENTER,width=110)
+        self.CusTable.column("Last name",anchor=CENTER,width=110)
+        self.CusTable.column("Phone",anchor=CENTER,width=100)
         self.CusTable.column("Email",anchor=CENTER)
 
         self.CusTable.pack(fill=BOTH,expand=1)
@@ -3833,15 +4665,6 @@ class EmployeeDashboard(tk.Frame):
         self.Cus_show()
 
     def hide_usr_all_frames(self):
-        self.Retrievedpw.set("")
-        self.cname.set("")
-        self.cphn.set("")
-        self.c_email.set("")
-
-        self.totalMoney.set(0)
-        self.totalTip.set(0)
-        self.totalDiscount.set(0)
-
         BackSPW_btn2()
         Backsp_btn2()
         BackCPFS_btn2()
@@ -3870,6 +4693,15 @@ class EmployeeDashboard(tk.Frame):
         BackEP_btn2()
         BackDuralash_btn2()
         BackMEE_btn2()
+
+        self.Retrievedpw.set("")
+        self.cname.set("")
+        self.cphn.set("")
+        self.c_email.set("")
+
+        self.totalMoney.set(0.0)
+        self.totalTip.set(0.0)
+        self.totalDiscount.set(0)
 
         self.BillFrame.place_forget()
         self.ApptFrame.place_forget()
@@ -3924,34 +4756,42 @@ class EmployeeDashboard(tk.Frame):
                 EFA.get(),D.get(),CD.get(),BC.get(),TN.get(),E.get(),UL.get(),C.get(),HL.get(),
                 FL.get(),B.get(),U.get(),Face.get(),Facial.get(),EP.get(),Duralash.get(),MEE.get()
             ]
+        try:
+            for index in range(len(Services)):   
+                value = Services[index]
+                
+                if value != 0 and type(value) != str:
+                    self.Selected_Services.append(value)
+                    self.Selected_Services_Id.append(index + 1)
 
-        for index in range(len(Services)):   
-            value = Services[index]
-            
-            if value != 0 and type(value) != str:
-                self.Selected_Services.append(value)
-                self.Selected_Services_Id.append(index + 1)
+            for index in self.Selected_Services_Id:
+                self.Selected_Services_name.append(self.ServiceName[index-1])
 
-        for index in self.Selected_Services_Id:
-            self.Selected_Services_name.append(self.ServiceName[index-1])
-
-        if  self.ServiceName[0] == "N/A":
-            messagebox.showerror("Error","No services available!!!")
+            if  self.ServiceName[0] == "N/A":
+                messagebox.showerror("Error","No services available!!!")
+                return
+            elif sum(self.Selected_Services) == 0:
+                messagebox.showerror("Error","No services selected!!!")
+                self.totalMoney.set(0.0)
+                self.totalTip.set(0.0)  
+            elif (self.totalDiscount.get() == 0) and (sum(self.Selected_Services) != 0):
+                Tip = round(self.totalTip.get(),2)
+                Total = round((sum(self.Selected_Services) + Tip),2)
+                self.totalMoney.set(Total)
+            elif (self.totalDiscount.get() != 0) and (sum(self.Selected_Services) != 0):
+                Discount = self.totalDiscount.get()
+                Tip = round(self.totalTip.get(),2)
+                Total = round(((sum(self.Selected_Services) + Tip) - ((sum(self.Selected_Services) + Tip) * (Discount/100))),2)
+                self.totalMoney.set(Total)
+            else:
+                messagebox.showerror("Error","No services selected!!!")
+        except TclError:
+            messagebox.showerror("Error","Invalid tip amount!!!")
             return
-        elif sum(self.Selected_Services) == 0:
-            messagebox.showerror("Error","No services selected!!!")
-            self.totalMoney.set(0.0)
-            self.totalTip.set(0.0)  
-        elif (self.totalDiscount.get() == 0) and (sum(self.Selected_Services) != 0):
-            Tip = round(self.totalTip.get(),2)
-            Total = round((sum(self.Selected_Services) + Tip),2)
-            self.totalMoney.set(Total)
-        elif (self.totalDiscount.get() != 0) and (sum(self.Selected_Services) != 0):
-            Discount = self.totalDiscount.get()
-            Tip = round(self.totalTip.get(),2)
-            Total = round(((sum(self.Selected_Services) + Tip) - ((sum(self.Selected_Services) + Tip) * (Discount/100))),2)
-            self.totalMoney.set(Total)
-            
+        except Exception as e:
+            messagebox.showerror("Error","Something went wrong")
+            print(f"Error due to: {str(e)}.")
+
     def get_All_Users(self):
         self.retrieved_password.clear()
         self.retrieved_password_Id.clear()
@@ -3974,19 +4814,19 @@ class EmployeeDashboard(tk.Frame):
                 
                 if bcrypt.checkpw(self.Retrievedpw.get().encode('utf8'), self.retrieved_password[index].encode('utf8')):
                     self.Selected_password_Id.append(self.retrieved_password_Id[index])
+                    print(self.Selected_password_Id[0])
+                    print("Correct")
                     
                     self.Customer_name = HumanName(self.cname.get())
                     self.last = ""
             
-
                     if len(self.Customer_name.middle) == 0:
                         self.last = self.Customer_name.last
                     else:
                         self.last = self.Customer_name.middle +" "+ self.Customer_name.last
                         
-                
                     self.first = self.Customer_name.first
-                           
+                             
                     phone = self.cphn.get()
                     email = self.c_email.get()
 
@@ -3998,6 +4838,7 @@ class EmployeeDashboard(tk.Frame):
                     SerId = self.Selected_Services_Id
 
                     if not CustomerDB().fetchCusIdAndPhone(self.first, self.last):
+                        print("No matched customer.")
                         CustomerId = []
                         InvoiceId = []
                         
@@ -4008,7 +4849,6 @@ class EmployeeDashboard(tk.Frame):
 
                         RetrievedInvoiceId = InvoiceDB().Add_Invoice(empId, cusId, tip, discount, total)
                         InvoiceId.append(RetrievedInvoiceId)
-                        
                         
                         self.InvId = InvoiceId[0]
 
@@ -4027,6 +4867,7 @@ class EmployeeDashboard(tk.Frame):
                         InvoiceId = []
 
                         RetrievedCustomerId = CustomerDB().fetchCusIdAndPhone(self.first, self.last)
+                        print(RetrievedCustomerId)
                         CustomerId.append(RetrievedCustomerId[0])
 
                         cusId = CustomerId[0]
@@ -4035,10 +4876,7 @@ class EmployeeDashboard(tk.Frame):
 
                         RetrievedInvoiceId = InvoiceDB().Add_Invoice(empId, cusId, tip, discount, total)
                         InvoiceId.append(RetrievedInvoiceId)
-
-                        
-
-                        
+                      
                         self.InvId = InvoiceId[0]
 
                         InvoiceLineItemDB().Add_InvoiceItem(self.InvId, SerId)
@@ -4066,7 +4904,6 @@ class EmployeeDashboard(tk.Frame):
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
 
-
     def generate_bill(self):
         if  self.ServiceName[0] == "N/A":
             messagebox.showerror("Error","No services available!!!")
@@ -4087,15 +4924,22 @@ class EmployeeDashboard(tk.Frame):
 
     def after_Submit_order(self):
         self.Start()
-
+        
     def Cus_show(self):
         self.CusTable.delete(*self.CusTable.get_children())
         try:
             if not CustomerDB().getAllCustomer():
                 messagebox.showerror("Error", "No Customer records available!!!.")
             else:
-                for row in CustomerDB().getAllCustomer():
-                    self.CusTable.insert("",END,values=row)
+                rows = CustomerDB().getAllCustomer()
+                for index in range(len(rows)):
+                    self.CusTable.tag_configure("evenrow",background="#f5d1e5")
+                    self.CusTable.tag_configure("oddrow",background="white")
+                    if index % 2 == 0:    
+                        self.CusTable.insert("",END,values=rows[index],tags=("evenrow",))
+                    else:
+                        self.CusTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
@@ -4238,13 +5082,19 @@ class EmployeeDashboard(tk.Frame):
         self.CusHFname.clear()
         self.CusHLname.clear()
         self.CusHPhone.clear()
+
+        self.ApptFname.clear()
+        self.ApptLname.clear()
+        self.ApptPhone.clear()
+
         rows = CustomerDB().getAllCustomer()
         row1s = CustomerDB().getAllHisCustomer()
         if rows or row1s:
             for i in range(0, len(rows)):
                 self.CusFname.append(rows[i][1])
                 self.CusLname.append(rows[i][2])
-                self.CusPhone.append(rows[i][3])  
+                self.CusPhone.append(rows[i][3])
+
             for i in range(0, len(row1s)):
                 self.CusHFname.append(row1s[i][1])
                 self.CusHLname.append(row1s[i][2])
@@ -4476,7 +5326,7 @@ class EmployeeDashboard(tk.Frame):
         self.btn_HLsearch.place_forget()
         self.txt_CusHPsearch.place_forget()
         self.btn_HPsearch.place_forget()
-    
+
     def Add_appointment(self):
         current = datetime.datetime.now().date()
         future = datetime.datetime.now().date() + datetime.timedelta(days=3)
@@ -4515,8 +5365,7 @@ class EmployeeDashboard(tk.Frame):
                         AppointmentDB().addAppt(cusId, self.ApptD_txt.get_date(),self.var_Appt_T.get(),self.ApptDesc_txt.get("1.0",'end-1c'))
                         messagebox.showinfo("Success","Appointment has beed added successfully!!!")
                         self.ApptClear()
-                    
-
+                         
                     else:
                         CustomerId = []
                         RetrievedCustomerId = CustomerDB().fetchCusId(First, Last)
@@ -4535,6 +5384,8 @@ class EmployeeDashboard(tk.Frame):
             print(f"Error due to: {str(e)}")
 
     def ApptClear(self):
+        self.Apptcmb_search.current(0)
+
         self.Hide_var_Appt_idFLPE()
         
         self.Appt_Acceptbtn.place(x=24,y=525)
@@ -4675,7 +5526,7 @@ class EmployeeDashboard(tk.Frame):
                 self.ApptHPhone.append(row1s[i][2])
         else:
             pass
-    
+
     def ApptHistory(self):
         try:
             rows = AppointmentDB().ApptHistory()
@@ -4966,6 +5817,7 @@ class EmployeeDashboard(tk.Frame):
         self.ApptD_txt.set_date(datetime.datetime.now().date())
         self.ApptDesc_txt.delete("1.0",END)
 
+
     def Hide_varApptFLPsearchtxt(self):
         self.var_ApptFsearchtxt.set("")
         self.var_ApptLsearchtxt.set("")
@@ -4991,7 +5843,7 @@ class EmployeeDashboard(tk.Frame):
         self.btn_HLsearch.place_forget()
         self.txt_ApptHPsearch.place_forget()
         self.btn_HPsearch.place_forget()
-    
+        
     def welcome_bill(self):
         today = datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
         self.txtarea.delete("1.0",END)
@@ -5110,6 +5962,7 @@ class EmployeeDashboard(tk.Frame):
         if show=="no":
             messagebox.showerror("Error","Invalid Bill number")
 
+    #=======================================================================
 if __name__ == "__main__":
     app = App()
     app.mainloop()
