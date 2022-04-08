@@ -57,48 +57,25 @@ class InvoiceDB:
         rows = self.cursor.fetchall()
         return rows
 
-    def SearchInvoicebyCusF(self, CusF):
-        print(CusF)
+    def SearchInvoicebyCustomer(self, Customer):
         self.cursor.execute("SELECT invoice_id, concat(e.first_name,' ',e.last_name) as Employee,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
                             FROM employee e \
                             JOIN invoice i \
                                 ON e.employee_id = i.employee_id \
                             JOIN customer c \
                                 ON i.customer_id = c.customer_id \
-                            WHERE c.first_name LIKE '%"+CusF+"%' and i.active = 1;")
+                            WHERE concat(c.first_name,' ',c.last_name) LIKE '%"+Customer+"%' and i.active = 1;")
         rows = self.cursor.fetchall()
         return rows
 
-    def SearchInvoicebyCusL(self, CusL):
+    def SearchInvoicebyEmployee(self, Employee):
         self.cursor.execute("SELECT invoice_id, concat(e.first_name,' ',e.last_name) as Employee,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
                             FROM employee e \
                             JOIN invoice i \
                                 ON e.employee_id = i.employee_id \
                             JOIN customer c \
                                 ON i.customer_id = c.customer_id \
-                            WHERE c.last_name LIKE '%"+CusL+"%' and i.active = 1;")
-        rows = self.cursor.fetchall()
-        return rows
-
-    def SearchInvoicebyEmpF(self, EmpF):
-        self.cursor.execute("SELECT invoice_id, concat(e.first_name,' ',e.last_name) as Employee,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
-                            FROM employee e \
-                            JOIN invoice i \
-                                ON e.employee_id = i.employee_id \
-                            JOIN customer c \
-                                ON i.customer_id = c.customer_id \
-                            WHERE e.first_name LIKE '%"+EmpF+"%' and i.active = 1;")
-        rows = self.cursor.fetchall()
-        return rows
-
-    def SearchInvoicebyEmpL(self, EmpL):
-        self.cursor.execute("SELECT invoice_id, concat(e.first_name,' ',e.last_name) as Employee,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
-                            FROM employee e \
-                            JOIN invoice i \
-                                ON e.employee_id = i.employee_id \
-                            JOIN customer c \
-                                ON i.customer_id = c.customer_id \
-                            WHERE e.last_name LIKE '%"+EmpL+"%' and i.active = 1;")
+                            WHERE concat(e.first_name,' ',e.last_name) LIKE '%"+Employee+"%' and i.active = 1;")
         rows = self.cursor.fetchall()
         return rows
 
@@ -129,48 +106,25 @@ class InvoiceDB:
         rows = self.cursor.fetchall()
         return rows
 
-    def SearchHInvoicebyCusF(self, CusF):
-        print(CusF)
+    def SearchHInvoicebyCustomer(self, Customer):
         self.cursor.execute("SELECT invoice_id, concat(e.first_name,' ',e.last_name) as Employee,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
                             FROM employee e \
                             JOIN invoice i \
                                 ON e.employee_id = i.employee_id \
                             JOIN customer c \
                                 ON i.customer_id = c.customer_id \
-                            WHERE c.first_name LIKE '%"+CusF+"%' and i.active = 0;")
+                            WHERE concat(c.first_name,' ',c.last_name) LIKE '%"+Customer+"%' and i.active = 0;")
         rows = self.cursor.fetchall()
         return rows
 
-    def SearchHInvoicebyCusL(self, CusL):
+    def SearchHInvoicebyEmployee(self, Employee):
         self.cursor.execute("SELECT invoice_id, concat(e.first_name,' ',e.last_name) as Employee,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
                             FROM employee e \
                             JOIN invoice i \
                                 ON e.employee_id = i.employee_id \
                             JOIN customer c \
                                 ON i.customer_id = c.customer_id \
-                            WHERE c.last_name LIKE '%"+CusL+"%' and i.active = 0;")
-        rows = self.cursor.fetchall()
-        return rows
-
-    def SearchHInvoicebyEmpF(self, EmpF):
-        self.cursor.execute("SELECT invoice_id, concat(e.first_name,' ',e.last_name) as Employee,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
-                            FROM employee e \
-                            JOIN invoice i \
-                                ON e.employee_id = i.employee_id \
-                            JOIN customer c \
-                                ON i.customer_id = c.customer_id \
-                            WHERE e.first_name LIKE '%"+EmpF+"%' and i.active = 0;")
-        rows = self.cursor.fetchall()
-        return rows
-
-    def SearchHInvoicebyEmpL(self, EmpL):
-        self.cursor.execute("SELECT invoice_id, concat(e.first_name,' ',e.last_name) as Employee,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
-                            FROM employee e \
-                            JOIN invoice i \
-                                ON e.employee_id = i.employee_id \
-                            JOIN customer c \
-                                ON i.customer_id = c.customer_id \
-                            WHERE e.last_name LIKE '%"+EmpL+"%' and i.active = 0;")
+                            WHERE concat(e.first_name,' ',e.last_name) LIKE '%"+Employee+"%' and i.active = 0;")
         rows = self.cursor.fetchall()
         return rows
 
@@ -190,8 +144,7 @@ class InvoiceDB:
         rows = self.cursor.fetchall()
         return rows
 
-    def SearchDetailsInvoicebyCusF(self, CusF):
-        print(CusF)
+    def SearchDetailsInvoicebyCustomer(self, Customer):
         self.cursor.execute("SELECT i.invoice_id, concat(e.first_name,' ',e.last_name) as Employee, service_name,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
                             FROM employee e \
                             JOIN invoice i \
@@ -202,11 +155,11 @@ class InvoiceDB:
                                 ON i.invoice_id = il.invoice_id \
                             JOIN service s \
                                 ON il.service_id = s.service_id \
-                            WHERE c.first_name LIKE '%"+CusF+"%' and i.active = 1;")
+                            WHERE concat(c.first_name,' ',c.last_name) LIKE '%"+Customer+"%' and i.active = 1;")
         rows = self.cursor.fetchall()
         return rows
 
-    def SearchDetailsInvoicebyCusL(self, CusL):
+    def SearchDetailsInvoicebyEmployee(self, Employee):
         self.cursor.execute("SELECT i.invoice_id, concat(e.first_name,' ',e.last_name) as Employee, service_name,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
                             FROM employee e \
                             JOIN invoice i \
@@ -217,37 +170,7 @@ class InvoiceDB:
                                 ON i.invoice_id = il.invoice_id \
                             JOIN service s \
                                 ON il.service_id = s.service_id \
-                            WHERE c.last_name LIKE '%"+CusL+"%' and i.active = 1;")
-        rows = self.cursor.fetchall()
-        return rows
-
-    def SearchDetailsInvoicebyEmpF(self, EmpF):
-        self.cursor.execute("SELECT i.invoice_id, concat(e.first_name,' ',e.last_name) as Employee, service_name,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
-                            FROM employee e \
-                            JOIN invoice i \
-                                ON e.employee_id = i.employee_id \
-                            JOIN customer c \
-                                ON i.customer_id = c.customer_id \
-                            JOIN invoice_line_item il \
-                                ON i.invoice_id = il.invoice_id \
-                            JOIN service s \
-                                ON il.service_id = s.service_id \
-                            WHERE e.first_name LIKE '%"+EmpF+"%' and i.active = 1;")
-        rows = self.cursor.fetchall()
-        return rows
-
-    def SearchDetailsInvoicebyEmpL(self, EmpL):
-        self.cursor.execute("SELECT i.invoice_id, concat(e.first_name,' ',e.last_name) as Employee, service_name,concat(c.first_name,' ',c.last_name) as Customer, tip, discount, invoice_total, invoice_datetime \
-                            FROM employee e \
-                            JOIN invoice i \
-                                ON e.employee_id = i.employee_id \
-                            JOIN customer c \
-                                ON i.customer_id = c.customer_id \
-                            JOIN invoice_line_item il \
-                                ON i.invoice_id = il.invoice_id \
-                            JOIN service s \
-                                ON il.service_id = s.service_id \
-                            WHERE e.last_name LIKE '%"+EmpL+"%' and i.active = 1;")
+                            WHERE concat(e.first_name,' ',e.last_name) LIKE '%"+Employee+"%' and i.active = 1;")
         rows = self.cursor.fetchall()
         return rows
 

@@ -881,7 +881,7 @@ class AdminDashboard(tk.Frame):
         InvRefreshbtn.place(x=10,y=255)
 
         self.Invoicecmb_search=ttk.Combobox(InvSearchFrame,textvariable=self.var_Invsearchby,width=13,state="readonly",justify=CENTER,font=("times new roman",18))
-        self.Invoicecmb_search["values"]=("Select","Invoice number","Cust first name","Cust last name","Emp first name","Emp last name")
+        self.Invoicecmb_search["values"]=("Select","Invoice number","Customer","Employee")
         self.Invoicecmb_search.grid(row=0,column=0,padx=10)
         self.Invoicecmb_search.current(0)
 
@@ -901,7 +901,7 @@ class AdminDashboard(tk.Frame):
 
         # >>>>>>>>>>>>>>Invoice History view<<<<<<<<<<<<<<
         self.HInvoicecmb_search=ttk.Combobox(InvSearchFrame,textvariable=self.var_HInvsearchby,width=13,state="readonly",justify=CENTER,font=("times new roman",18))
-        self.HInvoicecmb_search["values"]=("Select","Invoice number","Cust first name","Cust last name","Emp first name","Emp last name")
+        self.HInvoicecmb_search["values"]=("Select","Invoice number","Customer","Employee")
         self.HInvoicecmb_search.current(0)
 
         self.txt_HInvoice_search=tk.Entry(InvSearchFrame,textvariable=self.var_HInvsearchtxt,font=("times new roman",18),bg="white")
@@ -991,7 +991,7 @@ class AdminDashboard(tk.Frame):
 
         # >>>>>>>>>>>>>>Invoice Details Search<<<<<<<<<<<<<<
         self.DetailsInvoicecmb_search=ttk.Combobox(InvSearchFrame,textvariable=self.var_InvDetailssearchby,width=13,state="readonly",justify=CENTER,font=("times new roman",18))
-        self.DetailsInvoicecmb_search["values"]=("Select","Invoice number","Cust first name","Cust last name","Emp first name","Emp last name")
+        self.DetailsInvoicecmb_search["values"]=("Select","Invoice number","Customer","Employee")
         self.DetailsInvoicecmb_search.current(0)
 
         self.txt_DetailsInvoice_search=tk.Entry(InvSearchFrame,textvariable=self.var_InvDetailssearchtxt,font=("times new roman",18),bg="white")
@@ -2410,8 +2410,8 @@ class AdminDashboard(tk.Frame):
                             self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
                 else:
                     messagebox.showerror("Error","No records found.")
-            elif self.var_Invsearchby.get()=="Cust first name":
-                rows = InvoiceDB().SearchInvoicebyCusF(self.var_Invsearchtxt.get())
+            elif self.var_Invsearchby.get()=="Customer":
+                rows = InvoiceDB().SearchInvoicebyCustomer(self.var_Invsearchtxt.get())
                 if len(rows)!=0:
                     self.InvoiceTable.delete(*self.InvoiceTable.get_children())
                     for index in range(len(rows)):
@@ -2423,34 +2423,8 @@ class AdminDashboard(tk.Frame):
                             self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
                 else:
                     messagebox.showerror("Error","No records found.")
-            elif self.var_Invsearchby.get()=="Cust last name":
-                rows = InvoiceDB().SearchInvoicebyCusL(self.var_Invsearchtxt.get())
-                if len(rows)!=0:
-                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
-                    for index in range(len(rows)):
-                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
-                        self.InvoiceTable.tag_configure("oddrow",background="white")
-                        if index % 2 == 0:    
-                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
-                        else:
-                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
-                else:
-                    messagebox.showerror("Error","No records found.")
-            elif self.var_Invsearchby.get()=="Emp first name":
-                rows = InvoiceDB().SearchInvoicebyEmpF(self.var_Invsearchtxt.get())
-                if len(rows)!=0:
-                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
-                    for index in range(len(rows)):
-                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
-                        self.InvoiceTable.tag_configure("oddrow",background="white")
-                        if index % 2 == 0:    
-                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
-                        else:
-                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
-                else:
-                    messagebox.showerror("Error","No records found.")
-            elif self.var_Invsearchby.get()=="Emp last name":
-                rows = InvoiceDB().SearchInvoicebyEmpL(self.var_Invsearchtxt.get())
+            elif self.var_Invsearchby.get()=="Employee":
+                rows = InvoiceDB().SearchInvoicebyEmployee(self.var_Invsearchtxt.get())
                 if len(rows)!=0:
                     self.InvoiceTable.delete(*self.InvoiceTable.get_children())
                     for index in range(len(rows)):
@@ -2545,8 +2519,8 @@ class AdminDashboard(tk.Frame):
                             self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
                 else:
                     messagebox.showerror("Error","No records found.")
-            elif self.var_HInvsearchby.get()=="Cust first name":
-                rows = InvoiceDB().SearchHInvoicebyCusF(self.var_HInvsearchtxt.get())
+            elif self.var_HInvsearchby.get()=="Customer":
+                rows = InvoiceDB().SearchHInvoicebyCustomer(self.var_HInvsearchtxt.get())
                 if len(rows)!=0:
                     self.InvoiceTable.delete(*self.InvoiceTable.get_children())
                     for index in range(len(rows)):
@@ -2558,34 +2532,8 @@ class AdminDashboard(tk.Frame):
                             self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
                 else:
                     messagebox.showerror("Error","No records found.")
-            elif self.var_HInvsearchby.get()=="Cust last name":
-                rows = InvoiceDB().SearchHInvoicebyCusL(self.var_HInvsearchtxt.get())
-                if len(rows)!=0:
-                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
-                    for index in range(len(rows)):
-                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
-                        self.InvoiceTable.tag_configure("oddrow",background="white")
-                        if index % 2 == 0:    
-                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
-                        else:
-                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
-                else:
-                    messagebox.showerror("Error","No records found.")
-            elif self.var_HInvsearchby.get()=="Emp first name":
-                rows = InvoiceDB().SearchHInvoicebyEmpF(self.var_HInvsearchtxt.get(),)
-                if len(rows)!=0:
-                    self.InvoiceTable.delete(*self.InvoiceTable.get_children())
-                    for index in range(len(rows)):
-                        self.InvoiceTable.tag_configure("evenrow",background="#f5d1e5")
-                        self.InvoiceTable.tag_configure("oddrow",background="white")
-                        if index % 2 == 0:    
-                            self.InvoiceTable.insert("",END,values=rows[index],tags=("evenrow",))
-                        else:
-                            self.InvoiceTable.insert("",END,values=rows[index],tags=("oddrow",))
-                else:
-                    messagebox.showerror("Error","No records found.")
-            elif self.var_HInvsearchby.get()=="Emp last name":
-                rows = InvoiceDB().SearchHInvoicebyEmpL(self.var_HInvsearchtxt.get(),)
+            elif self.var_HInvsearchby.get()=="Employee":
+                rows = InvoiceDB().SearchHInvoicebyEmployee(self.var_HInvsearchtxt.get())
                 if len(rows)!=0:
                     self.InvoiceTable.delete(*self.InvoiceTable.get_children())
                     for index in range(len(rows)):
@@ -2657,8 +2605,8 @@ class AdminDashboard(tk.Frame):
                             self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("oddrow",))
                 else:
                     messagebox.showerror("Error","No records found.")
-            elif self.var_InvDetailssearchby.get()=="Cust first name":
-                rows = InvoiceDB().SearchDetailsInvoicebyCusF(self.var_InvDetailssearchtxt.get())
+            elif self.var_InvDetailssearchby.get()=="Customer":
+                rows = InvoiceDB().SearchDetailsInvoicebyCustomer(self.var_InvDetailssearchtxt.get())
                 if len(rows)!=0:
                     self.InvoiceDetailTable.delete(*self.InvoiceDetailTable.get_children())
                     for index in range(len(rows)):
@@ -2670,34 +2618,8 @@ class AdminDashboard(tk.Frame):
                             self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("oddrow",))
                 else:
                     messagebox.showerror("Error","No records found.")
-            elif self.var_InvDetailssearchby.get()=="Cust last name":
-                rows = InvoiceDB().SearchDetailsInvoicebyCusL(self.var_InvDetailssearchtxt.get())
-                if len(rows)!=0:
-                    self.InvoiceDetailTable.delete(*self.InvoiceDetailTable.get_children())
-                    for index in range(len(rows)):
-                        self.InvoiceDetailTable.tag_configure("evenrow",background="#f5d1e5")
-                        self.InvoiceDetailTable.tag_configure("oddrow",background="white")
-                        if index % 2 == 0:    
-                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("evenrow",))
-                        else:
-                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("oddrow",))
-                else:
-                    messagebox.showerror("Error","No records found.")
-            elif self.var_InvDetailssearchby.get()=="Emp first name":
-                rows = InvoiceDB().SearchDetailsInvoicebyEmpF(self.var_InvDetailssearchtxt.get())
-                if len(rows)!=0:
-                    self.InvoiceDetailTable.delete(*self.InvoiceDetailTable.get_children())
-                    for index in range(len(rows)):
-                        self.InvoiceDetailTable.tag_configure("evenrow",background="#f5d1e5")
-                        self.InvoiceDetailTable.tag_configure("oddrow",background="white")
-                        if index % 2 == 0:    
-                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("evenrow",))
-                        else:
-                            self.InvoiceDetailTable.insert("",END,values=rows[index],tags=("oddrow",))
-                else:
-                    messagebox.showerror("Error","No records found.")
-            elif self.var_InvDetailssearchby.get()=="Emp last name":
-                rows = InvoiceDB().SearchDetailsInvoicebyEmpL(self.var_InvDetailssearchtxt.get())
+            elif self.var_InvDetailssearchby.get()=="Employee":
+                rows = InvoiceDB().SearchDetailsInvoicebyEmployee(self.var_InvDetailssearchtxt.get())
                 if len(rows)!=0:
                     self.InvoiceDetailTable.delete(*self.InvoiceDetailTable.get_children())
                     for index in range(len(rows)):
