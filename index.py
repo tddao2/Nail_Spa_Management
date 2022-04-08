@@ -1419,7 +1419,7 @@ class AdminDashboard(tk.Frame):
         SV_SearchFrame.place(x=100,width=680,height=71) #550
 
         self.SVcmb_search=ttk.Combobox(SV_SearchFrame,textvariable=self.var_SVsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
-        self.SVcmb_search["values"]=("Select","first_name","last_name","score","month")
+        self.SVcmb_search["values"]=("Select","Employee","Score","Monthly")
         self.SVcmb_search.place(x=15,y=2,width=180)
         self.SVcmb_search.current(0)
 
@@ -2188,9 +2188,9 @@ class AdminDashboard(tk.Frame):
                 messagebox.showerror("Error","Select search by option")
             elif self.var_SVsearchtxt.get()=="":
                 messagebox.showerror("Error","Search input is required")
-            elif self.var_SVsearchby.get()=="score" and self.var_SVsearchtxt.get().isnumeric()==False:
+            elif self.var_SVsearchby.get()=="Score" and self.var_SVsearchtxt.get().isnumeric()==False:
                 messagebox.showerror("Error","Input needs to be number")
-            elif self.var_SVsearchby.get()=="score" and self.var_SVsearchtxt.get().isnumeric()==True:
+            elif self.var_SVsearchby.get()=="Score" and self.var_SVsearchtxt.get().isnumeric()==True:
                 score = "performance_score"
                 FBoption=(score,self.var_SVsearchtxt.get())
                 rows = FeedbackDB().getFBbyOption(FBoption)
@@ -2205,15 +2205,15 @@ class AdminDashboard(tk.Frame):
                             self.FeedbackTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.SV_ClearSearch()
                     self.FeedbackDetails()
-                    self.HideDeleteOptions()
+                    # self.HideDeleteOptions()
                 else:
                     messagebox.showerror("Error","No record found.")
                     self.SV_ClearSearch()
                     self.FeedbackDetails()
-                    self.HideDeleteOptions()
-            elif self.var_SVsearchby.get()=="month" and self.var_SVsearchtxt.get().isnumeric()==False:
+                    # self.HideDeleteOptions()
+            elif self.var_SVsearchby.get()=="Monthly" and self.var_SVsearchtxt.get().isnumeric()==False:
                 messagebox.showerror("Error","Input needs to be number")
-            elif self.var_SVsearchby.get()=="month" and self.var_SVsearchtxt.get().isnumeric()==True:
+            elif self.var_SVsearchby.get()=="Monthly" and self.var_SVsearchtxt.get().isnumeric()==True:
                 FBmonth=(self.var_SVsearchtxt.get())
                 rows = FeedbackDB().getFBbyMonth(FBmonth)
                 if len(rows)!=0:
@@ -2227,15 +2227,15 @@ class AdminDashboard(tk.Frame):
                             self.FeedbackTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.SV_ClearSearch()
                     self.FeedbackDetails()
-                    self.HideDeleteOptions()
+                    # self.HideDeleteOptions()
                 else:
                     messagebox.showerror("Error","No record found.")
                     self.SV_ClearSearch()
                     self.FeedbackDetails()
-                    self.HideDeleteOptions()
+                    # self.HideDeleteOptions()
             else:
-                FBoption=(self.var_SVsearchby.get(),self.var_SVsearchtxt.get())
-                rows = FeedbackDB().getFBbyOption(FBoption)
+                FBoption=(self.var_SVsearchtxt.get())
+                rows = FeedbackDB().getFBbyName(FBoption)
                 if len(rows)!=0:
                     self.FeedbackTable.delete(*self.FeedbackTable.get_children())
                     for index in range(len(rows)):
@@ -2252,6 +2252,7 @@ class AdminDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error",f"Error due to: {str(e)}")
             print(f"Something went wrong {e}.")
+
 
     def SV_ClearSearch(self):
         self.SVcmb_search.current(0)

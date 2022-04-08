@@ -53,6 +53,16 @@ class FeedbackDB:
         rows = self.cursor.fetchall()
         return rows
 
+    def getFBbyName(self, Name):
+        self.cursor.execute("SELECT feedback_id, concat(first_name,' ',last_name) as Name, performance_score, description, date_format(dateFB, '%b %d, %Y %h:%i:%s %p') as Date, a.active \
+                            FROM employee e \
+                            INNER JOIN feedback a \
+                                ON e.employee_id = a.employee_id \
+                            WHERE concat(first_name,' ',last_name) LIKE '%"+Name+"%' and a.active =1 \
+                            order by Name ASC;")
+        rows = self.cursor.fetchall()
+        return rows
+
     def getFBbyMonth(self, FBmonth):
         self.cursor.execute("SELECT feedback_id, concat(first_name,' ',last_name) as Name, performance_score, description, date_format(dateFB, '%b %d, %Y %h:%i:%s %p') as Date, a.active \
                             FROM employee e \
