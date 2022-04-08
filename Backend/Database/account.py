@@ -91,7 +91,20 @@ class AccountDB:
                                 ON a.account_status_id = asi.account_status_id \
                             INNER JOIN roles r \
                                 ON a.role_id = r.role_id \
-                            WHERE "+data[0]+" LIKE '%"+data[1]+"%'") 
+                            WHERE "+data[0]+" LIKE '%"+data[1]+"%' and a.active = 1") 
+        rows = self.cursor.fetchall()
+        return rows
+
+    def AcctSearchName(self, Name):
+        self.cursor.execute("SELECT a.account_id, concat(first_name,' ',last_name) as full_name, username, role_name, acct_status \
+                            FROM employee e \
+                            INNER JOIN account a \
+                                ON e.account_id = a.account_id \
+                            INNER JOIN account_status asi \
+                                ON a.account_status_id = asi.account_status_id \
+                            INNER JOIN roles r \
+                                ON a.role_id = r.role_id \
+                            WHERE concat(first_name,' ',last_name) LIKE '%"+Name+"%' and a.active = 1") 
         rows = self.cursor.fetchall()
         return rows
 

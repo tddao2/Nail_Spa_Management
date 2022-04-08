@@ -1549,7 +1549,7 @@ class AdminDashboard(tk.Frame):
         SearchFrame.place(x=100,width=680,height=71) #550
 
         self.Acctcmb_search=ttk.Combobox(SearchFrame,textvariable=self.var_Acctsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
-        self.Acctcmb_search["values"]=("Select","first_name","last_name","username","acct_status")
+        self.Acctcmb_search["values"]=("Select","employee","username","acct_status")
         self.Acctcmb_search.place(x=15,y=2,width=180)
         self.Acctcmb_search.current(0)
 
@@ -1918,6 +1918,20 @@ class AdminDashboard(tk.Frame):
                 messagebox.showerror("Error","Select search by option")
             elif self.var_Acctsearchtxt.get()=="":
                 messagebox.showerror("Error","Search input is required")
+            elif self.var_Acctsearchby.get()=="employee":
+                data=(self.var_Acctsearchtxt.get())
+                rows = AccountDB().AcctSearchName(data)
+                if len(rows)!=0:
+                    self.AccountTable.delete(*self.AccountTable.get_children())
+                    for index in range(len(rows)):
+                        self.AccountTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.AccountTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.AccountTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.AccountTable.insert("",END,values=rows[index],tags=("oddrow",))
+                else:
+                    messagebox.showerror("Error","No record found.")
             else:
                 data=(self.var_Acctsearchby.get(),self.var_Acctsearchtxt.get())
                 rows = AccountDB().AcctSearch(data)
