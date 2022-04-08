@@ -1017,7 +1017,7 @@ class AdminDashboard(tk.Frame):
         InvSearchFrame.place(x=150,y=10,width=951,height=91)
 
         self.Reportcmb_search=ttk.Combobox(InvSearchFrame,textvariable=self.var_ReportSearchBy,width=23,state="readonly",justify=CENTER,font=("times new roman",18))
-        self.Reportcmb_search["values"]=("Select","Wages","Customers serviced","Discounted invoices","Profit","Appointment Summary")
+        self.Reportcmb_search["values"]=("Select","Salary","Incentive","Discounted invoices","Sale Revenue","Appointment Summary")
         self.Reportcmb_search.grid(row=0,column=0,padx=25)
         self.Reportcmb_search.current(0)
 
@@ -1048,7 +1048,7 @@ class AdminDashboard(tk.Frame):
         scrolly=tk.Scrollbar(self.SalaryTableFrame,orient=VERTICAL)
         scrolly.pack(side=RIGHT,fill=Y)
 
-        self.SalaryTable=ttk.Treeview(self.SalaryTableFrame,columns=("Employee","Tip","Total Invoice","Wage (60%)"),
+        self.SalaryTable=ttk.Treeview(self.SalaryTableFrame,columns=("Employee","Tip","Total Sales","Salary received (60%)"),
                                         yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
                                         show='headings')
 
@@ -1057,15 +1057,15 @@ class AdminDashboard(tk.Frame):
 
         self.SalaryTable.heading("Employee",text="Employee")
         self.SalaryTable.heading("Tip",text="Tip")
-        self.SalaryTable.heading("Total Invoice",text="Total Invoice")
-        self.SalaryTable.heading("Wage (60%)",text="Wage (60%)")
+        self.SalaryTable.heading("Total Sales",text="Total Sales")
+        self.SalaryTable.heading("Salary received (60%)",text="Salary received (60%)")
 
         self.SalaryTable["show"]="headings"
 
         self.SalaryTable.column("Employee",anchor=CENTER,width=40)
         self.SalaryTable.column("Tip",anchor=CENTER,width=140)
-        self.SalaryTable.column("Total Invoice",anchor=CENTER,width=100)
-        self.SalaryTable.column("Wage (60%)",anchor=CENTER)
+        self.SalaryTable.column("Total Sales",anchor=CENTER,width=100)
+        self.SalaryTable.column("Salary received (60%)",anchor=CENTER)
 
         self.SalaryTable.pack(fill=BOTH,expand=1)
 
@@ -1198,7 +1198,7 @@ class AdminDashboard(tk.Frame):
                 messagebox.showerror("Error","Date TO should be less than or equal to the current day !!!!")
             elif self.txt_Report_searchFrom.get_date() > self.txt_Report_searchTo.get_date():
                 messagebox.showerror("Error","Date FROM should be less than or equal to Date TO!!!")
-            elif self.var_ReportSearchBy.get()=="Wages":
+            elif self.var_ReportSearchBy.get()=="Salary":
                 rows = InvoiceDB().SalaryReport(self.txt_Report_searchFrom.get_date(),self.txt_Report_searchTo.get_date())
                 if len(rows)!=0:
                     self.SalaryTable.delete(*self.SalaryTable.get_children())
@@ -1217,7 +1217,7 @@ class AdminDashboard(tk.Frame):
                 else:
                     messagebox.showerror("Error","No records found.")
                     self.Hide_Report_Treeview()
-            elif self.var_ReportSearchBy.get()=="Customers serviced":
+            elif self.var_ReportSearchBy.get()=="Incentive":
                 rows = InvoiceDB().CountInvReport(self.txt_Report_searchFrom.get_date(),self.txt_Report_searchTo.get_date())
                 if len(rows)!=0:
                     self.CountInvTable.delete(*self.CountInvTable.get_children())
@@ -1255,7 +1255,7 @@ class AdminDashboard(tk.Frame):
                 else:
                     messagebox.showerror("Error","No records found.")
                     self.Hide_Report_Treeview()
-            elif self.var_ReportSearchBy.get()=="Profit":
+            elif self.var_ReportSearchBy.get()=="Sale Revenue":
                 rows = InvoiceDB().RevenueReport(self.txt_Report_searchFrom.get_date(),self.txt_Report_searchTo.get_date())
                 if len(rows)!=0:
                     self.RevenueTable.delete(*self.RevenueTable.get_children())
@@ -1300,6 +1300,7 @@ class AdminDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
+
 
     def Hide_Report_Treeview(self):
         self.Reportcmb_search.current(0)
