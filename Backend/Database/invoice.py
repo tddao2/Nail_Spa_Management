@@ -227,6 +227,16 @@ class InvoiceDB:
                             (DateFrom,DateTo))
         rows = self.cursor.fetchall()
         return rows
+
+    def busiestday(self,DateFrom, DateTo):
+        self.cursor.execute("SELECT DATE_FORMAT(invoice_datetime, '%W, %M %e %Y') , count(*) \
+                            FROM invoice \
+                            WHERE DATE(invoice_datetime) BETWEEN %s AND %s and active = 1 \
+                            group by date(invoice_datetime) \
+                            ORDER BY count(*) desc;",
+                            (DateFrom,DateTo))
+        rows = self.cursor.fetchall()
+        return rows
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
     # >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> End <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<

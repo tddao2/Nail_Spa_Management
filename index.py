@@ -760,7 +760,7 @@ class AdminDashboard(tk.Frame):
         scrollX.config(command=self.tblCustomer.xview)
         scrollY.config(command=self.tblCustomer.yview)
 
-        self.tblCustomer.heading("customer_id", text="ID")
+        self.tblCustomer.heading("customer_id", text="#")
         self.tblCustomer.heading("customer_first_name", text="First Name")
         self.tblCustomer.heading("customer_last_name", text="Last Name")
         self.tblCustomer.heading("customer_phone", text="Phone Number")
@@ -845,24 +845,24 @@ class AdminDashboard(tk.Frame):
         scrolly=tk.Scrollbar(ServiceTableFrame,orient=VERTICAL)
         scrolly.pack(side=RIGHT,fill=Y)
         
-        self.ServiceTable=ttk.Treeview(ServiceTableFrame,columns=("ID","ServiceType","Servicename","Price",),
+        self.ServiceTable=ttk.Treeview(ServiceTableFrame,columns=("Service #","ServiceType","Servicename","Price",),
                                         yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
                                         show='headings')
 
         scrollx.config(command=self.ServiceTable.xview)
         scrolly.config(command=self.ServiceTable.yview)
 
-        self.ServiceTable.heading("ID",text="ID")
+        self.ServiceTable.heading("Service #",text="#")
         self.ServiceTable.heading("ServiceType",text="Service type")
         self.ServiceTable.heading("Servicename",text="Service name")
         self.ServiceTable.heading("Price",text="Price")
         
         self.ServiceTable["show"]="headings"
 
-        self.ServiceTable.column("ID",anchor=CENTER,width=40)
+        self.ServiceTable.column("Service #",anchor=CENTER,width=30)
         self.ServiceTable.column("ServiceType",anchor=CENTER)
         self.ServiceTable.column("Servicename",anchor=CENTER)
-        self.ServiceTable.column("Price",anchor=CENTER)
+        self.ServiceTable.column("Price",anchor=CENTER,width=60)
         
         self.ServiceTable.pack(fill=BOTH,expand=1)
         self.ServiceTable.bind("<ButtonRelease-1>",self.ServiceGetdata)
@@ -930,14 +930,14 @@ class AdminDashboard(tk.Frame):
         scrolly=tk.Scrollbar(self.InvoiceViewFrame,orient=VERTICAL)
         scrolly.pack(side=RIGHT,fill=Y)
         
-        self.InvoiceTable=ttk.Treeview(self.InvoiceViewFrame,columns=("ID","Employee","Customer","Tip","Discount","Total","DateTime"),
+        self.InvoiceTable=ttk.Treeview(self.InvoiceViewFrame,columns=("Invoice #","Employee","Customer","Tip","Discount","Total","DateTime"),
                                         yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
                                         show='headings')
 
         scrollx.config(command=self.InvoiceTable.xview)
         scrolly.config(command=self.InvoiceTable.yview)
 
-        self.InvoiceTable.heading("ID",text="ID")
+        self.InvoiceTable.heading("Invoice #",text="#")
         self.InvoiceTable.heading("Employee",text="Employee")
         self.InvoiceTable.heading("Customer",text="Customer")
         self.InvoiceTable.heading("Tip",text="Tip")
@@ -947,9 +947,9 @@ class AdminDashboard(tk.Frame):
         
         self.InvoiceTable["show"]="headings"
 
-        self.InvoiceTable.column("ID",anchor=CENTER,width=40)
+        self.InvoiceTable.column("Invoice #",anchor=CENTER,width=30)
         self.InvoiceTable.column("Employee",anchor=CENTER)
-        self.InvoiceTable.column("Customer",anchor=CENTER)
+        self.InvoiceTable.column("Customer",anchor=CENTER,width=140)
         self.InvoiceTable.column("Tip",anchor=CENTER,width=60)
         self.InvoiceTable.column("Discount",anchor=CENTER,width=80)
         self.InvoiceTable.column("Total",anchor=CENTER,width=60)
@@ -1026,7 +1026,7 @@ class AdminDashboard(tk.Frame):
         InvSearchFrame.place(x=150,y=10,width=951,height=91)
 
         self.Reportcmb_search=ttk.Combobox(InvSearchFrame,textvariable=self.var_ReportSearchBy,width=23,state="readonly",justify=CENTER,font=("times new roman",18))
-        self.Reportcmb_search["values"]=("Select","Salary","Incentive","Discounted invoices","Sale Revenue","Appointment Summary")
+        self.Reportcmb_search["values"]=("Select","Salary","Incentive","Discounted invoices","Sale Revenue","Appointment Summary","Busiest day of the week")
         self.Reportcmb_search.grid(row=0,column=0,padx=25)
         self.Reportcmb_search.current(0)
 
@@ -1096,7 +1096,7 @@ class AdminDashboard(tk.Frame):
         scrolly.config(command=self.CountInvTable.yview)
 
         self.CountInvTable.heading("Employee",text="Employee")
-        self.CountInvTable.heading("Count By Invoices",text="Serving customers")
+        self.CountInvTable.heading("Count By Invoices",text="Amount of Customers")
 
         self.CountInvTable["show"]="headings"
 
@@ -1122,7 +1122,7 @@ class AdminDashboard(tk.Frame):
         scrollx.config(command=self.DiscountTable.xview)
         scrolly.config(command=self.DiscountTable.yview)
 
-        self.DiscountTable.heading("Inv Id",text="Inv Id")
+        self.DiscountTable.heading("Inv Id",text="#")
         self.DiscountTable.heading("Employee",text="Employee")
         self.DiscountTable.heading("Customer",text="Customer")
         self.DiscountTable.heading("Tip",text="Tip")
@@ -1195,7 +1195,34 @@ class AdminDashboard(tk.Frame):
         self.AppSummaryTable.column("Count",anchor=CENTER)
 
         self.AppSummaryTable.pack(fill=BOTH,expand=1)
-    
+
+        # >>>>>>>>>>>>>>Busiest day <<<<<<<<<<<<<<
+
+        self.BusiestTableFrame=tk.LabelFrame(self.ReportFrame,relief=RIDGE,bd=1,bg="white")
+
+        scrollx=tk.Scrollbar(self.BusiestTableFrame,orient=HORIZONTAL)
+        scrollx.pack(side=BOTTOM,fill=X)
+
+        scrolly=tk.Scrollbar(self.BusiestTableFrame,orient=VERTICAL)
+        scrolly.pack(side=RIGHT,fill=Y)
+
+        self.BusiestTable=ttk.Treeview(self.BusiestTableFrame,columns=("Date","Customers"),
+                                        yscrollcommand=scrolly.set,xscrollcommand=scrollx.set,
+                                        show='headings')
+
+        scrollx.config(command=self.BusiestTable.xview)
+        scrolly.config(command=self.BusiestTable.yview)
+
+        self.BusiestTable.heading("Date",text="Date")
+        self.BusiestTable.heading("Customers",text="Customers")
+        
+        self.BusiestTable["show"]="headings"
+
+        self.BusiestTable.column("Date",anchor=CENTER)
+        self.BusiestTable.column("Customers",anchor=CENTER)
+
+        self.BusiestTable.pack(fill=BOTH,expand=1)
+
     def SearchReport(self):
         current = datetime.datetime.now().date()
         try:
@@ -1222,6 +1249,7 @@ class AdminDashboard(tk.Frame):
                     self.DiscountTableFrame.place_forget()
                     self.RevenueTableFrame.place_forget()
                     self.AppSummaryTableFrame.place_forget()
+                    self.BusiestTableFrame.place_forget()
                     self.SalaryTableFrame.place(x=50,y=110, width=1151, height=550)
                 else:
                     messagebox.showerror("Error","No records found.")
@@ -1241,6 +1269,7 @@ class AdminDashboard(tk.Frame):
                     self.DiscountTableFrame.place_forget()
                     self.RevenueTableFrame.place_forget()
                     self.AppSummaryTableFrame.place_forget()
+                    self.BusiestTableFrame.place_forget()
                     self.CountInvTableFrame.place(x=50,y=110, width=1151, height=550)
                 else:
                     messagebox.showerror("Error","No records found.")
@@ -1260,6 +1289,7 @@ class AdminDashboard(tk.Frame):
                     self.CountInvTableFrame.place_forget()
                     self.RevenueTableFrame.place_forget()
                     self.AppSummaryTableFrame.place_forget()
+                    self.BusiestTableFrame.place_forget()
                     self.DiscountTableFrame.place(x=50,y=110, width=1151, height=550)
                 else:
                     messagebox.showerror("Error","No records found.")
@@ -1279,6 +1309,7 @@ class AdminDashboard(tk.Frame):
                     self.CountInvTableFrame.place_forget()
                     self.DiscountTableFrame.place_forget()
                     self.AppSummaryTableFrame.place_forget()
+                    self.BusiestTableFrame.place_forget()
                     self.RevenueTableFrame.place(x=50,y=110, width=1151, height=550)
                 else:
                     messagebox.showerror("Error","No records found.")
@@ -1302,14 +1333,34 @@ class AdminDashboard(tk.Frame):
                     self.CountInvTableFrame.place_forget()
                     self.DiscountTableFrame.place_forget()
                     self.RevenueTableFrame.place_forget()
+                    self.BusiestTableFrame.place_forget()
                     self.AppSummaryTableFrame.place(x=50,y=110, width=1151, height=550)
+                else:
+                    messagebox.showerror("Error","No records found.")
+                    self.Hide_Report_Treeview()
+            elif self.var_ReportSearchBy.get()=="Busiest day of the week":
+                rows = InvoiceDB().busiestday(self.txt_Report_searchFrom.get_date(),self.txt_Report_searchTo.get_date())
+                if len(rows)!=0:
+                    self.BusiestTable.delete(*self.BusiestTable.get_children())
+                    for index in range(len(rows)):
+                        self.BusiestTable.tag_configure("evenrow",background="#f5d1e5")
+                        self.BusiestTable.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.BusiestTable.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.BusiestTable.insert("",END,values=rows[index],tags=("oddrow",))
+                    self.SalaryTableFrame.place_forget()
+                    self.CountInvTableFrame.place_forget()
+                    self.DiscountTableFrame.place_forget()
+                    self.RevenueTableFrame.place_forget()
+                    self.AppSummaryTableFrame.place_forget()
+                    self.BusiestTableFrame.place(x=50,y=110, width=1151, height=550)
                 else:
                     messagebox.showerror("Error","No records found.")
                     self.Hide_Report_Treeview()
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
-
 
     def Hide_Report_Treeview(self):
         self.Reportcmb_search.current(0)
@@ -1318,7 +1369,8 @@ class AdminDashboard(tk.Frame):
         self.DiscountTableFrame.place_forget()
         self.RevenueTableFrame.place_forget()
         self.AppSummaryTableFrame.place_forget()
-
+        self.BusiestTableFrame.place_forget()
+    
     def survey(self):
         self.hide_all_frames()
         self.FeedbackFrame.place(x=100,y=30,width=1251,height=691)
@@ -1461,8 +1513,8 @@ class AdminDashboard(tk.Frame):
         scrollx.config(command=self.FeedbackTable.xview)
         scrolly.config(command=self.FeedbackTable.yview)
 
-        self.FeedbackTable.heading("Feedback ID",text="STT")
-        self.FeedbackTable.heading("Full name",text="Full name")
+        self.FeedbackTable.heading("Feedback ID",text="#")
+        self.FeedbackTable.heading("Full name",text="Employee")
         self.FeedbackTable.heading("Score",text="Score")
         self.FeedbackTable.heading("Feedback",text="Feedback")
         self.FeedbackTable.heading("Date",text="Date")
@@ -2883,15 +2935,18 @@ class AdminDashboard(tk.Frame):
         curCustomer = (self.tblCustomer.item(focus))
         row = curCustomer['values']
 
-        self.var_customer_id.set(row[0])
-        self.txtCustomerFirstName.delete(0, tk.END)
-        self.txtCustomerFirstName.insert(tk.END, row[1])
-        self.txtCustomerLastName.delete(0, tk.END)
-        self.txtCustomerLastName.insert(tk.END, row[2])
-        self.txtCustomerPhone.delete(0, tk.END)
-        self.txtCustomerPhone.insert(tk.END, row[3])
-        self.txtCustomerEmail.delete(0, tk.END)
-        self.txtCustomerEmail.insert(tk.END, row[4])
+        try:
+            self.var_customer_id.set(row[0])
+            self.txtCustomerFirstName.delete(0, tk.END)
+            self.txtCustomerFirstName.insert(tk.END, row[1])
+            self.txtCustomerLastName.delete(0, tk.END)
+            self.txtCustomerLastName.insert(tk.END, row[2])
+            self.txtCustomerPhone.delete(0, tk.END)
+            self.txtCustomerPhone.insert(tk.END, row[3])
+            self.txtCustomerEmail.delete(0, tk.END)
+            self.txtCustomerEmail.insert(tk.END, row[4])
+        except:
+            pass
 
     def CustomerClear(self):
         # Clear Table Selection.
@@ -4445,7 +4500,7 @@ class EmployeeDashboard(tk.Frame):
         scrollx.config(command=self.ApptTable.xview)
         scrolly.config(command=self.ApptTable.yview)
 
-        self.ApptTable.heading("Appointment ID",text="Id")
+        self.ApptTable.heading("Appointment ID",text="#")
         self.ApptTable.heading("Customer",text="Customer")
         self.ApptTable.heading("Phone",text="Phone")
         self.ApptTable.heading("Email",text="Email")
@@ -4455,7 +4510,7 @@ class EmployeeDashboard(tk.Frame):
 
         self.ApptTable["show"]="headings"
 
-        self.ApptTable.column("Appointment ID",anchor=CENTER,width=40)
+        self.ApptTable.column("Appointment ID",anchor=CENTER,width=30)
         self.ApptTable.column("Customer",anchor=CENTER,width=140)
         self.ApptTable.column("Phone",anchor=CENTER,width=100)
         self.ApptTable.column("Email",anchor=CENTER)
@@ -4623,7 +4678,7 @@ class EmployeeDashboard(tk.Frame):
         scrollx.config(command=self.CusTable.xview)
         scrolly.config(command=self.CusTable.yview)
 
-        self.CusTable.heading("Customer ID",text="Id")
+        self.CusTable.heading("Customer ID",text="#")
         self.CusTable.heading("First name",text="First name")
         self.CusTable.heading("Last name",text="Last name")
         self.CusTable.heading("Phone",text="Phone")
@@ -4631,7 +4686,7 @@ class EmployeeDashboard(tk.Frame):
 
         self.CusTable["show"]="headings"
 
-        self.CusTable.column("Customer ID",anchor=CENTER,width=20)
+        self.CusTable.column("Customer ID",anchor=CENTER,width=30)
         self.CusTable.column("First name",anchor=CENTER,width=110)
         self.CusTable.column("Last name",anchor=CENTER,width=110)
         self.CusTable.column("Phone",anchor=CENTER,width=100)
