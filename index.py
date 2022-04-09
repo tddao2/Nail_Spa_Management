@@ -4392,17 +4392,17 @@ class EmployeeDashboard(tk.Frame):
         self.ApptDesc_txt=tk.Text(ApptLeftTopFrame,font=("time new roman",18),width=20,height=7,wrap=WORD)
         self.ApptDesc_txt.grid(row=5,column=1)
 
-        imgAppt_Acceptbtn=Image.open("images/accept.png").resize((80,80),Image.ANTIALIAS)
+        imgAppt_Acceptbtn=Image.open("images/book.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageAppt_Acceptbtn=ImageTk.PhotoImage(imgAppt_Acceptbtn)
         self.Appt_Acceptbtn=tk.Button(ApptLeftTopFrame,image=self.photoimageAppt_Acceptbtn,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.Add_appointment)
         self.Appt_Acceptbtn.place(x=24,y=525)
 
-        imgAppt_Updatebtn=Image.open("images/update.png").resize((80,80),Image.ANTIALIAS)
+        imgAppt_Updatebtn=Image.open("images/update1.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageAppt_Updatebtn=ImageTk.PhotoImage(imgAppt_Updatebtn)
         self.Appt_Updatebtn=tk.Button(ApptLeftTopFrame,image=self.photoimageAppt_Updatebtn,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptUpdate)
         self.Appt_Updatebtn.place(x=128,y=525)
 
-        imgAppt_Deletebtn=Image.open("images/delete.png").resize((80,80),Image.ANTIALIAS)
+        imgAppt_Deletebtn=Image.open("images/cancel.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageAppt_Deletebtn=ImageTk.PhotoImage(imgAppt_Deletebtn)
         self.Appt_Deletebtn=tk.Button(ApptLeftTopFrame,image=self.photoimageAppt_Deletebtn,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptDelete)
         self.Appt_Deletebtn.place(x=232,y=525)
