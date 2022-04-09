@@ -318,17 +318,41 @@ class Register(tk.Frame):
         account_status_id = 2
         employee_status_id = 1
         try: 
-            if self.firstname.get()=="" \
-                or self.lastname.get()=="" \
-                or self.phone.get()=="" \
-                or self.txtDOB.get_date()=="" \
-                or len(self.txtAddress.get("1.0",END))==1 \
-                or self.username.get()=="" \
-                or self.password.get()=="" \
-                or self.CFpassword.get()=="" \
-                or self.SQ.get()=="Select" \
-                or self.SA.get()=="" :
-                messagebox.showerror("Error","All input are required.")
+            if self.firstname.get()=="" :
+                messagebox.showerror("Error","First name is missing!!!")
+            elif self.lastname.get()=="":
+                messagebox.showerror("Error","Last name is missing!!!")
+            elif self.phone.get()=="" :
+                messagebox.showerror("Error","Phone number is missing!!!")
+            elif self.txtDOB.get_date()=="" :
+                messagebox.showerror("Error","Date of Birth is missing!!!")
+            elif len(self.txtAddress.get("1.0",END))==1 :
+                messagebox.showerror("Error","Address is missing!!!")
+
+            elif (len(self.username.get()) >= 8)== False:
+                messagebox.showerror("Error","The username must have at least 8 characters!!!")
+            elif (any(x.isalpha() for x in self.username.get()))== False:
+                messagebox.showerror("Error","The username must have at least some alphabets!!!")
+            elif (any(x.isdigit() for x in self.username.get()))== False:
+                messagebox.showerror("Error","The username must have at least one digit!!!")
+            
+            elif (len(self.password.get()) >= 8)== False:
+                messagebox.showerror("Error","The password must have at least 8 characters!!!")
+            elif (any(x.isalpha() for x in self.password.get()))== False:
+                messagebox.showerror("Error","The password must have at least some alphabets!!!")
+            elif (any(x.isupper() for x in self.password.get()))== False:
+                messagebox.showerror("Error","The password must have at least one uppercase!!!")
+            elif (any(x.islower() for x in self.password.get()))== False:
+                messagebox.showerror("Error","The password must have at least one lowercase!!!")
+            elif (any(x.isdigit() for x in self.password.get()))== False:
+                messagebox.showerror("Error","The password must have at least one digit!!!")
+
+            elif self.CFpassword.get()=="" :
+                messagebox.showerror("Error","Confirm password is missing!!!")
+            elif self.SQ.get()=="Select" :
+                messagebox.showerror("Error","Please select a security question!!!")
+            elif self.SA.get()=="" :
+                messagebox.showerror("Error","Answer security is missing!!!")
             elif self.phone.get().isnumeric() == False:
                 messagebox.showerror("Error","Contact contains numbers only.")
             elif self.txtDOB.get_date() == datetime.datetime.now().date():
@@ -343,7 +367,7 @@ class Register(tk.Frame):
                     hashedpassword=bcrypt.hashpw(password, bcrypt.gensalt())
                     secret_answer=self.SA.get().encode('utf8')
                     SAhased=bcrypt.hashpw(secret_answer, bcrypt.gensalt())
-                    account=(self.username.get(),hashedpassword,self.SQ.get(),SAhased,role_id,account_status_id)
+                    account=(self.username.get().lower(),hashedpassword,self.SQ.get(),SAhased,role_id,account_status_id)
                     
                     account_id=AccountDB().insertAccount(account)
                     FormatedPhone=phonenumbers.format_number(phonenumbers.parse(self.phone.get(), 'US'), phonenumbers.PhoneNumberFormat.NATIONAL)
