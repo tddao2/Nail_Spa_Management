@@ -2,7 +2,7 @@ from errno import errorcode
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk, messagebox
-from numpy import double
+# from numpy import double
 from tkcalendar import DateEntry
 from tkinter import font as tkfont
 import datetime
@@ -14,6 +14,8 @@ import re
 from itertools import repeat
 from nameparser import HumanName
 import os
+import win32api
+from tkinter import filedialog
 
 from Backend.createtables import CreateTables
 from Additional_features import myentry
@@ -4116,7 +4118,7 @@ class EmployeeDashboard(tk.Frame):
 
         #========================Bill Area==============================
         self.F5=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE)
-        self.F5.place(x=978,y=100,width=332,height=429)
+        self.F5.place(x=978,y=100,width=332,height=390)
   
         bill_title=tk.Label(self.F5,text="Bill Area",font="arial 15 bold",bd=7,relief=GROOVE)
         bill_title.pack(fill=X)
@@ -4126,6 +4128,9 @@ class EmployeeDashboard(tk.Frame):
         scrol_y.pack(side=RIGHT,fill=Y)
         scrol_y.config(command=self.txtarea.yview)
         self.txtarea.pack(fill=BOTH,expand=1)
+
+        Printbtn = tk.Button(self.BillFrame,text="Print",bd=10,relief=GROOVE,font=("time new roman",14,"bold"),bg="#A50060",fg="white",activebackground="#A50060",activeforeground="white",command=self.print)
+        Printbtn.place(x=978,y=490,width=332,height=39)
 
         #========================Button Frame==============================
         F6=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text="Bill Menu",font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
@@ -4153,16 +4158,16 @@ class EmployeeDashboard(tk.Frame):
         btn_F=tk.Frame(F6,bd=2,relief=GROOVE,bg="#e2479c")
         btn_F.place(x=700,width=579,height=80)
 
-        total_btn=tk.Button(btn_F,text="Total",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=self.total)
+        total_btn=tk.Button(btn_F,text="Total",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",activebackground="#A50060",activeforeground="white",command=self.total)
         total_btn.grid(row=0,column=0,padx=7,pady=3)
 
-        GBill_btn=tk.Button(btn_F,text="Generate Bill",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=self.generate_bill)
+        GBill_btn=tk.Button(btn_F,text="Generate Bill",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",activebackground="#A50060",activeforeground="white",command=self.generate_bill)
         GBill_btn.grid(row=0,column=1,padx=7,pady=3)
 
-        Clear_btn=tk.Button(btn_F,text="Clear",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=self.clear_bill)
+        Clear_btn=tk.Button(btn_F,text="Clear",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",activebackground="#A50060",activeforeground="white",command=self.clear_bill)
         Clear_btn.grid(row=0,column=2,padx=7,pady=3)
 
-        self.Exit_btn=tk.Button(btn_F,text="Logout",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",command=lambda: self.controller.show_frame("Login"))
+        self.Exit_btn=tk.Button(btn_F,text="Logout",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",activebackground="#A50060",activeforeground="white",command=lambda: self.controller.show_frame("Login"))
         self.Exit_btn.grid(row=0,column=3,padx=7,pady=3)
 
         self.ApptFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
@@ -5896,6 +5901,11 @@ class EmployeeDashboard(tk.Frame):
                 show="yes"
         if show=="no":
             messagebox.showerror("Error","Invalid Bill number")
+    
+    def print(self):
+        file_to_print = filedialog.askopenfilename(initialdir="Bills/",title="Open File",filetypes=(("Text Files", "*.txt"),("All Files","*.*")))
+        if file_to_print:
+            win32api.ShellExecute(0,"print",file_to_print,None,".",0)
 
     #=======================================================================
 if __name__ == "__main__":
