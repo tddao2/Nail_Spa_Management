@@ -4243,8 +4243,8 @@ class EmployeeDashboard(tk.Frame):
         scrol_y.config(command=self.txtarea.yview)
         self.txtarea.pack(fill=BOTH,expand=1)
 
-        Printbtn = tk.Button(self.BillFrame,text="Print",bd=10,relief=GROOVE,font=("time new roman",14,"bold"),bg="#A50060",fg="white",activebackground="#A50060",activeforeground="white",command=self.print)
-        Printbtn.place(x=978,y=490,width=332,height=39)
+        self.Printbtn = tk.Button(self.BillFrame,text="Print",bd=10,relief=GROOVE,font=("time new roman",14,"bold"),bg="#A50060",fg="white",activebackground="#A50060",activeforeground="white",command=self.print)
+        self.Printbtn.place(x=978,y=490,width=332,height=39)
 
         #========================Button Frame==============================
         F6=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text="Bill Menu",font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
@@ -4953,6 +4953,7 @@ class EmployeeDashboard(tk.Frame):
                 self.F3.place(x=326,y=100,width=325,height=429)
                 self.F4.place(x=652,y=100,width=325,height=429)
                 self.F5.place(x=978,y=100,width=332,height=429)
+                self.Printbtn.place(x=978,y=490,width=332,height=39)
 
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
@@ -4971,6 +4972,7 @@ class EmployeeDashboard(tk.Frame):
             self.F3.place_forget()
             self.F4.place_forget()
             self.F5.place_forget()
+            self.Printbtn.place_forget()
 
             self.lblEnterPassword.place(x=340, y=326)
             self.txtEnterPassword.place(x=600, y=326)
@@ -5955,6 +5957,7 @@ class EmployeeDashboard(tk.Frame):
         self.F3.place(x=326,y=100,width=325,height=429)
         self.F4.place(x=652,y=100,width=325,height=429)
         self.F5.place(x=978,y=100,width=332,height=429)
+        self.Printbtn.place(x=978,y=490,width=332,height=39)
 
         self.Retrievedpw.set("")
         self.cname.set("")
