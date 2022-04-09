@@ -439,7 +439,7 @@ class AdminDashboard(tk.Frame):
 
         self.HomeFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
         self.EmpFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
-        self.ClientFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="red")
+        self.ClientFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
         self.SaleFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
         self.ReportFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
         self.UserFrame=tk.Frame(self,relief=RIDGE,bd=1,bg="#e2479c")
@@ -650,94 +650,101 @@ class AdminDashboard(tk.Frame):
         self.var_customer_email = tk.StringVar()
 
         # ============= LEFT FRAME ================
-        LeftFrame = tk.LabelFrame(self.ClientFrame, relief=RIDGE, bd=1, bg="#e2479c")
+        LeftFrame = tk.LabelFrame(self.ClientFrame,text="Customer Details", font=("Segoe UI", 25, "bold"),relief=RIDGE, bd=1, bg="#e2479c",fg="gold")
         LeftFrame.place(x=0, y=0, width=370, height=690)
 
         # Header
-        header = tk.Label(LeftFrame, text="Customer Details", font=("Segoe UI", 25, "bold"), bg="#e2479c", fg="black")
-        header.place(x=20, y=20)
+        # header = tk.Label(LeftFrame, text="Customer Details", font=("Segoe UI", 25, "bold"), bg="#e2479c", fg="gold")
+        # header.place(x=20, y=20)
 
         # First Name
         lblFirstName = tk.Label(LeftFrame, text="First Name", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
-        lblFirstName.place(x=15, y=140)
+        lblFirstName.place(x=15, y=40)
 
         self.txtCustomerFirstName = ttk.Entry(LeftFrame, textvariable=self.var_customer_firstname, font=("Segoe UI", 18))
-        self.txtCustomerFirstName.place(x=140, y=140, width=200)
+        self.txtCustomerFirstName.place(x=147, y=40, width=200)
 
         # Last Name
         lblLastName = tk.Label(LeftFrame, text="Last Name", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
-        lblLastName.place(x=15, y=200)
+        lblLastName.place(x=15, y=100)
 
         self.txtCustomerLastName = ttk.Entry(LeftFrame, textvariable=self.var_customer_lastname, font=("Segoe UI", 18))
-        self.txtCustomerLastName.place(x=140, y=200, width=200)
+        self.txtCustomerLastName.place(x=147, y=100, width=200)
 
         # Phone
         lblPhone = tk.Label(LeftFrame, text="Phone", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
-        lblPhone.place(x=15, y=260)
+        lblPhone.place(x=15, y=160)
 
         self.txtCustomerPhone = ttk.Entry(LeftFrame, textvariable=self.var_customer_phone, font=("Segoe UI", 18))
-        self.txtCustomerPhone.place(x=140, y=260, width=200)
+        self.txtCustomerPhone.place(x=147, y=160, width=200)
 
         # Email
         lblEmail = tk.Label(LeftFrame, text="Email", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
-        lblEmail.place(x=15, y=320)
+        lblEmail.place(x=15, y=220)
 
         self.txtCustomerEmail = ttk.Entry(LeftFrame, textvariable=self.var_customer_email, font=("Segoe UI", 18))
-        self.txtCustomerEmail.place(x=140, y=320, width=200)
+        self.txtCustomerEmail.place(x=147, y=220, width=200)
 
         # Save Button
-        imgSave = Image.open("images/icons8-save-close-40.png")
+        imgSave = Image.open("images/add.png").resize((40,40),Image.ANTIALIAS)
         self.photoIamgeSave = ImageTk.PhotoImage(imgSave)
         btnSave = tk.Button(LeftFrame, image=self.photoIamgeSave, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerAddOrUpdate)
-        btnSave.place(x=170, y=380, width=50, height=50) 
+        btnSave.place(x=170, y=280, width=50, height=50) 
 
         # Delete Button
-        imgDelete = Image.open("images/icons8-trash-can-40.png")
+        imgDelete = Image.open("images/delete.png").resize((40,40),Image.ANTIALIAS)
         self.photoIamgeDelete = ImageTk.PhotoImage(imgDelete)
         btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerDelete)
-        btnDelete.place(x=230, y=380, width=50, height=50)
+        btnDelete.place(x=230, y=280, width=50, height=50)
 
         # Reset Form Button
-        imgResetForm = Image.open("images/icons8-available-updates-40.png")
+        imgResetForm = Image.open("images/Refresh.png").resize((40,40),Image.ANTIALIAS)
         self.photoIamgeResetForm = ImageTk.PhotoImage(imgResetForm)
         btnResetForm = tk.Button(LeftFrame, image=self.photoIamgeResetForm, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerClear)
-        btnResetForm.place(x=290, y=380, width=50, height=50)
+        btnResetForm.place(x=290, y=280, width=50, height=50)
 
         # ============= RIGHT FRAME ================
-        RightFrame = tk.LabelFrame(self.ClientFrame, relief=RIDGE, bd=1, bg="#e2479c")
-        RightFrame.place(x=370, y=0, width=880, height=690)
+        RightFrame = tk.Frame(self.ClientFrame,relief=RIDGE, bd=1, bg="#e2479c")
+        RightFrame.place(x=370, y=23, width=880, height=667)
 
         # Header
-        header = tk.Label(RightFrame, text="Search Customer", font=("Segoe UI", 25, "bold"), bg="#e2479c", fg="black")
-        header.place(x=20, y=20)
+        header=tk.LabelFrame(RightFrame,text="Search Customer",relief=RIDGE,font=("Segoe UI",20),bd=4,bg="#e2479c",fg="gold")
+        header.place(x=100,width=680,height=90) #550
+
+        # Header
+        # header = tk.Label(RightFrame, text="Search Customer", font=("Segoe UI", 25, "bold"), bg="#e2479c", fg="gold")
+        # header.place(x=20, y=15)
 
         # ============= RIGHT UPPER FRAME =============
-        SearchFrame = tk.Frame(RightFrame, relief=RIDGE, bd=2, bg="#e2479c")
-        SearchFrame.place(x=20, y=60, width=680, height=60)
+        # SearchFrame = tk.Frame(RightFrame, relief=RIDGE, bd=2, bg="#e2479c")
+        # SearchFrame.place(x=20, y=60, width=680, height=60)
 
-        self.cmbCustomerSearch = ttk.Combobox(SearchFrame, textvariable=self.var_customer_searchby, state="readonly", justify=CENTER, font=("Segoe UI", 15))
-        self.cmbCustomerSearch["values"] = ("Select", "First Name", "Last Name")
-        self.cmbCustomerSearch.place(x=15, y=10, width=150)
+        self.cmbCustomerSearch = ttk.Combobox(header, textvariable=self.var_customer_searchby, state="readonly", justify=CENTER, font=("Segoe UI", 15))
+        self.cmbCustomerSearch["values"] = ("Select", "First Name", "Last Name", "Phone")
+        self.cmbCustomerSearch.place(x=15,y=2,width=180)
         self.cmbCustomerSearch.current(0)
 
-        self.txtCustomerSearch = tk.Entry(SearchFrame, textvariable=self.var_customer_searchtxt, font=("Segoe UI",15), bg="white")
-        self.txtCustomerSearch.place(x=180, y=10, height=29)
+        self.txtCustomerSearch = tk.Entry(header, textvariable=self.var_customer_searchtxt, font=("Segoe UI",15), bg="white")
+        self.txtCustomerSearch.place(x=215,y=2)
 
         # Search Button
-        imgSearch = Image.open("images/icons8-browse-folder-30.png").resize((20,20),Image.ANTIALIAS)
+        imgSearch = Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoImageSearch=ImageTk.PhotoImage(imgSearch)
-        btnSearch = tk.Button(SearchFrame, image=self.photoImageSearch, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerSearch)
-        btnSearch.place(x=385, y=10)
+        btnSearch = tk.Button(header, image=self.photoImageSearch, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerSearch)
+        btnSearch.place(x=465)
 
         # Refresh Table Button
-        imgRefreshTable = Image.open("images/icons8-available-updates-30.png").resize((20,20),Image.ANTIALIAS)
-        self.photoIamgeRefreshTable = ImageTk.PhotoImage(imgRefreshTable)
-        btnRefreshTable = tk.Button(SearchFrame, image=self.photoIamgeRefreshTable, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerShow)
-        btnRefreshTable.place(x=420, y=10)
+        # imgRefreshTable = Image.open("images/icons8-available-updates-30.png").resize((20,20),Image.ANTIALIAS)
+        # self.photoIamgeRefreshTable = ImageTk.PhotoImage(imgRefreshTable)
+        # btnRefreshTable = tk.Button(header, image=self.photoIamgeRefreshTable, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerShow)
+        # btnRefreshTable.place(x=420, y=10)
+
+        btn_showClientHistory=tk.Button(header,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.CustomerHistory)
+        btn_showClientHistory.place(x=510,width=150)
 
         # ============= RIGHT LOWER FRAME =============
         TableFrame = tk.LabelFrame(RightFrame, relief=RIDGE, bd=1, bg="white")
-        TableFrame.place(x=20, y=135, width=835, height=540)
+        TableFrame.place(x=20, y=105, width=835, height=540)
 
         scrollX = tk.Scrollbar(TableFrame, orient=HORIZONTAL)
         scrollX.pack(side=BOTTOM, fill=X)
@@ -2796,11 +2803,11 @@ class AdminDashboard(tk.Frame):
                 firstName = self.var_customer_searchtxt.get()
                 rows = CustomerDB().getCustomerByFirstName(firstName)
 
-                # Clear Existing Records.
-                self.tblCustomer.delete(*self.tblCustomer.get_children())
+                if len(rows)!=0:
+                    # Clear Existing Records.
+                    self.tblCustomer.delete(*self.tblCustomer.get_children())
 
-                # Load Records.
-                if len(rows) != 0:
+                    # Load Records.
                     for index in range(len(rows)):
                         self.tblCustomer.tag_configure("evenrow",background="#f5d1e5")
                         self.tblCustomer.tag_configure("oddrow",background="white")
@@ -2808,8 +2815,6 @@ class AdminDashboard(tk.Frame):
                             self.tblCustomer.insert("",END,values=rows[index],tags=("evenrow",))
                         else:
                             self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
-                else:
-                    messagebox.showerror("Error","No customer records found.")
 
             elif self.var_customer_searchby.get()=="Last Name" and self.var_customer_searchtxt.get():
                 
@@ -2817,11 +2822,11 @@ class AdminDashboard(tk.Frame):
                 lastName = self.var_customer_searchtxt.get()
                 rows = CustomerDB().getCustomerByLastName(lastName)
 
-                # Clear existing records.
-                self.tblCustomer.delete(*self.tblCustomer.get_children())
+                if len(rows)!=0:
+                    # Clear Existing Records.
+                    self.tblCustomer.delete(*self.tblCustomer.get_children())
 
-                # Load record.
-                if len(rows) != 0:
+                    # Load Records.
                     for index in range(len(rows)):
                         self.tblCustomer.tag_configure("evenrow",background="#f5d1e5")
                         self.tblCustomer.tag_configure("oddrow",background="white")
@@ -2829,9 +2834,25 @@ class AdminDashboard(tk.Frame):
                             self.tblCustomer.insert("",END,values=rows[index],tags=("evenrow",))
                         else:
                             self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
-                else:
-                    messagebox.showerror("Error","No customer records found.")
 
+            elif self.var_customer_searchby.get()=="Phone" and self.var_customer_searchtxt.get():
+                
+                # Filter by Last name.
+                phone = self.var_customer_searchtxt.get()
+                rows = CustomerDB().getCustomerByPhone(phone)
+
+                if len(rows)!=0:
+                    # Clear Existing Records.
+                    self.tblCustomer.delete(*self.tblCustomer.get_children())
+
+                    # Load Records.
+                    for index in range(len(rows)):
+                        self.tblCustomer.tag_configure("evenrow",background="#f5d1e5")
+                        self.tblCustomer.tag_configure("oddrow",background="white")
+                        if index % 2 == 0:    
+                            self.tblCustomer.insert("",END,values=rows[index],tags=("evenrow",))
+                        else:
+                            self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
         except Exception as e:
             messagebox.showerror("Error", f"Error due to: {str(e)}")
             print(f"Something went wrong {e}.")
@@ -2888,7 +2909,21 @@ class AdminDashboard(tk.Frame):
         self.cmbCustomerSearch.current(0)
         self.txtCustomerSearch.delete(0, tk.END)
 
+        self.CustomerShow()
 
+    def CustomerHistory(self):
+        rows = CustomerDB().getAllHisCustomer()
+        if len(rows) != 0:
+            self.tblCustomer.delete(*self.tblCustomer.get_children())
+            for index in range(len(rows)):
+                self.tblCustomer.tag_configure("evenrow",background="#f5d1e5")
+                self.tblCustomer.tag_configure("oddrow",background="white")
+                if index % 2 == 0:    
+                    self.tblCustomer.insert("",END,values=rows[index],tags=("evenrow",))
+                else:
+                    self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
+        else:
+            messagebox.showerror("Error","No customer records found.")
 class Reset(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)

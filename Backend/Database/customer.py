@@ -106,19 +106,19 @@ class CustomerDB:
 
 
     def getCustomerByFirstName(self, first_name):
-        self.cursor.execute("SELECT * FROM customer WHERE first_name = %s AND active = 1", (first_name,))
+        self.cursor.execute("SELECT * FROM customer WHERE first_name LIKE '%"+first_name+"%' AND active = 1")
         rows = self.cursor.fetchall()
         return rows
 
 
     def getCustomerByLastName(self, last_name):
-        self.cursor.execute("SELECT * FROM customer WHERE last_name = %s AND active = 1", (last_name,))
+        self.cursor.execute("SELECT * FROM customer WHERE last_name LIKE '%"+last_name+"%' AND active = 1")
         rows = self.cursor.fetchall()
         return rows
 
 
     def getCustomerByPhone(self, phone):
-        self.cursor.execute("SELECT * FROM customer WHERE phone = %s AND active = 1", (phone,))
+        self.cursor.execute("SELECT * FROM customer WHERE phone LIKE '%"+phone+"%' AND active = 1")
         rows = self.cursor.fetchall()
         return rows
 
