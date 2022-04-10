@@ -712,14 +712,14 @@ class AdminDashboard(tk.Frame):
         # Save Button
         imgSave = Image.open("images/add.png").resize((40,40),Image.ANTIALIAS)
         self.photoIamgeSave = ImageTk.PhotoImage(imgSave)
-        btnSave = tk.Button(LeftFrame, image=self.photoIamgeSave, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerAddOrUpdate)
-        btnSave.place(x=170, y=280, width=50, height=50) 
+        self.btnSave = tk.Button(LeftFrame, image=self.photoIamgeSave, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerAddOrUpdate)
+        self.btnSave.place(x=170, y=280, width=50, height=50) 
 
         # Delete Button
         imgDelete = Image.open("images/delete.png").resize((40,40),Image.ANTIALIAS)
         self.photoIamgeDelete = ImageTk.PhotoImage(imgDelete)
-        btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerDelete)
-        btnDelete.place(x=230, y=280, width=50, height=50)
+        self.btnDelete = tk.Button(LeftFrame, image=self.photoIamgeDelete, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerDelete)
+        self.btnDelete.place(x=230, y=280, width=50, height=50)
 
         # Reset Form Button
         imgResetForm = Image.open("images/Refresh.png").resize((40,40),Image.ANTIALIAS)
@@ -754,8 +754,8 @@ class AdminDashboard(tk.Frame):
         # Search Button
         imgSearch = Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoImageSearch=ImageTk.PhotoImage(imgSearch)
-        btnSearch = tk.Button(header, image=self.photoImageSearch, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerSearch)
-        btnSearch.place(x=465)
+        self.btnSearch = tk.Button(header, image=self.photoImageSearch, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerSearch)
+        self.btnSearch.place(x=465)
 
         # Refresh Table Button
         # imgRefreshTable = Image.open("images/icons8-available-updates-30.png").resize((20,20),Image.ANTIALIAS)
@@ -2812,28 +2812,48 @@ class AdminDashboard(tk.Frame):
     def CustomerAddOrUpdate(self):
         try:
             # Check Input Field.
-            if self.var_customer_firstname.get() == '' or self.var_customer_lastname.get() == '' \
-                                                       or self.var_customer_phone.get() == '' \
-                                                       or self.var_customer_email.get() == '':
-                messagebox.showerror("Error", "Please input all required fields.")
-                return
-            
+            if self.var_customer_firstname.get() == '':
+                messagebox.showerror("Error", "First name is missing!!!")
+            elif self.var_customer_lastname.get() == '':
+                messagebox.showerror("Error", "Last name is missing!!!")
+            elif self.var_customer_phone.get() == '':
+                messagebox.showerror("Error", "Phone number is missing!!!")
+            elif self.var_customer_phone.get().isnumeric() == False:
+                messagebox.showerror("Error", "Phone number must be digits!!!")
+            elif len(self.var_customer_phone.get()) != 10:
+                messagebox.showerror("Error", "Phone number must be 10 digits!!!")
+            elif CustomerDB().getCustomerByPhone(self.phone_format(self.var_customer_phone.get())):
+                messagebox.showerror("Error", "The customer already existed!!!")
+
             # Add Mode: Insert New Customer Info.
-            if self.var_customer_id.get() == "":
-                CustomerDB().addCustomer(self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.var_customer_phone.get(), self.var_customer_email.get())
-                messagebox.showinfo("Success", "New Customer Record is Added Successfully!")            
+            elif self.var_customer_id.get() == "" and (not CustomerDB().getCustomerByPhone(self.phone_format(self.var_customer_phone.get()))):
+                op = messagebox.askyesno("Confirm","Do you want to add a new customer?")
+                if op:
+                    CustomerDB().addCustomer(self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.phone_format(self.var_customer_phone.get()), self.var_customer_email.get())
+                    messagebox.showinfo("Success", "New Customer Record is Added Successfully!")
+
+                    # Clear Input Field.
+                    self.CustomerClear()
+
+                    # Reload Customer Table.
+                    self.CustomerShow()
+                else:
+                    return            
             
             # Update Mode: Modify existing Customer Info.
-            else:              
-                CustomerDB().updateCustomer(self.var_customer_id.get(), self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.var_customer_phone.get(), self.var_customer_email.get())
-                messagebox.showinfo("Success", "Customer Record is updated Successfully!")
+            else:
+                op = messagebox.askyesno("Confirm","Do you want to update the customer?")        
+                if op:    
+                    CustomerDB().updateCustomer(self.var_customer_id.get(), self.var_customer_firstname.get(), self.var_customer_lastname.get(), self.phone_format(self.var_customer_phone.get()), self.var_customer_email.get())
+                    messagebox.showinfo("Success", "Customer Record is updated Successfully!")
+                    # Clear Input Field.
+                    self.CustomerClear()
+
+                    # Reload Customer Table.
+                    self.CustomerShow()
+                else:
+                    return 
                 
-            # Clear Input Field.
-            self.CustomerClear()
-
-            # Reload Customer Table.
-            self.CustomerShow()
-
         except Exception as e:
             messagebox.showerror("Error", "Something went wrong")
             print(f"Error due to: {str(e)}.")
@@ -2908,10 +2928,14 @@ class AdminDashboard(tk.Frame):
                         else:
                             self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
 
-            elif self.var_customer_searchby.get()=="Phone" and self.var_customer_searchtxt.get():
+            elif self.var_customer_searchby.get()=="Phone" and self.var_customer_searchtxt.get().isnumeric() == False:
+                messagebox.showerror("Error","Phone number must be digits")
+            elif self.var_customer_searchby.get()=="Phone" and len(self.var_customer_searchtxt.get()) != 10:
+                messagebox.showerror("Error", "Phone number must be 10 digits!!!")
+            elif (self.var_customer_searchby.get()=="Phone") and (self.var_customer_searchtxt.get().isnumeric() == True) and (len(self.var_customer_searchtxt.get()) == 10):
                 
                 # Filter by Last name.
-                phone = self.var_customer_searchtxt.get()
+                phone = self.phone_format(self.var_customer_searchtxt.get())
                 rows = CustomerDB().getCustomerByPhone(phone)
 
                 if len(rows)!=0:
@@ -2963,7 +2987,7 @@ class AdminDashboard(tk.Frame):
             self.txtCustomerLastName.delete(0, tk.END)
             self.txtCustomerLastName.insert(tk.END, row[2])
             self.txtCustomerPhone.delete(0, tk.END)
-            self.txtCustomerPhone.insert(tk.END, row[3])
+            self.txtCustomerPhone.insert(tk.END, re.sub('[^A-Za-z0-9]+', '', str(row[3])))
             self.txtCustomerEmail.delete(0, tk.END)
             self.txtCustomerEmail.insert(tk.END, row[4])
         except:
@@ -2985,6 +3009,10 @@ class AdminDashboard(tk.Frame):
         self.cmbCustomerSearch.current(0)
         self.txtCustomerSearch.delete(0, tk.END)
 
+        self.btnSave.place(x=170, y=280, width=50, height=50)
+        self.btnDelete.place(x=230, y=280, width=50, height=50)
+        self.btnSearch.place(x=465)
+
         self.CustomerShow()
 
     def CustomerHistory(self):
@@ -2998,8 +3026,15 @@ class AdminDashboard(tk.Frame):
                     self.tblCustomer.insert("",END,values=rows[index],tags=("evenrow",))
                 else:
                     self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
+            self.btnSave.place_forget()
+            self.btnDelete.place_forget()
+            self.btnSearch.place_forget()
         else:
             messagebox.showerror("Error","No customer records found.")
+
+    def phone_format(self,n):                                                                                                                                  
+        return format(int(n[:-1]), ",").replace(",", "-") + n[-1] 
+
 class Reset(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)

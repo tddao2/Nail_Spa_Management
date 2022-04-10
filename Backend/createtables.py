@@ -106,10 +106,10 @@ class CreateTables:
             "  `customer_id` int NOT NULL AUTO_INCREMENT,"
             "  `first_name` varchar(50) NOT NULL,"
             "  `last_name` varchar(50) NOT NULL,"
-            "  `phone` varchar(16),"
+            "  `phone` varchar(12),"
             "  `email` varchar(100),"
             "  `active` BIT NOT NULL DEFAULT 1,"
-            "  PRIMARY KEY (`customer_id`)"
+            "  PRIMARY KEY (`customer_id`), UNIQUE KEY `Unique_phone` (`phone)"
             ")"
         )
 
