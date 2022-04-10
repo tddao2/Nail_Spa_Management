@@ -302,15 +302,15 @@ class Register(tk.Frame):
         txtSecurityA.place(x=370,y=480,width=250)
 
         # =============Row6=============
-        imgRegist=Image.open("images/Registerbtn.png").resize((200,55),Image.ANTIALIAS)
+        imgRegist=Image.open("images/sign-up.png").resize((70,70),Image.ANTIALIAS)
         self.photoimageRegist=ImageTk.PhotoImage(imgRegist)
         Registerbtn=tk.Button(frame, image=self.photoimageRegist,command=self.add,borderwidth=0,cursor="hand2",font=("times new roman",15,"bold"),fg="white",bg="white",activebackground="white")
-        Registerbtn.place(x=70,y=540,width=210)
+        Registerbtn.place(x=130,y=530)
 
-        imgLogin=Image.open("images/Loginbtn.png").resize((200,60),Image.ANTIALIAS)
+        imgLogin=Image.open("images/sign-in.png").resize((70,70),Image.ANTIALIAS)
         self.photoimageLogin=ImageTk.PhotoImage(imgLogin)
         Loginbtn=tk.Button(frame, image=self.photoimageLogin,borderwidth=0,cursor="hand2",font=("times new roman",15,"bold"),fg="white",bg="white",activebackground="white",command=lambda: controller.show_frame("Login"))
-        Loginbtn.place(x=400,y=537,width=210,height=60)
+        Loginbtn.place(x=460,y=530)
 
     def add(self):
         userfetch = (self.username.get())
@@ -415,7 +415,7 @@ class AdminDashboard(tk.Frame):
         EmployeeBtn=tk.Button(LeftFrame, image=self.imageEmployee,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.employee)
         EmployeeBtn.grid(row=1,column=1)
 
-        imageCustomer = Image.open("images/client.png").resize((100,100))
+        imageCustomer = Image.open("images/customer.png").resize((100,100))
         self.imageCustomer=ImageTk.PhotoImage(imageCustomer)
         CustomerBtn=tk.Button(LeftFrame, image=self.imageCustomer,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.client)
         CustomerBtn.grid(row=2,column=1)
@@ -425,7 +425,7 @@ class AdminDashboard(tk.Frame):
         SaleBtn=tk.Button(LeftFrame, image=self.imageSale,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.sale)
         SaleBtn.grid(row=3,column=1)
 
-        imageReport = Image.open("images/Report.png").resize((100,100))
+        imageReport = Image.open("images/report.png").resize((100,100))
         self.imageReport=ImageTk.PhotoImage(imageReport)
         ReportBtn=tk.Button(LeftFrame, image=self.imageReport,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.Report)
         ReportBtn.grid(row=4,column=1)
@@ -435,7 +435,7 @@ class AdminDashboard(tk.Frame):
         FeedbackBtn=tk.Button(LeftFrame, image=self.imageFeedback,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.survey)
         FeedbackBtn.grid(row=5,column=1)
 
-        imageusers = Image.open("images/users.png").resize((100,100))
+        imageusers = Image.open("images/account.png").resize((100,100))
         self.imageusers=ImageTk.PhotoImage(imageusers)
         usersBtn=tk.Button(LeftFrame, image=self.imageusers,borderwidth=0,activebackground="#e2479c",bg="#e2479c",command=self.user)
         usersBtn.grid(row=6,column=1)
@@ -879,7 +879,7 @@ class AdminDashboard(tk.Frame):
         self.ServiceTable.heading("Service #",text="#")
         self.ServiceTable.heading("ServiceType",text="Service type")
         self.ServiceTable.heading("Servicename",text="Service name")
-        self.ServiceTable.heading("Price",text="Price")
+        self.ServiceTable.heading("Price",text="Price ($)")
         
         self.ServiceTable["show"]="headings"
 
@@ -964,18 +964,18 @@ class AdminDashboard(tk.Frame):
         self.InvoiceTable.heading("Invoice #",text="#")
         self.InvoiceTable.heading("Employee",text="Employee")
         self.InvoiceTable.heading("Customer",text="Customer")
-        self.InvoiceTable.heading("Tip",text="Tip")
-        self.InvoiceTable.heading("Discount",text="Discount")
-        self.InvoiceTable.heading("Total",text="Total")
+        self.InvoiceTable.heading("Tip",text="Tip ($)")
+        self.InvoiceTable.heading("Discount",text="Discount (%)")
+        self.InvoiceTable.heading("Total",text="Total ($)")
         self.InvoiceTable.heading("DateTime",text="DateTime")
         
         self.InvoiceTable["show"]="headings"
 
         self.InvoiceTable.column("Invoice #",anchor=CENTER,width=30)
-        self.InvoiceTable.column("Employee",anchor=CENTER)
+        self.InvoiceTable.column("Employee",anchor=CENTER,width=140)
         self.InvoiceTable.column("Customer",anchor=CENTER,width=140)
         self.InvoiceTable.column("Tip",anchor=CENTER,width=60)
-        self.InvoiceTable.column("Discount",anchor=CENTER,width=80)
+        self.InvoiceTable.column("Discount",anchor=CENTER,width=120)
         self.InvoiceTable.column("Total",anchor=CENTER,width=60)
         self.InvoiceTable.column("DateTime",anchor=CENTER)
         
@@ -1089,9 +1089,9 @@ class AdminDashboard(tk.Frame):
         scrolly.config(command=self.SalaryTable.yview)
 
         self.SalaryTable.heading("Employee",text="Employee")
-        self.SalaryTable.heading("Tip",text="Tip")
-        self.SalaryTable.heading("Total Sales",text="Total Sales")
-        self.SalaryTable.heading("Salary received (60%)",text="Salary received (60%)")
+        self.SalaryTable.heading("Tip",text="Tip ($)")
+        self.SalaryTable.heading("Total Sales",text="Total Sales ($)")
+        self.SalaryTable.heading("Salary received (60%)",text="Salary received (60%) ($)")
 
         self.SalaryTable["show"]="headings"
 
@@ -1149,9 +1149,9 @@ class AdminDashboard(tk.Frame):
         self.DiscountTable.heading("Inv Id",text="#")
         self.DiscountTable.heading("Employee",text="Employee")
         self.DiscountTable.heading("Customer",text="Customer")
-        self.DiscountTable.heading("Tip",text="Tip")
-        self.DiscountTable.heading("Discount",text="Discount")
-        self.DiscountTable.heading("Total",text="Total")
+        self.DiscountTable.heading("Tip",text="Tip ($)")
+        self.DiscountTable.heading("Discount",text="Discount (%)")
+        self.DiscountTable.heading("Total",text="Total ($)")
         self.DiscountTable.heading("Date",text="Date")
 
         self.DiscountTable["show"]="headings"
@@ -1160,7 +1160,7 @@ class AdminDashboard(tk.Frame):
         self.DiscountTable.column("Employee",anchor=CENTER,width=140)
         self.DiscountTable.column("Customer",anchor=CENTER,width=100)
         self.DiscountTable.column("Tip",anchor=CENTER,width=60)
-        self.DiscountTable.column("Discount",anchor=CENTER,width=60)
+        self.DiscountTable.column("Discount",anchor=CENTER,width=120)
         self.DiscountTable.column("Total",anchor=CENTER,width=60)
         self.DiscountTable.column("Date",anchor=CENTER)
 
@@ -1182,9 +1182,8 @@ class AdminDashboard(tk.Frame):
 
         scrollx.config(command=self.RevenueTable.xview)
         scrolly.config(command=self.RevenueTable.yview)
-        ProfitFrom = datetime.datetime.strptime(str(self.txt_Report_searchFrom.get_date()), "%Y-%m-%d").strftime("%Y/%m/%d")
-        ProfitTo = datetime.datetime.strptime(str(self.txt_Report_searchTo.get_date()), "%Y-%m-%d").strftime("%Y/%m/%d")
-        self.RevenueTable.heading("Profit",text=f"{ProfitFrom} - {ProfitTo}")
+        
+        self.RevenueTable.heading("Profit",text="Total Revenue ($)")
         
         self.RevenueTable["show"]="headings"
 
@@ -1208,9 +1207,8 @@ class AdminDashboard(tk.Frame):
 
         scrollx.config(command=self.AppSummaryTable.xview)
         scrolly.config(command=self.AppSummaryTable.yview)
-        ApptFrom = datetime.datetime.strptime(str(self.txt_Report_searchFrom.get_date()), "%Y-%m-%d").strftime("%Y/%m/%d")
-        ApptTo = datetime.datetime.strptime(str(self.txt_Report_searchTo.get_date()), "%Y-%m-%d").strftime("%Y/%m/%d")
-        self.AppSummaryTable.heading("Profit",text=f"{ApptFrom} - {ApptTo}")
+        
+        self.AppSummaryTable.heading("Profit",text="Summary")
         self.AppSummaryTable.heading("Count",text="Total")
         
         self.AppSummaryTable["show"]="headings"
@@ -1343,7 +1341,6 @@ class AdminDashboard(tk.Frame):
                 To = self.txt_Report_searchTo.get_date()
                 Date = (From, To, From, To, From, To)
                 rows = AppointmentDB().AppSummary(Date)
-                print(str(self.txt_Report_searchFrom.get_date()))
                 if len(rows)!=0:
                     self.AppSummaryTable.delete(*self.AppSummaryTable.get_children())
                     for index in range(len(rows)):
@@ -1674,7 +1671,7 @@ class AdminDashboard(tk.Frame):
         scrolly.config(command=self.AccountTable.yview)
 
         self.AccountTable.heading("ID",text="ID")
-        self.AccountTable.heading("Full name",text="Full name")
+        self.AccountTable.heading("Full name",text="Employee")
         self.AccountTable.heading("username",text="User name")
         self.AccountTable.heading("role",text="Role")
         self.AccountTable.heading("status",text="Status")
@@ -3232,7 +3229,7 @@ class Feedback(tk.Frame):
         backButton.place(x=40,y=530)
 
         # Submit Button
-        imgSubmit=Image.open("images/save.png").resize((80,80),Image.ANTIALIAS)
+        imgSubmit=Image.open("images/submit.png").resize((80,80),Image.ANTIALIAS)
         self.photoimageSubmit=ImageTk.PhotoImage(imgSubmit)
         submitButton = tk.Button(self.frame,image=self.photoimageSubmit,borderwidth=0,bg="white",activebackground="white",command=lambda: self.retrieve_input())
         submitButton.place(x=140,y=530)
@@ -3540,7 +3537,7 @@ class EmployeeDashboard(tk.Frame):
         self.F2=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text=self.ServiceType[0],font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
         self.F2.place(y=100,width=325,height=429)
    
-        SPW_lbl=tk.Label(self.F2,text=f"{self.ServiceName[0]} (${self.ServicePrice[0]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        SPW_lbl=tk.Label(self.F2,text=f"{self.ServiceName[0]} (${self.ServicePrice[0]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         SPW_lbl.grid(row=0,column=0,padx=5,pady=4,sticky="w")
 
         def AddSPW_btn1():
@@ -3566,7 +3563,7 @@ class EmployeeDashboard(tk.Frame):
         SPW_btn2=tk.Button(self.F2,image=self.photoimageSPW_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         SPW_btn2.bind("<ButtonRelease-1>",lambda event:BackSPW_btn2())
 
-        sp_lbl=tk.Label(self.F2,text=f"{self.ServiceName[1]} (${self.ServicePrice[1]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        sp_lbl=tk.Label(self.F2,text=f"{self.ServiceName[1]} (${self.ServicePrice[1]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         sp_lbl.grid(row=1,column=0,padx=5,pady=4,sticky="w")
 
         def Addsp_btn1():
@@ -3592,7 +3589,7 @@ class EmployeeDashboard(tk.Frame):
         sp_btn2=tk.Button(self.F2,image=self.photoimagesp_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         sp_btn2.bind("<ButtonRelease-1>",lambda event:Backsp_btn2())
 
-        CPFS_lbl=tk.Label(self.F2,text=f"{self.ServiceName[2]} (${self.ServicePrice[2]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        CPFS_lbl=tk.Label(self.F2,text=f"{self.ServiceName[2]} (${self.ServicePrice[2]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         CPFS_lbl.grid(row=2,column=0,padx=5,pady=4,sticky="w")
 
         def AddCPFS_btn1():
@@ -3618,7 +3615,7 @@ class EmployeeDashboard(tk.Frame):
         CPFS_btn2=tk.Button(self.F2,image=self.photoimageCPFS_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         CPFS_btn2.bind("<ButtonRelease-1>",lambda event:BackCPFS_btn2())
  
-        RA_lbl=tk.Label(self.F2,text=f"{self.ServiceName[3]} (${self.ServicePrice[3]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        RA_lbl=tk.Label(self.F2,text=f"{self.ServiceName[3]} (${self.ServicePrice[3]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         RA_lbl.grid(row=3,column=0,padx=5,pady=4,sticky="w")
 
         def AddRA_btn1():
@@ -3648,7 +3645,7 @@ class EmployeeDashboard(tk.Frame):
         self.F3=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text=self.ServiceType[1],font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
         self.F3.place(x=326,y=100,width=325,height=429)
   
-        M_lbl=tk.Label(self.F3,text=f"{self.ServiceName[4]} (${self.ServicePrice[4]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        M_lbl=tk.Label(self.F3,text=f"{self.ServiceName[4]} (${self.ServicePrice[4]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         M_lbl.grid(row=0,column=0,padx=5,pady=4,sticky="w")
 
         def AddM_btn1():
@@ -3674,7 +3671,7 @@ class EmployeeDashboard(tk.Frame):
         M_btn2=tk.Button(self.F3,image=self.photoimageM_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         M_btn2.bind("<ButtonRelease-1>",lambda event:BackM_btn2())
         
-        P_lbl=tk.Label(self.F3,text=f"{self.ServiceName[5]} (${self.ServicePrice[5]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        P_lbl=tk.Label(self.F3,text=f"{self.ServiceName[5]} (${self.ServicePrice[5]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         P_lbl.grid(row=1,column=0,padx=5,pady=4,sticky="w")
 
         def AddP_btn1():
@@ -3700,7 +3697,7 @@ class EmployeeDashboard(tk.Frame):
         P_btn2=tk.Button(self.F3,image=self.photoimageP_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         P_btn2.bind("<ButtonRelease-1>",lambda event:BackP_btn2())
         
-        MP_lbl=tk.Label(self.F3,text=f"{self.ServiceName[6]} (${self.ServicePrice[6]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        MP_lbl=tk.Label(self.F3,text=f"{self.ServiceName[6]} (${self.ServicePrice[6]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         MP_lbl.grid(row=2,column=0,padx=5,pady=4,sticky="w")
 
         def AddMP_btn1():
@@ -3726,7 +3723,7 @@ class EmployeeDashboard(tk.Frame):
         MP_btn2=tk.Button(self.F3,image=self.photoimageMP_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         MP_btn2.bind("<ButtonRelease-1>",lambda event:BackMP_btn2()) 
 
-        R_lbl=tk.Label(self.F3,text=f"{self.ServiceName[7]} (${self.ServicePrice[7]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        R_lbl=tk.Label(self.F3,text=f"{self.ServiceName[7]} (${self.ServicePrice[7]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         R_lbl.grid(row=3,column=0,padx=5,pady=4,sticky="w")
 
         def AddR_btn1():
@@ -3752,7 +3749,7 @@ class EmployeeDashboard(tk.Frame):
         R_btn2=tk.Button(self.F3,image=self.photoimageR_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         R_btn2.bind("<ButtonRelease-1>",lambda event:BackR_btn2()) 
 
-        PC_lbl=tk.Label(self.F3,text=f"{self.ServiceName[8]} (${self.ServicePrice[8]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        PC_lbl=tk.Label(self.F3,text=f"{self.ServiceName[8]} (${self.ServicePrice[8]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         PC_lbl.grid(row=4,column=0,padx=5,pady=4,sticky="w")
 
         def AddPC_btn1():
@@ -3778,7 +3775,7 @@ class EmployeeDashboard(tk.Frame):
         PC_btn2=tk.Button(self.F3,image=self.photoimagePC_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c") 
         PC_btn2.bind("<ButtonRelease-1>",lambda event:BackPC_btn2())
           
-        EFA_lbl=tk.Label(self.F3,text=f"{self.ServiceName[9]} (${self.ServicePrice[9]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        EFA_lbl=tk.Label(self.F3,text=f"{self.ServiceName[9]} (${self.ServicePrice[9]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         EFA_lbl.grid(row=5,column=0,padx=5,pady=4,sticky="w")
 
         def AddEFA_btn1():
@@ -3804,7 +3801,7 @@ class EmployeeDashboard(tk.Frame):
         EFA_btn2=tk.Button(self.F3,image=self.photoimageEFA_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         EFA_btn2.bind("<ButtonRelease-1>",lambda event:BackEFA_btn2()) 
 
-        D_lbl=tk.Label(self.F3,text=f"{self.ServiceName[10]} (${self.ServicePrice[10]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        D_lbl=tk.Label(self.F3,text=f"{self.ServiceName[10]} (${self.ServicePrice[10]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         D_lbl.grid(row=6,column=0,padx=5,pady=4,sticky="w")
 
         def AddD_btn1():
@@ -3830,7 +3827,7 @@ class EmployeeDashboard(tk.Frame):
         D_btn2=tk.Button(self.F3,image=self.photoimageD_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         D_btn2.bind("<ButtonRelease-1>",lambda event:BackD_btn2())
 
-        CD_lbl=tk.Label(self.F3,text=f"{self.ServiceName[11]} (${self.ServicePrice[11]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        CD_lbl=tk.Label(self.F3,text=f"{self.ServiceName[11]} (${self.ServicePrice[11]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         CD_lbl.grid(row=7,column=0,padx=5,pady=4,sticky="w")
 
         def AddCD_btn1():
@@ -3856,7 +3853,7 @@ class EmployeeDashboard(tk.Frame):
         CD_btn2=tk.Button(self.F3,image=self.photoimageCD_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         CD_btn2.bind("<ButtonRelease-1>",lambda event:BackCD_btn2())
         
-        BC_lbl=tk.Label(self.F3,text=f"{self.ServiceName[12]} (${self.ServicePrice[12]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        BC_lbl=tk.Label(self.F3,text=f"{self.ServiceName[12]} (${self.ServicePrice[12]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         BC_lbl.grid(row=8,column=0,padx=5,pady=4,sticky="w")
 
         def AddBC__btn1():
@@ -3882,7 +3879,7 @@ class EmployeeDashboard(tk.Frame):
         BC__btn2=tk.Button(self.F3,image=self.photoimageBC__btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         BC__btn2.bind("<ButtonRelease-1>",lambda event:BackBC__btn2())
 
-        TN_lbl=tk.Label(self.F3,text=f"{self.ServiceName[13]} (${self.ServicePrice[13]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        TN_lbl=tk.Label(self.F3,text=f"{self.ServiceName[13]} (${self.ServicePrice[13]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         TN_lbl.grid(row=9,column=0,padx=5,pady=4,sticky="w")
 
         def AddTN__btn1():
@@ -3918,7 +3915,7 @@ class EmployeeDashboard(tk.Frame):
         self.F4=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text=self.ServiceType[2],font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
         self.F4.place(x=652,y=100,width=325,height=429)    
 
-        E_lbl=tk.Label(self.F4,text=f"{self.ServiceName[14]} (${self.ServicePrice[14]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        E_lbl=tk.Label(self.F4,text=f"{self.ServiceName[14]} (${self.ServicePrice[14]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         E_lbl.grid(row=0,column=0,padx=5,pady=4,sticky="w")
 
         def AddE_btn1():
@@ -3944,7 +3941,7 @@ class EmployeeDashboard(tk.Frame):
         E_btn2=tk.Button(self.F4,image=self.photoimageE_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         E_btn2.bind("<ButtonRelease-1>",lambda event:BackE_btn2())
 
-        UL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[15]} (${self.ServicePrice[15]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        UL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[15]} (${self.ServicePrice[15]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         UL_lbl.grid(row=1,column=0,padx=5,pady=4,sticky="w")
 
         def AddUL_btn1():
@@ -3970,7 +3967,7 @@ class EmployeeDashboard(tk.Frame):
         UL_btn2=tk.Button(self.F4,image=self.photoimageUL_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         UL_btn2.bind("<ButtonRelease-1>",lambda event:BackUL_btn2()) 
 
-        C_lbl=tk.Label(self.F4,text=f"{self.ServiceName[16]} (${self.ServicePrice[16]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        C_lbl=tk.Label(self.F4,text=f"{self.ServiceName[16]} (${self.ServicePrice[16]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         C_lbl.grid(row=2,column=0,padx=5,pady=4,sticky="w")
 
         def AddC_btn1():
@@ -3996,7 +3993,7 @@ class EmployeeDashboard(tk.Frame):
         C_btn2=tk.Button(self.F4,image=self.photoimageC_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         C_btn2.bind("<ButtonRelease-1>",lambda event:BackC_btn2()) 
  
-        HL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[17]} (${self.ServicePrice[17]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        HL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[17]} (${self.ServicePrice[17]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         HL_lbl.grid(row=3,column=0,padx=5,pady=4,sticky="w")
 
         def AddHL_btn1():
@@ -4022,7 +4019,7 @@ class EmployeeDashboard(tk.Frame):
         HL_btn2=tk.Button(self.F4,image=self.photoimageHL_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         HL_btn2.bind("<ButtonRelease-1>",lambda event:BackHL_btn2())
 
-        FL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[18]} (${self.ServicePrice[18]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        FL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[18]} (${self.ServicePrice[18]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         FL_lbl.grid(row=4,column=0,padx=5,pady=4,sticky="w")
 
         def AddFL_btn1():
@@ -4048,7 +4045,7 @@ class EmployeeDashboard(tk.Frame):
         FL_btn2=tk.Button(self.F4,image=self.photoimageFL_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         FL_btn2.bind("<ButtonRelease-1>",lambda event:BackFL_btn2()) 
           
-        B_lbl=tk.Label(self.F4,text=f"{self.ServiceName[19]} (${self.ServicePrice[19]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        B_lbl=tk.Label(self.F4,text=f"{self.ServiceName[19]} (${self.ServicePrice[19]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         B_lbl.grid(row=5,column=0,padx=5,pady=4,sticky="w")
 
         def AddB_btn1():
@@ -4074,7 +4071,7 @@ class EmployeeDashboard(tk.Frame):
         B_btn2=tk.Button(self.F4,image=self.photoimageB_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         B_btn2.bind("<ButtonRelease-1>",lambda event:BackB_btn2())
 
-        U_lbl=tk.Label(self.F4,text=f"{self.ServiceName[20]} (${self.ServicePrice[20]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        U_lbl=tk.Label(self.F4,text=f"{self.ServiceName[20]} (${self.ServicePrice[20]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         U_lbl.grid(row=6,column=0,padx=5,pady=4,sticky="w")
 
         def AddU_btn1():
@@ -4100,7 +4097,7 @@ class EmployeeDashboard(tk.Frame):
         U_btn2=tk.Button(self.F4,image=self.photoimageU_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         U_btn2.bind("<ButtonRelease-1>",lambda event:BackU_btn2())
 
-        Face_lbl=tk.Label(self.F4,text=f"{self.ServiceName[21]} (${self.ServicePrice[21]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        Face_lbl=tk.Label(self.F4,text=f"{self.ServiceName[21]} (${self.ServicePrice[21]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         Face_lbl.grid(row=7,column=0,padx=5,pady=4,sticky="w")
 
         def AddFace_btn1():
@@ -4126,7 +4123,7 @@ class EmployeeDashboard(tk.Frame):
         Face_btn2=tk.Button(self.F4,image=self.photoimageFace_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         Face_btn2.bind("<ButtonRelease-1>",lambda event:BackFace_btn2())
         
-        Facial_lbl=tk.Label(self.F4,text=f"{self.ServiceName[22]} (${self.ServicePrice[22]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        Facial_lbl=tk.Label(self.F4,text=f"{self.ServiceName[22]} (${self.ServicePrice[22]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         Facial_lbl.grid(row=8,column=0,padx=5,pady=4,sticky="w")
 
         def AddFacial_btn1():
@@ -4152,7 +4149,7 @@ class EmployeeDashboard(tk.Frame):
         Facial_btn2=tk.Button(self.F4,image=self.photoimageFacial_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         Facial_btn2.bind("<ButtonRelease-1>",lambda event:BackFacial_btn2())
 
-        EP_lbl=tk.Label(self.F4,text=f"{self.ServiceName[23]} (${self.ServicePrice[23]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        EP_lbl=tk.Label(self.F4,text=f"{self.ServiceName[23]} (${self.ServicePrice[23]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         EP_lbl.grid(row=9,column=0,padx=5,pady=4,sticky="w")
 
         def AddEP_btn1():
@@ -4178,7 +4175,7 @@ class EmployeeDashboard(tk.Frame):
         EP_btn2=tk.Button(self.F4,image=self.photoimageEP_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         EP_btn2.bind("<ButtonRelease-1>",lambda event:BackEP_btn2())
 
-        Duralash_lbl=tk.Label(self.F4,text=f"{self.ServiceName[24]} (${self.ServicePrice[24]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        Duralash_lbl=tk.Label(self.F4,text=f"{self.ServiceName[24]} (${self.ServicePrice[24]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         Duralash_lbl.grid(row=10,column=0,padx=5,pady=4,sticky="w")
 
         def AddDuralash_btn1():
@@ -4204,7 +4201,7 @@ class EmployeeDashboard(tk.Frame):
         Duralash_btn2=tk.Button(self.F4,image=self.photoimageDuralash_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         Duralash_btn2.bind("<ButtonRelease-1>",lambda event:BackDuralash_btn2())
 
-        MEE_lbl=tk.Label(self.F4,text=f"{self.ServiceName[25]} (${self.ServicePrice[25]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="lightgreen")
+        MEE_lbl=tk.Label(self.F4,text=f"{self.ServiceName[25]} (${self.ServicePrice[25]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         MEE_lbl.grid(row=11,column=0,padx=5,pady=4,sticky="w")
 
         def AddMEE_btn1():
@@ -4281,7 +4278,7 @@ class EmployeeDashboard(tk.Frame):
         Clear_btn=tk.Button(btn_F,text="Clear",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",activebackground="#A50060",activeforeground="white",command=self.clear_bill)
         Clear_btn.grid(row=0,column=2,padx=7,pady=3)
 
-        self.Exit_btn=tk.Button(btn_F,text="Logout",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",activebackground="#A50060",activeforeground="white",command=lambda: self.controller.show_frame("Login"))
+        self.Exit_btn=tk.Button(btn_F,text="Logout",bg="#A50060",fg="white",bd=2,pady=15,width=10,font="arial 15 bold",activebackground="#A50060",activeforeground="white",command=self.Exit)
         self.Exit_btn.grid(row=0,column=3,padx=7,pady=3)
 
         self.ApptFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
@@ -4304,22 +4301,22 @@ class EmployeeDashboard(tk.Frame):
 
         width = font.metrics()['linespace'] + 20
 
-        Billcanvas = tk.Canvas(btnFrame, height=Billheight, width=width, bg="#ffcae5",borderwidth=1, relief="raised")
-        Billcanvas.create_text((18, 110), angle="90", anchor="center", text=BillLabel, fill="#e2479c", font=font)
+        Billcanvas = tk.Canvas(btnFrame, height=Billheight, width=width, bg="#a50060",borderwidth=1, relief="raised")
+        Billcanvas.create_text((18, 110), angle="90", anchor="center", text=BillLabel, fill="white", font=font)
 
         Billcanvas.bind("<ButtonPress-1>", lambda ev: ev.widget.configure(relief="sunken"))
         Billcanvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
         Billcanvas.bind("<ButtonPress-1>", lambda ev: self.bill(), add=True)
 
-        Apptcanvas = tk.Canvas(btnFrame, height=Apptheight, width=width, bg="#ffcae5", borderwidth=1, relief="raised")
-        Apptcanvas.create_text((18, 116), angle="90", anchor="center", text=Apptlabel, fill="#e2479c", font=font)
+        Apptcanvas = tk.Canvas(btnFrame, height=Apptheight, width=width, bg="#a50060", borderwidth=1, relief="raised")
+        Apptcanvas.create_text((18, 116), angle="90", anchor="center", text=Apptlabel, fill="white", font=font)
 
         Apptcanvas.bind("<ButtonPress-1>", lambda ev: ev.widget.configure(relief="sunken"))
         Apptcanvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
         Apptcanvas.bind("<ButtonPress-1>", lambda ev: self.Appt(), add=True)
     
-        Cuscanvas = tk.Canvas(btnFrame, height=Cusheight, width=width, bg="#ffcae5",borderwidth=1, relief="raised")
-        Cuscanvas.create_text((18, 75), angle="90", anchor="center", text=CusLabel, fill="#e2479c", font=font)
+        Cuscanvas = tk.Canvas(btnFrame, height=Cusheight, width=width, bg="#a50060",borderwidth=1, relief="raised")
+        Cuscanvas.create_text((18, 75), angle="90", anchor="center", text=CusLabel, fill="white", font=font)
 
         Cuscanvas.bind("<ButtonPress-1>", lambda ev: ev.widget.configure(relief="sunken"))
         Cuscanvas.bind("<ButtonRelease-1>", lambda ev: ev.widget.configure(relief="raised"))
@@ -4536,7 +4533,7 @@ class EmployeeDashboard(tk.Frame):
 
         self.ApptTable.column("Appointment ID",anchor=CENTER,width=30)
         self.ApptTable.column("Customer",anchor=CENTER,width=140)
-        self.ApptTable.column("Phone",anchor=CENTER,width=100)
+        self.ApptTable.column("Phone",anchor=CENTER,width=120)
         self.ApptTable.column("Email",anchor=CENTER)
         self.ApptTable.column("Date Appt",anchor=CENTER,width=145)
         self.ApptTable.column("Time Appt",anchor=CENTER,width=125)
@@ -6023,6 +6020,11 @@ class EmployeeDashboard(tk.Frame):
         file_to_print = filedialog.askopenfilename(initialdir="Bills/",title="Open File",filetypes=(("Text Files", "*.txt"),("All Files","*.*")))
         if file_to_print:
             win32api.ShellExecute(0,"print",file_to_print,None,".",0)
+
+    def Exit(self):
+        self.close_reset()
+        self.clear_bill()
+        self.controller.show_frame("Login")
 
     #=======================================================================
 if __name__ == "__main__":
