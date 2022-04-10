@@ -30,7 +30,7 @@ class CustomerDB:
 
         self.cursor.execute("SELECT LAST_INSERT_ID();")
         row = self.cursor.fetchone()
-        print("addCustomerAndGetId", row)
+
         return row[0]
 
     def getAllCusByFN(self):
@@ -40,9 +40,9 @@ class CustomerDB:
         rows = self.cursor.fetchall()
         return rows
 
-    def fetchCusIdAndPhone(self, first, last):
+    def fetchCusIdAndPhone(self, first, last, phone):
         self.cursor.execute("SELECT customer_id, phone FROM customer \
-                            WHERE first_name LIKE '%"+first+"%' and last_name LIKE '%"+last+"%' and active = 1;")
+                            WHERE first_name LIKE '%"+first+"%' and last_name LIKE '%"+last+"%' and phone LIKE '%"+phone+"%' and active = 1;")
         row = self.cursor.fetchone()
         if row:
             return row

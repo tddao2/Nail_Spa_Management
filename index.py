@@ -3536,7 +3536,7 @@ class EmployeeDashboard(tk.Frame):
         
         for i in range(0, len(rows)):
             cname.append(rows[i][1])
-            cphn.append(rows[i][2])
+            cphn.append(re.sub('[^A-Za-z0-9]+', '', str(rows[i][2])))
             c_email.append(rows[i][3])
         self.txtcname.set_completion_list(cname)
 
@@ -4900,21 +4900,20 @@ class EmployeeDashboard(tk.Frame):
             self.Selected_password_Id.clear()
             value_found = False
             for index in range(len(self.retrieved_password)):
-                
                 if bcrypt.checkpw(self.Retrievedpw.get().encode('utf8'), self.retrieved_password[index].encode('utf8')):
                     self.Selected_password_Id.append(self.retrieved_password_Id[index])
                     
                     self.Customer_name = HumanName(self.cname.get())
                     self.last = ""
-            
+        
                     if len(self.Customer_name.middle) == 0:
                         self.last = self.Customer_name.last
                     else:
                         self.last = self.Customer_name.middle +" "+ self.Customer_name.last
                         
                     self.first = self.Customer_name.first
-                             
-                    phone = self.cphn.get()
+                    
+                    phone = self.phone_format(self.cphn.get())
                     email = self.c_email.get()
 
                     empId = self.Selected_password_Id[0]
@@ -4924,8 +4923,7 @@ class EmployeeDashboard(tk.Frame):
 
                     SerId = self.Selected_Services_Id
 
-                    if not CustomerDB().fetchCusIdAndPhone(self.first, self.last):
-                        print("No matched customer.")
+                    if not CustomerDB().fetchCusIdAndPhone(self.first, self.last, phone):
                         CustomerId = []
                         InvoiceId = []
                         
@@ -4933,6 +4931,8 @@ class EmployeeDashboard(tk.Frame):
                         CustomerId.append(RetrievedCustomerId)
 
                         cusId = CustomerId[0]
+
+                        self.cphn.set(phone)
 
                         RetrievedInvoiceId = InvoiceDB().Add_Invoice(empId, cusId, tip, discount, total)
                         InvoiceId.append(RetrievedInvoiceId)
@@ -4947,13 +4947,13 @@ class EmployeeDashboard(tk.Frame):
                         self.welcome_bill()
 
                         self.close_reset()
-                        
                         break
                     else:
                         CustomerId = []
                         InvoiceId = []
 
-                        RetrievedCustomerId = CustomerDB().fetchCusIdAndPhone(self.first, self.last)
+                        RetrievedCustomerId = CustomerDB().fetchCusIdAndPhone(self.first, self.last, phone)
+                        
                         CustomerId.append(RetrievedCustomerId[0])
 
                         cusId = CustomerId[0]
@@ -4962,7 +4962,7 @@ class EmployeeDashboard(tk.Frame):
 
                         RetrievedInvoiceId = InvoiceDB().Add_Invoice(empId, cusId, tip, discount, total)
                         InvoiceId.append(RetrievedInvoiceId)
-                      
+
                         self.InvId = InvoiceId[0]
 
                         InvoiceLineItemDB().Add_InvoiceItem(self.InvId, SerId)
@@ -4991,6 +4991,7 @@ class EmployeeDashboard(tk.Frame):
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
 
+
     def generate_bill(self):
         if  self.ServiceName[0] == "N/A":
             messagebox.showerror("Error","No services available!!!")
@@ -4999,6 +5000,12 @@ class EmployeeDashboard(tk.Frame):
             messagebox.showerror("Error","No services selected!!!")
         elif self.cname.get() == "":
             messagebox.showerror("Error","Missing customer name!!!")
+        elif self.cphn.get() == "":
+            messagebox.showerror("Error","Phone number is missing!!!")
+        elif self.cphn.get().isnumeric() == False:
+            messagebox.showerror("Error", "Phone number must be digits!!!")
+        elif len(self.cphn.get()) != 10:
+            messagebox.showerror("Error","Phone number must be 10 digits!!!")
         else:
             self.F2.place_forget()
             self.F3.place_forget()
@@ -5040,7 +5047,7 @@ class EmployeeDashboard(tk.Frame):
             self.var_Cus_id.set(row[0])
             self.var_Cus_F.set(row[1])
             self.var_Cus_L.set(row[2])
-            self.var_Cus_P.set(row[3])
+            self.var_Cus_P.set(re.sub('[^A-Za-z0-9]+', '', str(row[3])))
             self.var_Cus_E.set(row[4]) 
         except:
             pass
@@ -5080,10 +5087,20 @@ class EmployeeDashboard(tk.Frame):
                 messagebox.showerror("Error","First Name missing")
             elif self.var_Cus_L.get()=="":
                 messagebox.showerror("Error","Last Name missing")
+            elif self.var_Cus_P.get() == '':
+                messagebox.showerror("Error", "Phone number is missing!!!")
+            elif self.var_Cus_P.get().isnumeric() == False:
+                messagebox.showerror("Error", "Phone number must be digits!!!")
+            elif len(self.var_Cus_P.get()) != 10:
+                messagebox.showerror("Error", "Phone number must be 10 digits!!!")
             else:
-                CustomerDB().updateCustomer(self.var_Cus_id.get(),self.var_Cus_F.get(),self.var_Cus_L.get(),self.var_Cus_P.get(),self.var_Cus_E.get())
-                messagebox.showinfo("Success","Update Successfully!")
-                self.CusClear()
+                op = messagebox.askyesno("Confirm","Do you want to update the customer?")
+                if op:
+                    CustomerDB().updateCustomer(self.var_Cus_id.get(),self.var_Cus_F.get(),self.var_Cus_L.get(),self.phone_format(self.var_Cus_P.get()),self.var_Cus_E.get())
+                    messagebox.showinfo("Success","Update Successfully!")
+                    self.CusClear()
+                else:
+                    return
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
@@ -5423,6 +5440,12 @@ class EmployeeDashboard(tk.Frame):
                 messagebox.showerror("Error","Updates are in processing!!!")
             elif self.var_Appt_FN.get()=="":
                 messagebox.showerror("Error","Customer name is required!!!")
+            elif self.var_Appt_P.get() == '':
+                messagebox.showerror("Error", "Phone number is missing!!!")
+            elif self.var_Appt_P.get().isnumeric() == False:
+                messagebox.showerror("Error", "Phone number must be digits!!!")
+            elif len(self.var_Appt_P.get()) != 10:
+                messagebox.showerror("Error", "Phone number must be 10 digits!!!")
             elif self.ApptD_txt.get_date()=="":
                 messagebox.showerror("Error","Appoitment date is required!!!")
             elif self.var_Appt_T.get()=="Select":
@@ -5435,6 +5458,7 @@ class EmployeeDashboard(tk.Frame):
                 Name=HumanName(self.var_Appt_FN.get())
                 First=Name.first
                 Last=""
+                Phone = self.phone_format(self.var_Appt_P.get())
                 if len(Name.middle) == 0:
                     Last = Name.last
                 else:
@@ -5443,9 +5467,9 @@ class EmployeeDashboard(tk.Frame):
                 DateFormated=datetime.datetime.strptime(str(self.ApptD_txt.get_date()),'%Y-%m-%d').strftime('%A, %d. %B')
                 op=messagebox.askyesno("Confirmation",f"Do you want to make an appointment on {DateFormated} at {self.ApptT_txt.get()}?")
                 if op==True:
-                    if not CustomerDB().fetchCusId(First, Last):
+                    if not CustomerDB().fetchCusIdAndPhone(First, Last, Phone):
                         CustomerId = []
-                        RetrievedCustomerId = CustomerDB().addCustomerAndGetId(First, Last, self.var_Appt_P.get(), self.var_Appt_E.get())
+                        RetrievedCustomerId = CustomerDB().addCustomerAndGetId(First, Last, Phone, self.var_Appt_E.get())
                         CustomerId.append(RetrievedCustomerId)
 
                         cusId = CustomerId[0]
@@ -5456,11 +5480,12 @@ class EmployeeDashboard(tk.Frame):
                          
                     else:
                         CustomerId = []
-                        RetrievedCustomerId = CustomerDB().fetchCusId(First, Last)
-                        CustomerId.append(RetrievedCustomerId)
+                        RetrievedCustomerId = CustomerDB().fetchCusIdAndPhone(First, Last, Phone)
+                        
+                        CustomerId.append(RetrievedCustomerId[0])
 
                         cusId = CustomerId[0]
-
+                        
                         AppointmentDB().addAppt(cusId, self.ApptD_txt.get_date(),self.var_Appt_T.get(),self.ApptDesc_txt.get("1.0",'end-1c'))
                         messagebox.showinfo("Success","Appointment has beed added successfully!!!")
                         self.ApptClear()
@@ -5470,6 +5495,7 @@ class EmployeeDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}")
+
 
     def ApptClear(self):
         self.Apptcmb_search.current(0)
@@ -6035,6 +6061,55 @@ class EmployeeDashboard(tk.Frame):
         self.txtarea.config(state=NORMAL)
         self.txtarea.delete("1.0",END)
 
+        self.lblEnterPassword.place_forget()
+        self.txtEnterPassword.place_forget()
+        self.BtnEnterPassword.place_forget()
+        
+        self.F2.place(y=100,width=325,height=429)
+        self.F3.place(x=326,y=100,width=325,height=429)
+        self.F4.place(x=652,y=100,width=325,height=429)
+        self.F5.place(x=978,y=100,width=332,height=429)
+        self.Printbtn.place(x=978,y=490,width=332,height=39)
+
+        self.Retrievedpw.set("")
+        self.cname.set("")
+        self.cphn.set("")
+        self.c_email.set("")
+        self.c_bill.set("")
+
+        self.totalMoney.set(0)
+        self.totalTip.set(0)
+        self.totalDiscount.set(0)
+
+        BackSPW_btn2()
+        Backsp_btn2()
+        BackCPFS_btn2()
+        BackRA_btn2()
+
+        BackM_btn2()
+        BackP_btn2()
+        BackMP_btn2()
+        BackR_btn2()
+        BackPC_btn2()
+        BackEFA_btn2()
+        BackD_btn2()
+        BackCD_btn2()
+        BackBC__btn2()
+        BackTN__btn2()
+
+        BackE_btn2()
+        BackUL_btn2()
+        BackC_btn2()
+        BackHL_btn2()
+        BackFL_btn2()
+        BackB_btn2()
+        BackU_btn2()
+        BackFace_btn2()
+        BackFacial_btn2()
+        BackEP_btn2()
+        BackDuralash_btn2()
+        BackMEE_btn2()
+
     def find_bill(self):
         self.txtarea.config(state=NORMAL)
         show="no"
@@ -6060,6 +6135,9 @@ class EmployeeDashboard(tk.Frame):
         self.close_reset()
         self.clear_bill()
         self.controller.show_frame("Login")
+
+    def phone_format(self,n):                                                                                                                                  
+        return format(int(n[:-1]), ",").replace(",", "-") + n[-1] 
 
     #=======================================================================
 if __name__ == "__main__":

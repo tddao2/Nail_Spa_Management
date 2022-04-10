@@ -115,7 +115,7 @@ class AccountDB:
                                 ON e.account_id = a.account_id \
                             INNER JOIN account_status asi \
                                 ON a.account_status_id = asi.account_status_id \
-                            WHERE acct_status = 'active';") 
+                            WHERE a.role_id= 2 and a.account_status_id = 1 and a.active = 1;") 
         rows = self.cursor.fetchall()
         return rows
 
