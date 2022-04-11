@@ -26,7 +26,7 @@ class CreateTables:
             "  `account_id` int NOT NULL AUTO_INCREMENT,"
             "  `username` varchar(50) NOT NULL,"
             "  `password` varchar(255) NOT NULL,"
-            "  `secret_question` varchar(255) NOT NULL,"
+            "  `secret_question` varchar(100) NOT NULL,"
             "  `secret_answer` varchar(255) NOT NULL,"
             "  `role_id` int NOT NULL,"
             "  `account_status_id` int NOT NULL,"
