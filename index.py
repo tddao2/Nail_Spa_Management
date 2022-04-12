@@ -40,6 +40,7 @@ class App(tk.Tk):
         
         self.title_font = tkfont.Font(family='Helvetica', size=18, weight="bold", slant="italic")
         self.title("KT Nails Spa")
+        self.iconbitmap("images/nails logo.ico")
 
         # Reference: https://blog.teclado.com/side-values-in-tkinters-pack-geometry-manager/
         container = tk.Frame(self)
