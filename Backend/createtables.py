@@ -186,6 +186,11 @@ class CreateTables:
         TABLES['employee_status_data2'] = (
             "INSERT INTO `employee_status` (`emp_status`) SELECT 'Current' FROM DUAL WHERE NOT EXISTS (SELECT * FROM `employee_status` WHERE `emp_status`='Current' LIMIT 1);"
         )
+
+        TABLES['Default_Admin'] = (
+            "INSERT INTO account(username, password, secret_question, secret_answer, role_id, account_status_id) \
+            values('admin','$2b$12$xhojbjLhp/HzHDm7YbJVKuFwMSrhWvkMCgEcApyzditKtwcrbLjxy','Your Pet Name','$2b$12$cqf0WNfBSlpP9UkLa5orwOb47RoVYl9rV/eG7HDQb6/aLEPDnlZOW',1,1);"
+        ) 
                  
         cnx = mysql.connector.connect(**Connect)
         cursor = cnx.cursor()
@@ -197,6 +202,8 @@ class CreateTables:
                 cnx.commit()
             except mysql.connector.Error as err:
                 if err.errno == errorcode.ER_TABLE_EXISTS_ERROR:
+                    print("already exists.")
+                elif mysql.connector.errors.IntegrityError:
                     print("already exists.")
                 else:
                     print(err.msg)
