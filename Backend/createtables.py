@@ -109,7 +109,7 @@ class CreateTables:
             "  `phone` varchar(12),"
             "  `email` varchar(100),"
             "  `active` BIT NOT NULL DEFAULT 1,"
-            "  PRIMARY KEY (`customer_id`), UNIQUE KEY `Unique_phone` (`phone)"
+            "  PRIMARY KEY (`customer_id`), UNIQUE KEY `Unique_phone` (`phone`)"
             ")"
         )
 

@@ -16,6 +16,7 @@ from nameparser import HumanName
 import os
 import win32api
 from tkinter import filedialog
+import tempfile
 
 from Backend.createtables import CreateTables
 from Additional_features import myentry
@@ -6128,9 +6129,11 @@ class EmployeeDashboard(tk.Frame):
             messagebox.showerror("Error","Invalid Bill number")
     
     def print(self):
-        file_to_print = filedialog.askopenfilename(initialdir="Bills/",title="Open File",filetypes=(("Text Files", "*.txt"),("All Files","*.*")))
-        if file_to_print:
-            win32api.ShellExecute(0,"print",file_to_print,None,".",0)
+        if self.txtarea.get("1.0",'end-1c'):
+            q = self.txtarea.get("1.0",'end-1c')
+            filename = tempfile.mktemp(".txt")
+            open(filename,"w").write(q)
+            os.startfile(filename,"print")
 
     def Exit(self):
         self.close_reset()
