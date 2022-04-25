@@ -1,4 +1,5 @@
-from errno import errorcode
+import mysql.connector
+from mysql.connector import errorcode
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk, messagebox
@@ -4990,8 +4991,21 @@ class EmployeeDashboard(tk.Frame):
                 self.Printbtn.place(x=978,y=490,width=332,height=39)
 
         except Exception as e:
-            messagebox.showerror("Error","Something went wrong")
-            print(f"Error due to: {str(e)}.")
+            if mysql.connector.errors.IntegrityError:
+                messagebox.showerror("Error","Customer already exists.")
+                self.Retrievedpw.set("")
+                self.lblEnterPassword.place_forget()
+                self.txtEnterPassword.place_forget()
+                self.BtnEnterPassword.place_forget()
+
+                self.F2.place(y=100,width=325,height=429)
+                self.F3.place(x=326,y=100,width=325,height=429)
+                self.F4.place(x=652,y=100,width=325,height=429)
+                self.F5.place(x=978,y=100,width=332,height=429)
+                self.Printbtn.place(x=978,y=490,width=332,height=39)
+            else:
+                messagebox.showerror("Error","Something went wrong")
+                print(f"Error due to: {str(e)}.")
 
 
     def generate_bill(self):
@@ -5962,6 +5976,7 @@ class EmployeeDashboard(tk.Frame):
         
     def welcome_bill(self):
         today = datetime.datetime.now().strftime("%A, %d. %B %Y %I:%M%p")
+        self.txtarea.config(state=NORMAL)
         self.txtarea.delete("1.0",END)
         self.txtarea.insert(END,"\tWelcome to KT Nail & Spa")
         self.txtarea.insert(END,"\n\t   (281) 403-2184")

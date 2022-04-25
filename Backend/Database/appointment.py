@@ -17,8 +17,7 @@ class AppointmentDB:
                             FROM appointment a \
                             JOIN customer c \
                                 ON a.customer_id = c.customer_id \
-                            WHERE date_appt >= curdate() and (date_appt <= DATE_ADD(CURDATE(), INTERVAL 3 DAY)) and a.active = 1 \
-                            ORDER BY time_appt ASC;")
+                            WHERE date_appt >= curdate() and (date_appt <= DATE_ADD(CURDATE(), INTERVAL 3 DAY)) and a.active = 1")
         rows = self.cursor.fetchall()
         return rows
 
