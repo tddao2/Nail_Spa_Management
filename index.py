@@ -200,7 +200,7 @@ class Register(tk.Frame):
         self.SA = tk.StringVar()
 
         # left image
-        bg1=Image.open("images/Nailwall.jpg").resize((470,610), Image.ANTIALIAS)
+        bg1=Image.open("images/nailLogo.jpeg").resize((470,610), Image.ANTIALIAS)
         self.lblbg1=ImageTk.PhotoImage(bg1)
         lblLeft=tk.Label(self, image=self.lblbg1)
         lblLeft.place(x=85,y=50,width=470,height=610) #x=50
@@ -3051,7 +3051,7 @@ class Reset(tk.Frame):
         self.RS_SA = tk.StringVar()
 
         # left image
-        bg1=Image.open("images/Nailwall.jpg").resize((470,610), Image.ANTIALIAS)
+        bg1=Image.open("images/nailLogo.jpeg").resize((470,610), Image.ANTIALIAS)
         self.lblbg1=ImageTk.PhotoImage(bg1)
         lblLeft=tk.Label(self, image=self.lblbg1)
         lblLeft.place(x=255,y=50,width=470,height=610) #x=85
