@@ -1,9 +1,10 @@
-import mysql.connector
-from mysql.connector import errorcode
+import tempfile
 from tkinter import *
 import tkinter as tk
 from tkinter import ttk, messagebox
-# from numpy import double
+from tkinter import filedialog
+import mysql.connector
+from mysql.connector import errorcode
 from tkcalendar import DateEntry
 from tkinter import font as tkfont
 import datetime
@@ -15,9 +16,6 @@ import re
 from itertools import repeat
 from nameparser import HumanName
 import os
-import win32api
-from tkinter import filedialog
-import tempfile
 
 from Backend.createtables import CreateTables
 from Additional_features import myentry
@@ -35,6 +33,7 @@ from Backend.Database.role import RoleDB
 from Backend.Database.service_type import ServiceTypeDB
 from Backend.Database.service import ServiceDB
 
+
 class App(tk.Tk):
 
     def __init__(self, *args, **kwargs):
@@ -44,14 +43,12 @@ class App(tk.Tk):
         self.title("KT Nails Spa")
         self.iconbitmap("images/nails logo.ico")
 
-        # Reference: https://blog.teclado.com/side-values-in-tkinters-pack-geometry-manager/
         container = tk.Frame(self)
         container.pack(side="top", fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        # Return screen width and height in pixels.
-        width = 1350
+        width = 1350  # 1280
         height = 720
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -60,7 +57,6 @@ class App(tk.Tk):
         self.geometry(f'{width}x{height}+{int(x)}+{int(y)}')
         self.resizable(False,False)
 
-        # Initializing an empty frame array.
         self.frames = {}
         for F in (Login, Register, Reset, AdminDashboard, EmployeeDashboard, Feedback):
             page_name = F.__name__
@@ -70,13 +66,13 @@ class App(tk.Tk):
 
             frame.grid(row=0, column=0, sticky="nsew")
 
-        # Display the current page
         self.show_frame("Login")
 
     def show_frame(self, page_name):
         '''Show a frame for the given page name'''
         frame = self.frames[page_name]
         frame.tkraise()
+
 
 class Login(tk.Frame):
 
@@ -91,7 +87,7 @@ class Login(tk.Frame):
         self.password = tk.StringVar()
 
         lblFrame = tk.LabelFrame(self,bg="#e2479c")
-        lblFrame.place(x=525,y=160,width=340, height=450)
+        lblFrame.place(x=525,y=160,width=340, height=450) # x=490
 
         img1=Image.open("images/login.png").resize((100,100), Image.ANTIALIAS)
         self.photoimage1=ImageTk.PhotoImage(img1)
@@ -319,7 +315,11 @@ class Register(tk.Frame):
         userfetch = (self.username.get())
         role_id = 2
         account_status_id = 2
+        activeAccount = 0
+
         employee_status_id = 1
+        activeEmployee = 0
+
         try: 
             if self.firstname.get()=="" :
                 messagebox.showerror("Error","First name is missing!!!")
@@ -379,9 +379,11 @@ class Register(tk.Frame):
                     
                     op=messagebox.showinfo("Success","Register Successfully!")
                     self.clear()
+                    
         except Exception as e:
             messagebox.showerror("Error",f"Error due to: {str(e)}")
             print(f"Something went wrong {e}.")
+    
 
     def clear(self):
         self.firstname.set("")
@@ -401,6 +403,7 @@ class AdminDashboard(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         self.controller = controller
+        # self.config(bg="#e2479c")
 
         AMframe=tk.Frame(self,bg="#e2479c")
         AMframe.place(x=0,y=0,width=1350,height=720)
@@ -474,6 +477,7 @@ class AdminDashboard(tk.Frame):
 
         self.Home()
         
+        
 
     def Home(self):
         self.hide_all_frames()
@@ -488,8 +492,8 @@ class AdminDashboard(tk.Frame):
         self.FeedbackCount()
         self.TotalSales()
         self.TopServices()
-        
-        self.lbl_TopService=tk.Label(self.HomeFrame,textvariable=self.var_TopServices,width=33,height=7,bd=3,relief=SUNKEN,bg="#f06292",fg="white",font=("goudy old style",18,"bold"))
+
+        self.lbl_TopService=tk.Label(self.HomeFrame,textvariable=self.var_TopServices,width=30,height=5,bd=3,relief=SUNKEN,bg="#f06292",fg="white",font=("goudy old style",23,"bold"))
         self.lbl_TopService.grid(row=0,column=0,padx=38,pady=67)
 
         self.lbl_TotalFeedback=tk.Label(self.HomeFrame,textvariable=self.var_FeedbackCount,width=30,height=5,bd=3,relief=SUNKEN,bg="#ec407a",fg="white",font=("goudy old style",23,"bold"))
@@ -548,6 +552,7 @@ class AdminDashboard(tk.Frame):
         lblDOB.place(x=15,y=200)
 
         self.txtDOB=DateEntry(LeftFrame,selectmode='day',font=("times new roman",18),date_pattern='mm/dd/y')
+        # self.txtDOB.pack()
         self.txtDOB.place(x=140,y=200,width=200)
 
         lblEmail=tk.Label(LeftFrame,text="Email",font=("times new roman",18,"bold"),bg="#e2479c",fg="white")
@@ -609,6 +614,7 @@ class AdminDashboard(tk.Frame):
 
         imgSearch=Image.open("images/search.png").resize((38,38),Image.ANTIALIAS)
         self.photoimageSearch=ImageTk.PhotoImage(imgSearch)
+    
         self.btn_search=tk.Button(SearchFrame,image=self.photoimageSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.EmpSearch)
         self.btn_search.place(x=465)
 
@@ -680,10 +686,6 @@ class AdminDashboard(tk.Frame):
         LeftFrame = tk.LabelFrame(self.ClientFrame,text="Customer Details", font=("Segoe UI", 25, "bold"),relief=RIDGE, bd=1, bg="#e2479c",fg="gold")
         LeftFrame.place(x=0, y=0, width=370, height=690)
 
-        # Header
-        # header = tk.Label(LeftFrame, text="Customer Details", font=("Segoe UI", 25, "bold"), bg="#e2479c", fg="gold")
-        # header.place(x=20, y=20)
-
         # First Name
         lblFirstName = tk.Label(LeftFrame, text="First Name", font=("Segoe UI", 18, "bold"), bg="#e2479c", fg="white")
         lblFirstName.place(x=15, y=40)
@@ -738,13 +740,7 @@ class AdminDashboard(tk.Frame):
         header=tk.LabelFrame(RightFrame,text="Search Customer",relief=RIDGE,font=("Segoe UI",20),bd=4,bg="#e2479c",fg="gold")
         header.place(x=100,width=680,height=90) #550
 
-        # Header
-        # header = tk.Label(RightFrame, text="Search Customer", font=("Segoe UI", 25, "bold"), bg="#e2479c", fg="gold")
-        # header.place(x=20, y=15)
-
         # ============= RIGHT UPPER FRAME =============
-        # SearchFrame = tk.Frame(RightFrame, relief=RIDGE, bd=2, bg="#e2479c")
-        # SearchFrame.place(x=20, y=60, width=680, height=60)
 
         self.cmbCustomerSearch = ttk.Combobox(header, textvariable=self.var_customer_searchby, state="readonly", justify=CENTER, font=("Segoe UI", 15))
         self.cmbCustomerSearch["values"] = ("Select", "First Name", "Last Name", "Phone")
@@ -759,12 +755,6 @@ class AdminDashboard(tk.Frame):
         self.photoImageSearch=ImageTk.PhotoImage(imgSearch)
         self.btnSearch = tk.Button(header, image=self.photoImageSearch, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerSearch)
         self.btnSearch.place(x=465)
-
-        # Refresh Table Button
-        # imgRefreshTable = Image.open("images/icons8-available-updates-30.png").resize((20,20),Image.ANTIALIAS)
-        # self.photoIamgeRefreshTable = ImageTk.PhotoImage(imgRefreshTable)
-        # btnRefreshTable = tk.Button(header, image=self.photoIamgeRefreshTable, borderwidth=0, cursor="hand2", bg="#e2479c", activebackground="#e2479c", command=self.CustomerShow)
-        # btnRefreshTable.place(x=420, y=10)
 
         btn_showClientHistory=tk.Button(header,text="History Records",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.CustomerHistory)
         btn_showClientHistory.place(x=510,width=150)
@@ -1185,7 +1175,7 @@ class AdminDashboard(tk.Frame):
 
         scrollx.config(command=self.RevenueTable.xview)
         scrolly.config(command=self.RevenueTable.yview)
-        
+
         self.RevenueTable.heading("Profit",text="Total Revenue ($)")
         
         self.RevenueTable["show"]="headings"
@@ -1210,7 +1200,6 @@ class AdminDashboard(tk.Frame):
 
         scrollx.config(command=self.AppSummaryTable.xview)
         scrolly.config(command=self.AppSummaryTable.yview)
-        
         self.AppSummaryTable.heading("Profit",text="Summary")
         self.AppSummaryTable.heading("Count",text="Total")
         
@@ -1237,7 +1226,7 @@ class AdminDashboard(tk.Frame):
 
         scrollx.config(command=self.BusiestTable.xview)
         scrolly.config(command=self.BusiestTable.yview)
-
+        
         self.BusiestTable.heading("Date",text="Date")
         self.BusiestTable.heading("Customers",text="Customers")
         
@@ -1247,7 +1236,7 @@ class AdminDashboard(tk.Frame):
         self.BusiestTable.column("Customers",anchor=CENTER)
 
         self.BusiestTable.pack(fill=BOTH,expand=1)
-
+    
     def SearchReport(self):
         current = datetime.datetime.now().date()
         try:
@@ -1344,6 +1333,7 @@ class AdminDashboard(tk.Frame):
                 To = self.txt_Report_searchTo.get_date()
                 Date = (From, To, From, To, From, To)
                 rows = AppointmentDB().AppSummary(Date)
+                print(str(self.txt_Report_searchFrom.get_date()))
                 if len(rows)!=0:
                     self.AppSummaryTable.delete(*self.AppSummaryTable.get_children())
                     for index in range(len(rows)):
@@ -1394,13 +1384,12 @@ class AdminDashboard(tk.Frame):
         self.RevenueTableFrame.place_forget()
         self.AppSummaryTableFrame.place_forget()
         self.BusiestTableFrame.place_forget()
-    
+
     def survey(self):
         self.hide_all_frames()
         self.FeedbackFrame.place(x=100,y=30,width=1251,height=691)
 
         style = ttk.Style()
-        # style.theme_use('clam')
         style.configure('Treeview.Heading',font=("times new roman",20,"bold"),foreground="black")
         style.configure('Treeview',font=("times new roman",15),rowheight=40)
         style.map('Treeview',background=[('selected','#e2479c')])
@@ -1411,6 +1400,7 @@ class AdminDashboard(tk.Frame):
         self.var_SV_id=tk.StringVar()
         self.var_SV_Emp=tk.StringVar()
         self.var_month=tk.StringVar()
+
         # ==========================================================Left Frame=============================================================
         
         # =============Top Left Frame=============
@@ -1443,8 +1433,6 @@ class AdminDashboard(tk.Frame):
         # =============Bottom Left Frame=============
         SVLeftBottomFrame=tk.LabelFrame(self.FeedbackFrame,text="Feedback Remove",relief=RIDGE,font=("times new roman",15),bd=1,bg="#e2479c",fg="gold")
         SVLeftBottomFrame.place(y=389,width=370,height=300) 
-
-        
 
         self.lblSV_Search=tk.Label(SVLeftBottomFrame,text="Delete by",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
         self.lblSV_Search.place(x=15,y=20)
@@ -1483,14 +1471,15 @@ class AdminDashboard(tk.Frame):
         self.lblFrom=tk.Label(SVLeftBottomFrame,text="From",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
 
         self.txtFrom=DateEntry(SVLeftBottomFrame,selectmode='day',font=("times new roman",15),date_pattern='mm/dd/y')
-
+        
         self.lblTo=tk.Label(SVLeftBottomFrame,text="To",font=("times new roman",15,"bold"),bg="#e2479c",fg="white")
 
-        self.txtTo=DateEntry(SVLeftBottomFrame,selectmode='day',font=("times new roman",15),date_pattern='mm/dd/y')
+        self.txtTo=DateEntry(SVLeftBottomFrame,selectmode='day',font=("times new roman",15),date_pattern='mm/dd/y') 
 
         imgSVRemove=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageSVRemove=ImageTk.PhotoImage(imgSVRemove)
         self.SVRemovebtn=tk.Button(SVLeftBottomFrame, image=self.photoimageSVRemove,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.deleteMonthly)
+        
 
         imgSVRemove1=Image.open("images/delete.png").resize((60,60),Image.ANTIALIAS)
         self.photoimageSVRemove1=ImageTk.PhotoImage(imgSVRemove1)
@@ -1521,8 +1510,9 @@ class AdminDashboard(tk.Frame):
         btn_showHistory.place(x=510,width=150)
 
         # =============Bottom Right Frame=============
+
         FeedbackTableFrame=tk.LabelFrame(SV_RightFrame,relief=RIDGE,bd=1,bg="white")
-        FeedbackTableFrame.place(x=20,y=82,width=839,height=574)
+        FeedbackTableFrame.place(x=20,y=82,width=839,height=574) #608
 
         scrollx=tk.Scrollbar(FeedbackTableFrame,orient=HORIZONTAL)
         scrollx.pack(side=BOTTOM,fill=X)
@@ -1706,6 +1696,7 @@ class AdminDashboard(tk.Frame):
     def EmpUpdate(self):
         emp_status_New = 1
         emp_status_Current = 2
+        # emp_status_Pass = 3
         try:
             if self.var_emp_id.get()=="":
                 messagebox.showerror("Error","No employee info selected")
@@ -2305,12 +2296,10 @@ class AdminDashboard(tk.Frame):
                             self.FeedbackTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.SV_ClearSearch()
                     self.FeedbackDetails()
-                    # self.HideDeleteOptions()
                 else:
                     messagebox.showerror("Error","No record found.")
                     self.SV_ClearSearch()
                     self.FeedbackDetails()
-                    # self.HideDeleteOptions()
             elif self.var_SVsearchby.get()=="Monthly" and self.var_SVsearchtxt.get().isnumeric()==False:
                 messagebox.showerror("Error","Input needs to be number")
             elif self.var_SVsearchby.get()=="Monthly" and self.var_SVsearchtxt.get().isnumeric()==True:
@@ -2327,12 +2316,10 @@ class AdminDashboard(tk.Frame):
                             self.FeedbackTable.insert("",END,values=rows[index],tags=("oddrow",))
                     self.SV_ClearSearch()
                     self.FeedbackDetails()
-                    # self.HideDeleteOptions()
                 else:
                     messagebox.showerror("Error","No record found.")
                     self.SV_ClearSearch()
                     self.FeedbackDetails()
-                    # self.HideDeleteOptions()
             else:
                 FBoption=(self.var_SVsearchtxt.get())
                 rows = FeedbackDB().getFBbyName(FBoption)
@@ -2352,7 +2339,6 @@ class AdminDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error",f"Error due to: {str(e)}")
             print(f"Something went wrong {e}.")
-
 
     def SV_ClearSearch(self):
         self.SVcmb_search.current(0)
@@ -2814,7 +2800,6 @@ class AdminDashboard(tk.Frame):
         # Customer Helper Function
     def CustomerAddOrUpdate(self):
         try:
-            # Check Input Field.
             if self.var_customer_firstname.get() == '':
                 messagebox.showerror("Error", "First name is missing!!!")
             elif self.var_customer_lastname.get() == '':
@@ -2930,14 +2915,12 @@ class AdminDashboard(tk.Frame):
                             self.tblCustomer.insert("",END,values=rows[index],tags=("evenrow",))
                         else:
                             self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
-
+            
             elif self.var_customer_searchby.get()=="Phone" and self.var_customer_searchtxt.get().isnumeric() == False:
                 messagebox.showerror("Error","Phone number must be digits")
             elif self.var_customer_searchby.get()=="Phone" and len(self.var_customer_searchtxt.get()) != 10:
                 messagebox.showerror("Error", "Phone number must be 10 digits!!!")
             elif (self.var_customer_searchby.get()=="Phone") and (self.var_customer_searchtxt.get().isnumeric() == True) and (len(self.var_customer_searchtxt.get()) == 10):
-                
-                # Filter by Last name.
                 phone = self.phone_format(self.var_customer_searchtxt.get())
                 rows = CustomerDB().getCustomerByPhone(phone)
 
@@ -2973,7 +2956,7 @@ class AdminDashboard(tk.Frame):
                     self.tblCustomer.insert("",END,values=rows[index],tags=("oddrow",))
         else:
             messagebox.showerror("Error","No customer records found.")
-                
+              
         # Reset Search Bar.
         self.cmbCustomerSearch.current(0)
         self.txtCustomerSearch.delete(0, tk.END)
@@ -2982,7 +2965,6 @@ class AdminDashboard(tk.Frame):
         focus = self.tblCustomer.focus()
         curCustomer = (self.tblCustomer.item(focus))
         row = curCustomer['values']
-
         try:
             self.var_customer_id.set(row[0])
             self.txtCustomerFirstName.delete(0, tk.END)
@@ -3036,7 +3018,7 @@ class AdminDashboard(tk.Frame):
             messagebox.showerror("Error","No customer records found.")
 
     def phone_format(self,n):                                                                                                                                  
-        return format(int(n[:-1]), ",").replace(",", "-") + n[-1] 
+        return format(int(n[:-1]), ",").replace(",", "-") + n[-1]  
 
 class Reset(tk.Frame):
     def __init__(self, parent, controller):
@@ -3228,7 +3210,6 @@ class Feedback(tk.Frame):
         header = tk.Label(self.frame, text="Customer Feedback", font=("Segoe UI", 25, "bold"),bg="white")
         header.place(x=20, y=20)
 
-        # Employee Name
         self.employeeNameLabel = tk.Label(self.frame, text="Employee Name:", font=("Segoe UI", 14, "bold"),bg="white")
         self.employeeNameLabel.place(x=20, y=160)
 
@@ -3259,6 +3240,7 @@ class Feedback(tk.Frame):
 
         self.descriptionEntry = tk.Text(self.frame, font=("Segoe UI", 14, "bold"), bg="#EBECF0", borderwidth=2,wrap=WORD)
         self.descriptionEntry.place(x=20, y=360, width=400, height=150)
+
 
         # Back Button (To Login Page)
         imgBack=Image.open("images/back.png").resize((80,80),Image.ANTIALIAS)
@@ -3322,7 +3304,7 @@ class EmployeeDashboard(tk.Frame):
         self.ApptHPhone = []
         
         self.Start()
-               
+             
         self.CusFname = []
         self.CusLname = []
         self.CusPhone = []
@@ -3330,7 +3312,7 @@ class EmployeeDashboard(tk.Frame):
         self.CusHFname = []
         self.CusHLname = []
         self.CusHPhone = []
-       
+        
         self.virtualCustomerFN()
         
     def Start(self):
@@ -3404,7 +3386,6 @@ class EmployeeDashboard(tk.Frame):
         self.totalDiscount=tk.IntVar()
 
         self.Retrievedpw = tk.StringVar()
-
 
         SPW.set(0)
         SP.set(0)
@@ -3512,11 +3493,13 @@ class EmployeeDashboard(tk.Frame):
         global Duralash_btn1
         global Duralash_btn2
         global MEE_btn1
-        global MEE_btn2               
-        
+        global MEE_btn2
+       
+        #========================Retrieve Service Price==============================
+
         #========================Title==============================
 
-        title=tk.Label(self,text="Billing Software",bd="12",relief=GROOVE,bg="#e2479c",fg="white",font=("time new roman",25,"bold"),pady=2)
+        title=tk.Label(self,text="KT Nails & Spa Management System",bd="12",relief=GROOVE,bg="#e2479c",fg="white",font=("time new roman",25,"bold"),pady=2)
         title.pack(fill=X)
 
         #========================Creating Frame==============================
@@ -3582,14 +3565,16 @@ class EmployeeDashboard(tk.Frame):
             SPW_btn1.grid_forget()
             SPW_btn2.grid(row=0,column=2,pady=4)
             SPW.set(self.ServicePrice[0])
-            
+            print(f"SPW = {SPW.get()}")
+
         global BackSPW_btn2    
 
         def BackSPW_btn2():
             SPW_btn2.grid_forget()
             SPW_btn1.grid(row=0,column=1,pady=4)
             SPW.set(0)
-                    
+            print(f"SPW = {SPW.get()}")
+        
         imgSPW_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageSPW_btn1=ImageTk.PhotoImage(imgSPW_btn1)
         SPW_btn1=tk.Button(self.F2,image=self.photoimageSPW_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -3608,6 +3593,7 @@ class EmployeeDashboard(tk.Frame):
             sp_btn1.grid_forget()
             sp_btn2.grid(row=1,column=2,pady=4)
             SP.set(self.ServicePrice[1])
+            print(f"SP = {SP.get()}")
 
         global Backsp_btn2    
 
@@ -3615,6 +3601,7 @@ class EmployeeDashboard(tk.Frame):
             sp_btn2.grid_forget()
             sp_btn1.grid(row=1,column=1,pady=4)
             SP.set(0)
+            print(f"SP = {SP.get()}")
 
         imgsp_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimagesp_btn1=ImageTk.PhotoImage(imgsp_btn1)
@@ -3634,6 +3621,7 @@ class EmployeeDashboard(tk.Frame):
             CPFS_btn1.grid_forget()
             CPFS_btn2.grid(row=2,column=2,pady=4)
             SPFS.set(self.ServicePrice[2])
+            print(f"SPFS = {SPFS.get()}")
 
         global BackCPFS_btn2    
 
@@ -3641,6 +3629,7 @@ class EmployeeDashboard(tk.Frame):
             CPFS_btn2.grid_forget()
             CPFS_btn1.grid(row=2,column=1,pady=4)
             SPFS.set(0)
+            print(f"SPFS = {SPFS.get()}")
 
         imgCPFS_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageCPFS_btn1=ImageTk.PhotoImage(imgCPFS_btn1)
@@ -3660,13 +3649,15 @@ class EmployeeDashboard(tk.Frame):
             RA_btn1.grid_forget()
             RA_btn2.grid(row=3,column=2,pady=4)
             RA.set(self.ServicePrice[3])
-            
+            print(f"RA = {RA.get()}")
+
         global BackRA_btn2  
 
         def BackRA_btn2():
             RA_btn2.grid_forget()
             RA_btn1.grid(row=3,column=1,pady=4)
             RA.set(0)
+            print(f"RA = {RA.get()}")
 
         imgRA_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageRA_btn1=ImageTk.PhotoImage(imgRA_btn1)
@@ -3690,6 +3681,7 @@ class EmployeeDashboard(tk.Frame):
             M_btn1.grid_forget()
             M_btn2.grid(row=0,column=2,pady=3)
             M.set(self.ServicePrice[4])
+            print(f"M = {M.get()}")
 
         global BackM_btn2 
 
@@ -3697,6 +3689,7 @@ class EmployeeDashboard(tk.Frame):
             M_btn2.grid_forget()
             M_btn1.grid(row=0,column=1,pady=3)
             M.set(0)
+            print(f"M = {M.get()}")
 
         imgM_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageM_btn1=ImageTk.PhotoImage(imgM_btn1)
@@ -3708,7 +3701,7 @@ class EmployeeDashboard(tk.Frame):
         self.photoimageM_btn2=ImageTk.PhotoImage(imgM_btn2)
         M_btn2=tk.Button(self.F3,image=self.photoimageM_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         M_btn2.bind("<ButtonRelease-1>",lambda event:BackM_btn2())
-        
+
         P_lbl=tk.Label(self.F3,text=f"{self.ServiceName[5]} (${self.ServicePrice[5]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         P_lbl.grid(row=1,column=0,padx=5,pady=4,sticky="w")
 
@@ -3716,13 +3709,15 @@ class EmployeeDashboard(tk.Frame):
             P_btn1.grid_forget()
             P_btn2.grid(row=1,column=2,pady=4)
             P.set(self.ServicePrice[5])
-        
+            print(f"P = {P.get()}")
+
         global BackP_btn2
 
         def BackP_btn2():
             P_btn2.grid_forget()
             P_btn1.grid(row=1,column=1,pady=4)
             P.set(0)
+            print(f"P = {P.get()}")
 
         imgP_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageP_btn1=ImageTk.PhotoImage(imgP_btn1)
@@ -3742,14 +3737,16 @@ class EmployeeDashboard(tk.Frame):
             MP_btn1.grid_forget()
             MP_btn2.grid(row=2,column=2,pady=4) 
             MP.set(self.ServicePrice[6])
-            
+            print(f"MP = {MP.get()}")
+
         global BackMP_btn2
 
         def BackMP_btn2():
             MP_btn2.grid_forget()
             MP_btn1.grid(row=2,column=1,pady=4)
             MP.set(0)
-            
+            print(f"MP = {MP.get()}")
+
         imgMP_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageMP_btn1=ImageTk.PhotoImage(imgMP_btn1)
         MP_btn1=tk.Button(self.F3,image=self.photoimageMP_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -3768,6 +3765,7 @@ class EmployeeDashboard(tk.Frame):
             R_btn1.grid_forget()
             R_btn2.grid(row=3,column=2,pady=4)
             R.set(self.ServicePrice[7])
+            print(f"R = {R.get()}")
 
         global BackR_btn2
 
@@ -3775,6 +3773,7 @@ class EmployeeDashboard(tk.Frame):
             R_btn2.grid_forget()
             R_btn1.grid(row=3,column=1,pady=4)
             R.set(0)
+            print(f"R = {R.get()}")
 
         imgR_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageR_btn1=ImageTk.PhotoImage(imgR_btn1)
@@ -3794,6 +3793,7 @@ class EmployeeDashboard(tk.Frame):
             PC_btn1.grid_forget()
             PC_btn2.grid(row=4,column=2,pady=4) 
             PC.set(self.ServicePrice[8])
+            print(f"PC = {PC.get()}")
 
         global BackPC_btn2
 
@@ -3801,6 +3801,7 @@ class EmployeeDashboard(tk.Frame):
             PC_btn2.grid_forget()
             PC_btn1.grid(row=4,column=1,pady=4)
             PC.set(0)
+            print(f"PC = {PC.get()}")
 
         imgPC_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimagePC_btn1=ImageTk.PhotoImage(imgPC_btn1)
@@ -3810,9 +3811,9 @@ class EmployeeDashboard(tk.Frame):
         
         imgPC_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
         self.photoimagePC_btn2=ImageTk.PhotoImage(imgPC_btn2)
-        PC_btn2=tk.Button(self.F3,image=self.photoimagePC_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c") 
+        PC_btn2=tk.Button(self.F3,image=self.photoimagePC_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         PC_btn2.bind("<ButtonRelease-1>",lambda event:BackPC_btn2())
-          
+         
         EFA_lbl=tk.Label(self.F3,text=f"{self.ServiceName[9]} (${self.ServicePrice[9]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         EFA_lbl.grid(row=5,column=0,padx=5,pady=4,sticky="w")
 
@@ -3820,6 +3821,7 @@ class EmployeeDashboard(tk.Frame):
             EFA_btn1.grid_forget()
             EFA_btn2.grid(row=5,column=2,pady=4) 
             EFA.set(self.ServicePrice[9])
+            print(f"EFA = {EFA.get()}")
 
         global BackEFA_btn2
 
@@ -3827,6 +3829,7 @@ class EmployeeDashboard(tk.Frame):
             EFA_btn2.grid_forget()
             EFA_btn1.grid(row=5,column=1,pady=4)
             EFA.set(0)
+            print(f"EFA = {EFA.get()}")
 
         imgEFA_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageEFA_btn1=ImageTk.PhotoImage(imgEFA_btn1)
@@ -3846,13 +3849,15 @@ class EmployeeDashboard(tk.Frame):
             D_btn1.grid_forget()
             D_btn2.grid(row=6,column=2,pady=4)
             D.set(self.ServicePrice[10])
-            
+            print(f"D = {D.get()}")
+
         global BackD_btn2
 
         def BackD_btn2():
             D_btn2.grid_forget()
             D_btn1.grid(row=6,column=1,pady=4)
             D.set(0)
+            print(f"D = {D.get()}")
 
         imgD_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageD_btn1=ImageTk.PhotoImage(imgD_btn1)
@@ -3872,14 +3877,16 @@ class EmployeeDashboard(tk.Frame):
             CD_btn1.grid_forget()
             CD_btn2.grid(row=7,column=2,pady=4)
             CD.set(self.ServicePrice[11])
-            
+            print(f"CD = {CD.get()}")
+
         global BackCD_btn2
 
         def BackCD_btn2():
             CD_btn2.grid_forget()
             CD_btn1.grid(row=7,column=1,pady=4)
             CD.set(0)
-            
+            print(f"CD = {CD.get()}")
+
         imgCD_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageCD_btn1=ImageTk.PhotoImage(imgCD_btn1)
         CD_btn1=tk.Button(self.F3,image=self.photoimageCD_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -3898,6 +3905,7 @@ class EmployeeDashboard(tk.Frame):
             BC__btn1.grid_forget()
             BC__btn2.grid(row=8,column=2,pady=4)
             BC.set(self.ServicePrice[12])
+            print(f"BC = {BC.get()}")
 
         global BackBC__btn2
 
@@ -3905,6 +3913,7 @@ class EmployeeDashboard(tk.Frame):
             BC__btn2.grid_forget()
             BC__btn1.grid(row=8,column=1,pady=4)
             BC.set(0)
+            print(f"BC = {BC.get()}")
 
         imgBC__btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageBC__btn1=ImageTk.PhotoImage(imgBC__btn1)
@@ -3924,6 +3933,7 @@ class EmployeeDashboard(tk.Frame):
             TN__btn1.grid_forget()
             TN__btn2.grid(row=9,column=2,pady=4)
             TN.set(self.ServicePrice[13])
+            print(f"TN = {TN.get()}")
 
         global BackTN__btn2
 
@@ -3931,6 +3941,7 @@ class EmployeeDashboard(tk.Frame):
             TN__btn2.grid_forget()
             TN__btn1.grid(row=9,column=1,pady=4)
             TN.set(0)
+            print(f"TN = {TN.get()}")
 
         imgTN__btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageTN__btn1=ImageTk.PhotoImage(imgTN__btn1)
@@ -3960,14 +3971,16 @@ class EmployeeDashboard(tk.Frame):
             E_btn1.grid_forget()
             E_btn2.grid(row=0,column=2,pady=4)
             E.set(self.ServicePrice[14])
-            
+            print(f"E = {E.get()}")
+
         global BackE_btn2
 
         def BackE_btn2():
             E_btn2.grid_forget()
             E_btn1.grid(row=0,column=1,pady=4)
             E.set(0)
-            
+            print(f"E = {E.get()}")
+
         imgE_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageE_btn1=ImageTk.PhotoImage(imgE_btn1)
         E_btn1=tk.Button(self.F4,image=self.photoimageE_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -3977,6 +3990,7 @@ class EmployeeDashboard(tk.Frame):
         imgE_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageE_btn2=ImageTk.PhotoImage(imgE_btn2)
         E_btn2=tk.Button(self.F4,image=self.photoimageE_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+    
         E_btn2.bind("<ButtonRelease-1>",lambda event:BackE_btn2())
 
         UL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[15]} (${self.ServicePrice[15]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
@@ -3986,6 +4000,7 @@ class EmployeeDashboard(tk.Frame):
             UL_btn1.grid_forget()
             UL_btn2.grid(row=1,column=2,pady=4)
             UL.set(self.ServicePrice[15])
+            print(f"UL = {UL.get()}")
 
         global BackUL_btn2
 
@@ -3993,6 +4008,7 @@ class EmployeeDashboard(tk.Frame):
             UL_btn2.grid_forget()
             UL_btn1.grid(row=1,column=1,pady=4)
             UL.set(0)
+            print(f"UL = {UL.get()}")
 
         imgUL_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageUL_btn1=ImageTk.PhotoImage(imgUL_btn1)
@@ -4012,13 +4028,15 @@ class EmployeeDashboard(tk.Frame):
             C_btn1.grid_forget()
             C_btn2.grid(row=2,column=2,pady=4)
             C.set(self.ServicePrice[16])
-            
+            print(f"C = {C.get()}")
+
         global BackC_btn2
 
         def BackC_btn2():
             C_btn2.grid_forget()
             C_btn1.grid(row=2,column=1,pady=4)
             C.set(0)
+            print(f"C = {C.get()}")
 
         imgC_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageC_btn1=ImageTk.PhotoImage(imgC_btn1)
@@ -4030,7 +4048,7 @@ class EmployeeDashboard(tk.Frame):
         self.photoimageC_btn2=ImageTk.PhotoImage(imgC_btn2)
         C_btn2=tk.Button(self.F4,image=self.photoimageC_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         C_btn2.bind("<ButtonRelease-1>",lambda event:BackC_btn2()) 
- 
+
         HL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[17]} (${self.ServicePrice[17]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         HL_lbl.grid(row=3,column=0,padx=5,pady=4,sticky="w")
 
@@ -4038,6 +4056,7 @@ class EmployeeDashboard(tk.Frame):
             HL_btn1.grid_forget()
             HL_btn2.grid(row=3,column=2,pady=4)
             HL.set(self.ServicePrice[17])
+            print(f"HL = {HL.get()}")
 
         global BackHL_btn2
 
@@ -4045,6 +4064,7 @@ class EmployeeDashboard(tk.Frame):
             HL_btn2.grid_forget()
             HL_btn1.grid(row=3,column=1,pady=4)
             HL.set(0)
+            print(f"HL = {HL.get()}")
 
         imgHL_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageHL_btn1=ImageTk.PhotoImage(imgHL_btn1)
@@ -4055,6 +4075,7 @@ class EmployeeDashboard(tk.Frame):
         imgHL_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageHL_btn2=ImageTk.PhotoImage(imgHL_btn2)
         HL_btn2=tk.Button(self.F4,image=self.photoimageHL_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+    
         HL_btn2.bind("<ButtonRelease-1>",lambda event:BackHL_btn2())
 
         FL_lbl=tk.Label(self.F4,text=f"{self.ServiceName[18]} (${self.ServicePrice[18]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
@@ -4063,7 +4084,8 @@ class EmployeeDashboard(tk.Frame):
         def AddFL_btn1():
             FL_btn1.grid_forget()
             FL_btn2.grid(row=4,column=2,pady=4)
-            FL.set(self.ServicePrice[18])  
+            FL.set(self.ServicePrice[18])
+            print(f"FL = {FL.get()}")
 
         global BackFL_btn2
 
@@ -4071,6 +4093,7 @@ class EmployeeDashboard(tk.Frame):
             FL_btn2.grid_forget()
             FL_btn1.grid(row=4,column=1,pady=4)
             FL.set(0)
+            print(f"FL = {FL.get()}")
 
         imgFL_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageFL_btn1=ImageTk.PhotoImage(imgFL_btn1)
@@ -4082,7 +4105,7 @@ class EmployeeDashboard(tk.Frame):
         self.photoimageFL_btn2=ImageTk.PhotoImage(imgFL_btn2)
         FL_btn2=tk.Button(self.F4,image=self.photoimageFL_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         FL_btn2.bind("<ButtonRelease-1>",lambda event:BackFL_btn2()) 
-          
+        
         B_lbl=tk.Label(self.F4,text=f"{self.ServiceName[19]} (${self.ServicePrice[19]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         B_lbl.grid(row=5,column=0,padx=5,pady=4,sticky="w")
 
@@ -4090,6 +4113,7 @@ class EmployeeDashboard(tk.Frame):
             B_btn1.grid_forget()
             B_btn2.grid(row=5,column=2,pady=4)
             B.set(self.ServicePrice[19])
+            print(f"B = {B.get()}")
 
         global BackB_btn2
 
@@ -4097,7 +4121,8 @@ class EmployeeDashboard(tk.Frame):
             B_btn2.grid_forget()
             B_btn1.grid(row=5,column=1,pady=4)
             B.set(0)
-            
+            print(f"B = {B.get()}")
+
         imgB_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageB_btn1=ImageTk.PhotoImage(imgB_btn1)
         B_btn1=tk.Button(self.F4,image=self.photoimageB_btn1,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
@@ -4116,6 +4141,7 @@ class EmployeeDashboard(tk.Frame):
             U_btn1.grid_forget()
             U_btn2.grid(row=6,column=2,pady=4)
             U.set(self.ServicePrice[20])
+            print(f"U = {U.get()}")
 
         global BackU_btn2
 
@@ -4123,6 +4149,7 @@ class EmployeeDashboard(tk.Frame):
             U_btn2.grid_forget()
             U_btn1.grid(row=6,column=1,pady=4)
             U.set(0)
+            print(f"U = {U.get()}")
 
         imgU_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageU_btn1=ImageTk.PhotoImage(imgU_btn1)
@@ -4142,6 +4169,7 @@ class EmployeeDashboard(tk.Frame):
             Face_btn1.grid_forget()
             Face_btn2.grid(row=7,column=2,pady=4)
             Face.set(self.ServicePrice[21])
+            print(f"Face = {Face.get()}")
 
         global BackFace_btn2
 
@@ -4149,6 +4177,7 @@ class EmployeeDashboard(tk.Frame):
             Face_btn2.grid_forget()
             Face_btn1.grid(row=7,column=1,pady=4)
             Face.set(0)
+            print(f"Face = {Face.get()}")
 
         imgFace_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageFace_btn1=ImageTk.PhotoImage(imgFace_btn1)
@@ -4168,6 +4197,7 @@ class EmployeeDashboard(tk.Frame):
             Facial_btn1.grid_forget()
             Facial_btn2.grid(row=8,column=2,pady=4)
             Facial.set(self.ServicePrice[22])
+            print(f"Facial = {Facial.get()}")
 
         global BackFacial_btn2
 
@@ -4175,6 +4205,7 @@ class EmployeeDashboard(tk.Frame):
             Facial_btn2.grid_forget()
             Facial_btn1.grid(row=8,column=1,pady=4)
             Facial.set(0)
+            print(f"Facial = {Facial.get()}")
 
         imgFacial_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageFacial_btn1=ImageTk.PhotoImage(imgFacial_btn1)
@@ -4194,6 +4225,7 @@ class EmployeeDashboard(tk.Frame):
             EP_btn1.grid_forget()
             EP_btn2.grid(row=9,column=2,pady=4)
             EP.set(self.ServicePrice[23])
+            print(f"EP = {EP.get()}")
 
         global BackEP_btn2
 
@@ -4201,6 +4233,7 @@ class EmployeeDashboard(tk.Frame):
             EP_btn2.grid_forget()
             EP_btn1.grid(row=9,column=1,pady=4)
             EP.set(0)
+            print(f"EP = {EP.get()}")
 
         imgEP_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageEP_btn1=ImageTk.PhotoImage(imgEP_btn1)
@@ -4213,6 +4246,7 @@ class EmployeeDashboard(tk.Frame):
         EP_btn2=tk.Button(self.F4,image=self.photoimageEP_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
         EP_btn2.bind("<ButtonRelease-1>",lambda event:BackEP_btn2())
 
+
         Duralash_lbl=tk.Label(self.F4,text=f"{self.ServiceName[24]} (${self.ServicePrice[24]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
         Duralash_lbl.grid(row=10,column=0,padx=5,pady=4,sticky="w")
 
@@ -4220,6 +4254,7 @@ class EmployeeDashboard(tk.Frame):
             Duralash_btn1.grid_forget()
             Duralash_btn2.grid(row=10,column=2,pady=4)
             Duralash.set(self.ServicePrice[24])
+            print(f"Duralash = {Duralash.get()}")
 
         global BackDuralash_btn2
 
@@ -4227,6 +4262,7 @@ class EmployeeDashboard(tk.Frame):
             Duralash_btn2.grid_forget()
             Duralash_btn1.grid(row=10,column=1,pady=4)
             Duralash.set(0)
+            print(f"Duralash = {Duralash.get()}")
 
         imgDuralash_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageDuralash_btn1=ImageTk.PhotoImage(imgDuralash_btn1)
@@ -4237,6 +4273,7 @@ class EmployeeDashboard(tk.Frame):
         imgDuralash_btn2=Image.open("images/check.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageDuralash_btn2=ImageTk.PhotoImage(imgDuralash_btn2)
         Duralash_btn2=tk.Button(self.F4,image=self.photoimageDuralash_btn2,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c")
+
         Duralash_btn2.bind("<ButtonRelease-1>",lambda event:BackDuralash_btn2())
 
         MEE_lbl=tk.Label(self.F4,text=f"{self.ServiceName[25]} (${self.ServicePrice[25]})",font=("time new roman",11,"bold"),bg="#e2479c",fg="white")
@@ -4246,6 +4283,7 @@ class EmployeeDashboard(tk.Frame):
             MEE_btn1.grid_forget()
             MEE_btn2.grid(row=11,column=2,pady=4)
             MEE.set(self.ServicePrice[25])
+            print(f"MEE = {MEE.get()}")
 
         global BackMEE_btn2
 
@@ -4253,6 +4291,7 @@ class EmployeeDashboard(tk.Frame):
             MEE_btn2.grid_forget()
             MEE_btn1.grid(row=11,column=1,pady=4)
             MEE.set(0)
+            print(f"MEE = {MEE.get()}")
 
         imgMEE_btn1=Image.open("images/plus.png").resize((17,17),Image.ANTIALIAS)
         self.photoimageMEE_btn1=ImageTk.PhotoImage(imgMEE_btn1)
@@ -4267,7 +4306,7 @@ class EmployeeDashboard(tk.Frame):
 
         #========================Bill Area==============================
         self.F5=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE)
-        self.F5.place(x=978,y=100,width=332,height=390)
+        self.F5.place(x=978,y=100,width=332,height=390) # 429
   
         bill_title=tk.Label(self.F5,text="Bill Area",font="arial 15 bold",bd=7,relief=GROOVE)
         bill_title.pack(fill=X)
@@ -4280,6 +4319,7 @@ class EmployeeDashboard(tk.Frame):
 
         self.Printbtn = tk.Button(self.BillFrame,text="Print",bd=10,relief=GROOVE,font=("time new roman",14,"bold"),bg="#A50060",fg="white",activebackground="#A50060",activeforeground="white",command=self.print)
         self.Printbtn.place(x=978,y=490,width=332,height=39)
+
 
         #========================Button Frame==============================
         F6=tk.LabelFrame(self.BillFrame,bd=10,relief=GROOVE,text="Bill Menu",font=("time new roman",15,"bold"),fg="gold",bg="#e2479c")
@@ -4321,6 +4361,8 @@ class EmployeeDashboard(tk.Frame):
 
         self.ApptFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
         self.CusFrame=tk.Frame(self,relief=RIDGE,bd=1 ,bg="#e2479c")
+
+        
 
         #========================Button switch Frame==============================
         
@@ -4501,6 +4543,8 @@ class EmployeeDashboard(tk.Frame):
         self.photoimageLSearch=ImageTk.PhotoImage(imgLSearch)
         self.btn_Lsearch=tk.Button(Appt_SearchFrame,image=self.photoimageLSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptLsearch)
         
+
+
         self.txt_ApptPsearch=myentry(Appt_SearchFrame,textvariable=self.var_ApptPsearchtxt,font=("times new roman",18),bg="white")
         self.txt_ApptPsearch.set_completion_list(self.ApptPhone)
 
@@ -4508,14 +4552,17 @@ class EmployeeDashboard(tk.Frame):
         self.photoimagePSearch=ImageTk.PhotoImage(imgPSearch)
         self.btn_Psearch=tk.Button(Appt_SearchFrame,image=self.photoimagePSearch,borderwidth=0,cursor="hand2",bg="#e2479c",activebackground="#e2479c",command=self.ApptPsearch)
         
+
         # ==================================================== 
         
         btn_showHistory=tk.Button(Appt_SearchFrame,text="Cancelled Appointments",relief=RIDGE,font=("times new roman",14,"bold"),bd=2,cursor="hand2",bg="#e2479c",fg="white",activebackground="#e2479c",activeforeground="white",command=self.ApptHistory)
         btn_showHistory.place(x=510,width=210)
         
+
         # ====================================================
         self.HApptcmb_search=ttk.Combobox(Appt_SearchFrame,textvariable=self.var_ApptHsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
         self.HApptcmb_search["values"]=("Select","first_name","last_name","phone")
+        # self.HApptcmb_search.place(x=15,y=2,width=180)
         self.HApptcmb_search.current(0)
         self.HApptcmb_search.bind("<<ComboboxSelected>>", self.ApptHSearchSelection)
 
@@ -4571,7 +4618,7 @@ class EmployeeDashboard(tk.Frame):
 
         self.ApptTable.column("Appointment ID",anchor=CENTER,width=30)
         self.ApptTable.column("Customer",anchor=CENTER,width=140)
-        self.ApptTable.column("Phone",anchor=CENTER,width=120)
+        self.ApptTable.column("Phone",anchor=CENTER,width=140)
         self.ApptTable.column("Email",anchor=CENTER)
         self.ApptTable.column("Date Appt",anchor=CENTER,width=145)
         self.ApptTable.column("Time Appt",anchor=CENTER,width=125)
@@ -4586,6 +4633,7 @@ class EmployeeDashboard(tk.Frame):
         self.hide_usr_all_frames()
         self.CusFrame.place(x=39,y=67,width=1312,height=653)
         
+
         style = ttk.Style()
         style.configure('Treeview.Heading',font=("times new roman",20,"bold"),foreground="black")
         style.configure('Treeview',font=("times new roman",15),rowheight=40)
@@ -4693,7 +4741,7 @@ class EmployeeDashboard(tk.Frame):
         # ====================================================
         self.HCuscmb_search=ttk.Combobox(Cus_SearchFrame,textvariable=self.var_CusHsearchby,state="readonly",justify=CENTER,font=("times new roman",18))
         self.HCuscmb_search["values"]=("Select","first_name","last_name","phone")
-        # self.HCuscmb_search.place(x=15,y=2,width=180)
+
         self.HCuscmb_search.current(0)
         self.HCuscmb_search.bind("<<ComboboxSelected>>", self.CusHSearchSelection)
 
@@ -4811,6 +4859,7 @@ class EmployeeDashboard(tk.Frame):
             Price = "?"
             Name = "N/A"
             if not ServiceDB().getAllServices():
+                
                 self.ServicePrice.extend(repeat(Price, Times))
                 self.ServiceName.extend(repeat(Name, Times))
                 print(type(self.ServicePrice[0]))
@@ -4858,6 +4907,7 @@ class EmployeeDashboard(tk.Frame):
 
             for index in self.Selected_Services_Id:
                 self.Selected_Services_name.append(self.ServiceName[index-1])
+                
 
             if  self.ServiceName[0] == "N/A":
                 messagebox.showerror("Error","No services available!!!")
@@ -4870,11 +4920,13 @@ class EmployeeDashboard(tk.Frame):
                 Tip = round(self.totalTip.get(),2)
                 Total = round((sum(self.Selected_Services) + Tip),2)
                 self.totalMoney.set(Total)
+               
             elif (self.totalDiscount.get() != 0) and (sum(self.Selected_Services) != 0):
                 Discount = self.totalDiscount.get()
                 Tip = round(self.totalTip.get(),2)
                 Total = round(((sum(self.Selected_Services) + Tip) - ((sum(self.Selected_Services) + Tip) * (Discount/100))),2)
                 self.totalMoney.set(Total)
+                
             else:
                 messagebox.showerror("Error","No services selected!!!")
         except TclError:
@@ -4903,8 +4955,11 @@ class EmployeeDashboard(tk.Frame):
             self.Selected_password_Id.clear()
             value_found = False
             for index in range(len(self.retrieved_password)):
+                
                 if bcrypt.checkpw(self.Retrievedpw.get().encode('utf8'), self.retrieved_password[index].encode('utf8')):
                     self.Selected_password_Id.append(self.retrieved_password_Id[index])
+                    print(self.Selected_password_Id[0])
+                    print("Correct")
                     
                     self.Customer_name = HumanName(self.cname.get())
                     self.last = ""
@@ -4927,6 +4982,7 @@ class EmployeeDashboard(tk.Frame):
                     SerId = self.Selected_Services_Id
 
                     if not CustomerDB().fetchCusIdAndPhone(self.first, self.last, phone):
+                        print("No matched customer.")
                         CustomerId = []
                         InvoiceId = []
                         
@@ -4950,13 +5006,14 @@ class EmployeeDashboard(tk.Frame):
                         self.welcome_bill()
 
                         self.close_reset()
+                        
                         break
                     else:
                         CustomerId = []
                         InvoiceId = []
 
                         RetrievedCustomerId = CustomerDB().fetchCusIdAndPhone(self.first, self.last, phone)
-                        
+                        print(RetrievedCustomerId)
                         CustomerId.append(RetrievedCustomerId[0])
 
                         cusId = CustomerId[0]
@@ -4974,7 +5031,7 @@ class EmployeeDashboard(tk.Frame):
                         value_found = True
                         self.welcome_bill()
                         self.close_reset()
-                        
+            
                         break
 
             if not value_found:
@@ -5007,7 +5064,6 @@ class EmployeeDashboard(tk.Frame):
                 messagebox.showerror("Error","Something went wrong")
                 print(f"Error due to: {str(e)}.")
 
-
     def generate_bill(self):
         if  self.ServiceName[0] == "N/A":
             messagebox.showerror("Error","No services available!!!")
@@ -5015,7 +5071,7 @@ class EmployeeDashboard(tk.Frame):
         elif sum(self.Selected_Services) == 0:
             messagebox.showerror("Error","No services selected!!!")
         elif self.cname.get() == "":
-            messagebox.showerror("Error","Missing customer name!!!")
+            messagebox.showerror("Error","Customer name is missing!!!")
         elif self.cphn.get() == "":
             messagebox.showerror("Error","Phone number is missing!!!")
         elif self.cphn.get().isnumeric() == False:
@@ -5034,8 +5090,9 @@ class EmployeeDashboard(tk.Frame):
             self.BtnEnterPassword.place(x=470, y=390, width=80)
 
     def after_Submit_order(self):
+
         self.Start()
-        
+
     def Cus_show(self):
         self.CusTable.delete(*self.CusTable.get_children())
         try:
@@ -5054,6 +5111,18 @@ class EmployeeDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}.")
+
+    # def Cus_show(self):
+    #     self.CusTable.delete(*self.CusTable.get_children())
+    #     try:
+    #         if not CustomerDB().getAllCustomer():
+    #             messagebox.showerror("Error", "No Customer records available!!!.")
+    #         else:
+    #             for row in CustomerDB().getAllCustomer():
+    #                 self.CusTable.insert("",END,values=row)
+    #     except Exception as e:
+    #         messagebox.showerror("Error","Something went wrong")
+    #         print(f"Error due to: {str(e)}.")
 
     def CusGetdata(self,event):
         f=self.CusTable.focus()
@@ -5216,10 +5285,17 @@ class EmployeeDashboard(tk.Frame):
                 self.CusLname.append(rows[i][2])
                 self.CusPhone.append(rows[i][3])
 
+            # self.txt_CusFsearch.set_completion_list(self.CusFname)
+            # self.txt_CusLsearch.set_completion_list(self.CusLname)
+            # self.txt_CusPsearch.set_completion_list(self.CusPhone)
+
             for i in range(0, len(row1s)):
                 self.CusHFname.append(row1s[i][1])
                 self.CusHLname.append(row1s[i][2])
                 self.CusHPhone.append(row1s[i][3])
+            # self.txt_CusHFsearch.set_completion_list(self.CusHFname)
+            # self.txt_CusHLsearch.set_completion_list(self.CusHLname)
+            # self.txt_CusHPsearch.set_completion_list(self.CusHPhone)
         else:
             pass
 
@@ -5511,7 +5587,6 @@ class EmployeeDashboard(tk.Frame):
         except Exception as e:
             messagebox.showerror("Error","Something went wrong")
             print(f"Error due to: {str(e)}")
-
 
     def ApptClear(self):
         self.Apptcmb_search.current(0)
@@ -6073,6 +6148,12 @@ class EmployeeDashboard(tk.Frame):
         BackDuralash_btn2()
         BackMEE_btn2()
 
+        # self.Service_id_price_name()
+        # self.Service_Type()
+        # self.get_All_Users()
+
+        # self.clear_bill()
+
     def clear_bill(self):
         self.c_bill.set("")
         self.txtarea.config(state=NORMAL)
@@ -6142,13 +6223,14 @@ class EmployeeDashboard(tk.Frame):
                 show="yes"
         if show=="no":
             messagebox.showerror("Error","Invalid Bill number")
-    
+
     def print(self):
         if self.txtarea.get("1.0",'end-1c'):
             q = self.txtarea.get("1.0",'end-1c')
             filename = tempfile.mktemp(".txt")
             open(filename,"w").write(q)
             os.startfile(filename,"print")
+
 
     def Exit(self):
         self.close_reset()
@@ -6157,7 +6239,7 @@ class EmployeeDashboard(tk.Frame):
 
     def phone_format(self,n):                                                                                                                                  
         return format(int(n[:-1]), ",").replace(",", "-") + n[-1] 
-
+        
     #=======================================================================
 if __name__ == "__main__":
     app = App()

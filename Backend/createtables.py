@@ -12,7 +12,7 @@ class CreateTables:
             "  PRIMARY KEY (`role_id`)"
             ")"
         )
-        # UNIQUE KEY `Unique_role_name` (`role_name`)
+
         TABLES['account_status'] = (
             "CREATE TABLE `account_status` ("
             "  `account_status_id` int NOT NULL AUTO_INCREMENT,"
@@ -35,7 +35,7 @@ class CreateTables:
             "  CONSTRAINT `FK_account_role_id` FOREIGN KEY (`role_id`) "
             "     REFERENCES `roles` (`role_id`) ON UPDATE CASCADE,"
             "  CONSTRAINT `FK_account_account_status_id` FOREIGN KEY (`account_status_id`) "
-            "     REFERENCES `account_status` (`account_status_id`) ON UPDATE CASCADE"
+            "     REFERENCES `account_status` (`account_status_id`) ON UPDATE CASCADE "
             ")"
         )
 
@@ -63,7 +63,7 @@ class CreateTables:
             "  CONSTRAINT `FK_employee_employee_status_id` FOREIGN KEY (`employee_status_id`) "
             "     REFERENCES `employee_status` (`employee_status_id`) ON UPDATE CASCADE,"
             "  CONSTRAINT `FK_employee_account_id` FOREIGN KEY (`account_id`) "
-            "     REFERENCES `account` (`account_id`) ON UPDATE CASCADE ON DELETE CASCADE"  # considering UPDATE CASCADE
+            "     REFERENCES `account` (`account_id`) ON UPDATE CASCADE ON DELETE CASCADE"
             ")"
         )
 
@@ -187,13 +187,47 @@ class CreateTables:
             "INSERT INTO `employee_status` (`emp_status`) SELECT 'Current' FROM DUAL WHERE NOT EXISTS (SELECT * FROM `employee_status` WHERE `emp_status`='Current' LIMIT 1);"
         )
 
+        TABLES['employee_status_data2'] = (
+            "INSERT INTO `employee_status` (`emp_status`) SELECT 'Current' FROM DUAL WHERE NOT EXISTS (SELECT * FROM `employee_status` WHERE `emp_status`='Current' LIMIT 1);"
+        )
+
         TABLES['Default_Admin'] = (
             "INSERT INTO account(username, password, secret_question, secret_answer, role_id, account_status_id) \
             values('admin','$2b$12$xhojbjLhp/HzHDm7YbJVKuFwMSrhWvkMCgEcApyzditKtwcrbLjxy','Your Pet Name','$2b$12$cqf0WNfBSlpP9UkLa5orwOb47RoVYl9rV/eG7HDQb6/aLEPDnlZOW',1,1);"
-        ) 
-                 
+        )      
+
+        """
+        INSERT INTO service(service_name, price, service_type_code)
+        VALUES ('Solar Pink & White', 45, 'EST'),
+        ('Solar Pink', 30, 'EST'),
+        ('Color Powder F/Set', 45, 'EST'),
+        ('Regular Acrylic', 25, 'EST'),
+        ('Manicure', 15, 'NNS'),
+        ('Pedicure', 25, 'NNS'),
+        ('Manicure & Pedicure', 35, 'NNS'),
+        ('Repair', 4, 'NNS'),
+        ('Polish Change', 10, 'NNS'),
+        ('Extra French & American', 3, 'NNS'),
+        ('Design', 3, 'NNS'),
+        ('Cut Down', 3, 'NNS'),
+        ('Buff & Cream', 2, 'NNS'),
+        ('2 Toes Nails', 10, 'NNS'),
+        ('Eyebrow', 8, 'WS'),
+        ('Upper Lip', 10, 'WS'),
+        ('Chin', 10, 'WS'),
+        ('Half Leg', 25, 'WS'),
+        ('Full Leg', 45, 'WS'),
+        ('Bikini', 20, 'WS'),
+        ('Underarm', 10, 'WS'),
+        ('Face', 30, 'WS'),
+        ('Facial', 30, 'WS'),
+        ('Eyelash 1 Piece', 15, 'WS'),
+        ('Duralash', 28, 'WS'),
+        ('Magic Eyelash Extension', 150, 'WS');
+        """
+            
         cnx = mysql.connector.connect(**Connect)
-        cursor = cnx.cursor()
+        cursor = cnx.cursor(buffered=True)
         for table_name in TABLES:
             table_description = TABLES[table_name]
             try:
