@@ -6,7 +6,9 @@
 
 1. Install dependencies
 `pip install -r requirements.txt`
+
 2. Host a AWS database and put the connection inside `connection.py`
 `pip install -r requirements.txt`
+
 3. Run the app
 `python index.py`
